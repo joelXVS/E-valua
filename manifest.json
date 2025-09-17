@@ -1,0 +1,24 @@
+{
+  "name": "Sistema de Evaluación Online",
+  "short_name": "Evaluación Online",
+  "description": "Sistema completo de evaluación online para instituciones educativas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#15803d",
+  "theme_color": "#15803d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/placeholder.svg?height=192&width=192",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/placeholder.svg?height=512&width=512",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "es"
+}

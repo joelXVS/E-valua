@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Evaluación Online</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#15803d">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Cargando Sistema de Evaluación...</p>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen hidden">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>Sistema de Evaluación Online</h1>
+                    <p>Ingresa tus credenciales para continuar</p>
+                </div>
+                
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="user-code">Código de Usuario</label>
+                        <input type="text" id="user-code" name="userCode" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-type">Tipo de Usuario</label>
+                        <select id="user-type" name="userType" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="estudiante">Estudiante</option>
+                            <option value="docente">Docente</option>
+                            <option value="administrador">Administrador</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Iniciar Sesión</button>
+                </form>
+                
+                <div class="register-section">
+                    <p>¿No tienes cuenta?</p>
+                    <button id="show-register" class="btn-secondary">Crear Cuenta</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="register-screen" class="screen hidden">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>Crear Nueva Cuenta</h1>
+                    <p>Completa los datos para registrarte</p>
+                </div>
+                
+                <form id="register-form" class="login-form">
+                    <div class="form-group">
+                        <label for="reg-name">Nombre Completo</label>
+                        <input type="text" id="reg-name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-code">Código de Usuario</label>
+                        <input type="text" id="reg-code" name="userCode" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-password">Contraseña</label>
+                        <input type="password" id="reg-password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-user-type">Tipo de Usuario</label>
+                        <select id="reg-user-type" name="userType" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="estudiante">Estudiante</option>
+                            <option value="docente">Docente</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="teacher-code-group" style="display: none;">
+                        <label for="teacher-code">Código de Profesor (requerido para docentes)</label>
+                        <input type="text" id="teacher-code" name="teacherCode">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Crear Cuenta</button>
+                    <button type="button" id="back-to-login" class="btn-secondary">Volver al Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="main-app" class="screen hidden">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <h2>Evaluación Online</h2>
+                </div>
+                <div class="nav-user">
+                    <span id="user-name"></span>
+                    <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+                </div>
+            </nav>
+
+            <div class="main-content">
+                <aside class="sidebar">
+                    <ul class="nav-menu" id="nav-menu">
+                        <!-- Menu items will be populated by JavaScript based on user role -->
+                    </ul>
+                </aside>
+
+                <main class="content-area">
+                    <div id="content-container">
+                        <!-- Content will be loaded dynamically -->
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Offline Indicator -->
+        <div id="offline-indicator" class="offline-indicator hidden">
+            <span>Sin conexión - Los datos se guardarán localmente</span>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/test-creator.js"></script>
+    <script src="js/test-evaluator.js"></script>
+    <script src="js/results-analyzer.js"></script>
+    <script src="js/offline-manager.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
