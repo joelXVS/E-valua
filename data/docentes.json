@@ -1,0 +1,40 @@
+{
+  "teachers": [
+    {
+      "id": "DOC001",
+      "name": "Prof. Luis Hernández",
+      "code": "PROF001",
+      "password": "teacher123",
+      "email": "luis.hernandez@colegio.edu",
+      "subject": "Matemáticas",
+      "grades": ["10A", "10B", "11A"],
+      "teacherCode": "MATH2024",
+      "createdAt": "2024-01-10T08:00:00Z",
+      "lastLogin": "2024-03-15T07:30:00Z",
+      "status": "active",
+      "testsCreated": 12,
+      "studentsAssigned": 45
+    },
+    {
+      "id": "DOC002",
+      "name": "Prof. Carmen López",
+      "code": "PROF002",
+      "password": "teacher123",
+      "email": "carmen.lopez@colegio.edu",
+      "subject": "Ciencias Naturales",
+      "grades": ["9A", "9B", "10A"],
+      "teacherCode": "SCIENCE2024",
+      "createdAt": "2024-01-10T08:15:00Z",
+      "lastLogin": "2024-03-15T09:45:00Z",
+      "status": "active",
+      "testsCreated": 8,
+      "studentsAssigned": 38
+    }
+  ],
+  "validTeacherCodes": ["MATH2024", "SCIENCE2024", "ENGLISH2024", "HISTORY2024", "SPANISH2024"],
+  "metadata": {
+    "totalTeachers": 2,
+    "lastUpdated": "2024-03-15T18:00:00Z",
+    "version": "1.0"
+  }
+}

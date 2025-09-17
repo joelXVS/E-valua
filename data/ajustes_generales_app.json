@@ -1,0 +1,72 @@
+{
+  "app": {
+    "name": "E-valua",
+    "version": "1.0.0-beta",
+    "description": "Sistema de Evaluación Online",
+    "maintenance": false,
+    "maintenanceMessage": "El sistema está en mantenimiento. Por favor, intente más tarde.",
+    "maxStudents": 1600,
+    "sessionTimeout": 7200,
+    "autoSave": true,
+    "autoSaveInterval": 30
+  },
+  "theme": {
+    "primaryColor": "#667eea",
+    "secondaryColor": "#764ba2",
+    "successColor": "#28a745",
+    "warningColor": "#ffc107",
+    "dangerColor": "#dc3545",
+    "backgroundColor": "#f8f9fa",
+    "textColor": "#333333"
+  },
+  "security": {
+    "maxLoginAttempts": 3,
+    "lockoutDuration": 900,
+    "passwordMinLength": 8,
+    "requireStrongPassword": false,
+    "sessionEncryption": true,
+    "antiCheatEnabled": true,
+    "blockScreenCapture": true,
+    "blockRightClick": true
+  },
+  "notifications": {
+    "emailEnabled": false,
+    "smsEnabled": false,
+    "pushEnabled": true,
+    "testReminders": true,
+    "resultNotifications": true
+  },
+  "backup": {
+    "autoBackup": true,
+    "backupInterval": 86400,
+    "maxBackups": 7,
+    "backupLocation": "local"
+  },
+  "admin": {
+    "name": "Joel Valencia",
+    "code": "1115454214",
+    "password": "admin2024",
+    "email": "joel.valencia@colegio.edu",
+    "lastLogin": "2024-03-15T18:00:00Z"
+  },
+  "features": {
+    "offlineMode": true,
+    "dataSync": true,
+    "exportResults": true,
+    "bulkImport": true,
+    "advancedAnalytics": true,
+    "customBranding": false
+  },
+  "limits": {
+    "maxQuestionsPerTest": 100,
+    "maxOptionsPerQuestion": 6,
+    "maxFileSize": 10485760,
+    "maxImageSize": 5242880,
+    "maxTestDuration": 14400
+  },
+  "metadata": {
+    "createdAt": "2024-01-01T00:00:00Z",
+    "lastUpdated": "2024-03-15T18:00:00Z",
+    "version": "1.0"
+  }
+}
