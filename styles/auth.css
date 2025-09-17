@@ -1,0 +1,116 @@
+/* Authentication Styles */
+.login-container,
+.register-container {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.login-header,
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h1 {
+  color: #667eea;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.login-header p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+
+.register-header h2 {
+  color: #667eea;
+  font-size: 1.8rem;
+}
+
+.login-form,
+.register-form {
+  margin-bottom: 1.5rem;
+}
+
+.register-section {
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e1e5e9;
+}
+
+.register-section p {
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+/* Form validation styles */
+.form-group.error input,
+.form-group.error select {
+  border-color: #dc3545;
+}
+
+.form-group.success input,
+.form-group.success select {
+  border-color: #28a745;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.form-group.error .error-message {
+  display: block;
+}
+
+/* Loading state for forms */
+.form-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.form-loading button {
+  position: relative;
+}
+
+.form-loading button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@media (max-width: 480px) {
+  .login-container,
+  .register-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .login-header h1 {
+    font-size: 2rem;
+  }
+}
