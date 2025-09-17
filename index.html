@@ -10,14 +10,8 @@
 </head>
 <body>
     <div id="app">
-        <!-- Loading Screen -->
-        <div id="loading-screen" class="loading-screen">
-            <div class="loading-spinner"></div>
-            <p>Cargando Sistema de Evaluación...</p>
-        </div>
-
         <!-- Login Screen -->
-        <div id="login-screen" class="screen hidden">
+        <div id="login-screen" class="screen">
             <div class="login-container">
                 <div class="login-header">
                     <h1>Sistema de Evaluación Online</h1>
@@ -103,6 +97,45 @@
         <div id="main-app" class="screen hidden">
             <nav class="navbar">
                 <div class="nav-brand">
+                    <h2>Evaluación Online</h2>
+                </div>
+                <div class="nav-user">
+                    <span id="user-name"></span>
+                    <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+                </div>
+            </nav>
+
+            <div class="main-content">
+                <aside class="sidebar">
+                    <ul class="nav-menu" id="nav-menu">
+                        <!-- Menu items will be populated by JavaScript based on user role -->
+                    </ul>
+                </aside>
+
+                <main class="content-area">
+                    <div id="content-container">
+                        <!-- Content will be loaded dynamically -->
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Offline Indicator -->
+        <div id="offline-indicator" class="offline-indicator hidden">
+            <span>Sin conexión - Los datos se guardarán localmente</span>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/test-creator.js"></script>
+    <script src="js/test-evaluator.js"></script>
+    <script src="js/results-analyzer.js"></script>
+    <script src="js/offline-manager.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
                     <h2>Evaluación Online</h2>
                 </div>
                 <div class="nav-user">
