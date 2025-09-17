@@ -14,6 +14,13 @@ class EvaluaApp {
       // Show loading screen
       this.showLoading()
 
+      const initAttempts = Number.parseInt(localStorage.getItem("evalua_init_attempts") || "0")
+      if (initAttempts >= 3) {
+        this.showRecoveryMode()
+        return
+      }
+      localStorage.setItem("evalua_init_attempts", (initAttempts + 1).toString())
+
       // Wait for database to initialize
       await this.waitForDatabase()
 
@@ -29,31 +36,33 @@ class EvaluaApp {
       // Hide loading screen
       this.hideLoading()
 
+      localStorage.removeItem("evalua_init_attempts")
       this.isInitialized = true
       console.log("[v0] E-valua application initialized successfully")
     } catch (error) {
       console.error("[v0] Application initialization failed:", error)
-      this.showError("Error al inicializar la aplicación. Por favor recargue la página.")
+      this.handleInitializationError(error)
     }
   }
 
   async waitForDatabase() {
     let attempts = 0
-    const maxAttempts = 20
+    const maxAttempts = 10 // Reduced from 20 to 10 to fail faster
 
     while (!window.db || !window.db.data || !window.db.data.settings) {
       if (attempts >= maxAttempts) {
-        throw new Error("Database initialization timeout")
+        throw new Error("Database initialization timeout - La base de datos no se pudo cargar")
       }
 
       console.log(`[v0] Waiting for database... attempt ${attempts + 1}/${maxAttempts}`)
-      await new Promise((resolve) => setTimeout(resolve, 250))
+      await new Promise((resolve) => setTimeout(resolve, 500)) // Increased from 250ms to 500ms
       attempts++
     }
 
-    if (!window.db.data.students || !window.db.data.teachers || !window.db.data.tests || !window.db.data.results) {
-      throw new Error("Database data incomplete")
-    }
+    if (!window.db.data.students) window.db.data.students = []
+    if (!window.db.data.teachers) window.db.data.teachers = []
+    if (!window.db.data.tests) window.db.data.tests = []
+    if (!window.db.data.results) window.db.data.results = []
 
     console.log("[v0] Database ready with all data loaded")
   }
@@ -500,6 +509,52 @@ class EvaluaApp {
     // Show user-friendly error message
     this.showError("Ha ocurrido un error. Por favor intente nuevamente.")
   }
+
+  // Recovery mode for persistent initialization failures
+  showRecoveryMode() {
+    document.body.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; background: #f8f9fa;">
+        <div style="max-width: 500px; padding: 2rem; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <h2 style="color: #dc3545; margin-bottom: 1rem;">🔧 Modo de Recuperación</h2>
+          <p style="margin-bottom: 1.5rem; color: #666;">La aplicación ha fallado múltiples veces al inicializar. Esto puede deberse a datos corruptos.</p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button onclick="window.clearDataAndRestart()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+              Limpiar Datos y Reiniciar
+            </button>
+            <button onclick="window.forceRestart()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+              Intentar de Nuevo
+            </button>
+          </div>
+          <p style="margin-top: 1rem; font-size: 0.9rem; color: #999;">
+            Si el problema persiste, contacte al administrador del sistema.
+          </p>
+        </div>
+      </div>
+    `
+  }
+
+  handleInitializationError(error) {
+    const initAttempts = Number.parseInt(localStorage.getItem("evalua_init_attempts") || "0")
+
+    if (initAttempts >= 3) {
+      // Already handled by showRecoveryMode
+      return
+    }
+
+    // Show error without automatic reload
+    document.body.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif; background: #f8f9fa;">
+        <div style="max-width: 500px; padding: 2rem; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <h2 style="color: #dc3545; margin-bottom: 1rem;">Error de Inicialización</h2>
+          <p style="margin-bottom: 1rem; color: #666;">No se pudo inicializar la aplicación correctamente.</p>
+          <p style="margin-bottom: 1.5rem; font-size: 0.9rem; color: #999;">Intento ${initAttempts} de 3</p>
+          <button onclick="location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Reintentar
+          </button>
+        </div>
+      </div>
+    `
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -521,6 +576,38 @@ document.addEventListener("DOMContentLoaded", () => {
     `
   }
 })
+
+// Global recovery functions
+window.clearDataAndRestart = () => {
+  try {
+    // Clear all localStorage data
+    localStorage.clear()
+
+    // Show confirmation message
+    alert("Datos limpiados. La página se recargará automáticamente.")
+
+    // Reload the page
+    setTimeout(() => {
+      location.reload()
+    }, 1000)
+  } catch (error) {
+    console.error("[v0] Error clearing data:", error)
+    alert("Error al limpiar datos. Intente manualmente.")
+  }
+}
+
+window.forceRestart = () => {
+  // Reset initialization attempts
+  localStorage.removeItem("evalua_init_attempts")
+
+  // Show message
+  alert("Reiniciando aplicación...")
+
+  // Reload the page
+  setTimeout(() => {
+    location.reload()
+  }, 500)
+}
 
 // Global error handler
 window.addEventListener("error", (e) => {
