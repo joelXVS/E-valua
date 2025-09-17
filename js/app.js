@@ -8,15 +8,70 @@ class App {
   }
 
   init() {
-    this.setupEventListeners()
-    this.checkMaintenanceMode()
-    this.loadApp()
+    this.waitForDependencies()
+      .then(() => {
+        this.setupEventListeners()
+        this.checkMaintenanceMode()
+        this.loadApp()
+      })
+      .catch((error) => {
+        console.error("Error loading dependencies:", error)
+        this.showAlert("Error al cargar el sistema. Por favor recarga la página.", "error")
+      })
+  }
+
+  waitForDependencies() {
+    return new Promise((resolve, reject) => {
+      let attempts = 0
+      const maxAttempts = 50 // 5 seconds max wait time
+
+      const checkDependencies = () => {
+        attempts++
+
+        // Check if all required classes are available
+        if (
+          window.DataManager &&
+          window.Auth &&
+          window.Dashboard &&
+          window.TestCreator &&
+          window.TestEvaluator &&
+          window.ResultsAnalyzer &&
+          window.OfflineManager
+        ) {
+          // Initialize all managers
+          try {
+            window.dataManager = new window.DataManager()
+            window.auth = new window.Auth()
+            window.dashboard = new window.Dashboard()
+            window.testCreator = new window.TestCreator()
+            window.testEvaluator = new window.TestEvaluator()
+            window.resultsAnalyzer = new window.ResultsAnalyzer()
+            window.offlineManager = new window.OfflineManager()
+
+            console.log("[v0] All dependencies loaded successfully")
+            resolve()
+          } catch (error) {
+            console.error("[v0] Error initializing managers:", error)
+            reject(error)
+          }
+        } else if (attempts >= maxAttempts) {
+          console.error("[v0] Timeout waiting for dependencies")
+          reject(new Error("Timeout waiting for dependencies"))
+        } else {
+          setTimeout(checkDependencies, 100)
+        }
+      }
+
+      checkDependencies()
+    })
   }
 
   setupEventListeners() {
     // Online/Offline detection
     window.addEventListener("online", () => {
-      window.dataManager.setOnlineStatus(true)
+      if (window.dataManager) {
+        window.dataManager.setOnlineStatus(true)
+      }
       this.hideOfflineIndicator()
       // Trigger sync when coming back online
       if (window.offlineManager) {
@@ -25,7 +80,9 @@ class App {
     })
 
     window.addEventListener("offline", () => {
-      window.dataManager.setOnlineStatus(false)
+      if (window.dataManager) {
+        window.dataManager.setOnlineStatus(false)
+      }
       this.showOfflineIndicator()
       // Handle offline mode
       if (window.offlineManager) {
@@ -74,10 +131,19 @@ class App {
   }
 
   checkMaintenanceMode() {
-    const settings = window.dataManager.getAllData().ajustes_generales_app
-    if (settings.mantenimiento) {
-      this.showMaintenanceScreen()
-      return false
+    if (!window.dataManager) {
+      console.warn("[v0] DataManager not available for maintenance check")
+      return true
+    }
+
+    try {
+      const settings = window.dataManager.getAllData().ajustes_generales_app
+      if (settings && settings.mantenimiento) {
+        this.showMaintenanceScreen()
+        return false
+      }
+    } catch (error) {
+      console.warn("[v0] Error checking maintenance mode:", error)
     }
     return true
   }
@@ -103,6 +169,21 @@ class App {
     }, 1500)
   }
 
+  showScreen(screenName) {
+    // Hide all screens
+    document.querySelectorAll(".screen").forEach((screen) => {
+      screen.classList.add("hidden")
+    })
+
+    // Show requested screen
+    const targetScreen = document.getElementById(`${screenName}-screen`) || document.getElementById(`${screenName}-app`)
+    if (targetScreen) {
+      targetScreen.classList.remove("hidden")
+    }
+
+    this.currentScreen = screenName
+  }
+
   handleLogin(event) {
     const formData = new FormData(event.target)
     const userCode = formData.get("userCode")
@@ -114,6 +195,11 @@ class App {
       return
     }
 
+    if (!window.dataManager) {
+      this.showAlert("Sistema no inicializado correctamente. Por favor recarga la página.", "error")
+      return
+    }
+
     if (!navigator.onLine && window.offlineManager) {
       const cachedData = window.offlineManager.getCachedData()
       if (!cachedData) {
@@ -122,19 +208,24 @@ class App {
       }
     }
 
-    const user = window.dataManager.authenticateUser(userCode, password, userType)
+    try {
+      const user = window.dataManager.authenticateUser(userCode, password, userType)
 
-    if (user) {
-      this.currentUser = { ...user, tipo: userType }
-      localStorage.setItem("current_user", JSON.stringify(this.currentUser))
-      this.showMainApp()
-      this.showAlert("Bienvenido " + user.nombre, "success")
+      if (user) {
+        this.currentUser = { ...user, tipo: userType }
+        localStorage.setItem("current_user", JSON.stringify(this.currentUser))
+        this.showMainApp()
+        this.showAlert("Bienvenido " + user.nombre, "success")
 
-      if (window.offlineManager) {
-        window.offlineManager.cacheEssentialData()
+        if (window.offlineManager) {
+          window.offlineManager.cacheEssentialData()
+        }
+      } else {
+        this.showAlert("Credenciales incorrectas", "error")
       }
-    } else {
-      this.showAlert("Credenciales incorrectas", "error")
+    } catch (error) {
+      console.error("[v0] Login error:", error)
+      this.showAlert("Error al iniciar sesión", "error")
     }
   }
 
@@ -198,35 +289,6 @@ class App {
     document.getElementById("user-name").textContent = this.currentUser.nombre
 
     this.updateOfflineStatus()
-  }
-
-  updateOfflineStatus() {
-    const userInfo = document.querySelector(".nav-user")
-    let offlineStatus = document.getElementById("offline-status")
-
-    if (!navigator.onLine) {
-      if (!offlineStatus) {
-        offlineStatus = document.createElement("span")
-        offlineStatus.id = "offline-status"
-        offlineStatus.style.cssText = `
-          background: #f59e0b;
-          color: white;
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.25rem;
-          font-size: 0.8rem;
-          margin-left: 0.5rem;
-        `
-        userInfo.appendChild(offlineStatus)
-      }
-
-      const syncStatus = window.offlineManager ? window.offlineManager.getSyncStatus() : null
-      const pendingCount = syncStatus ? syncStatus.pendingItems : 0
-      offlineStatus.textContent = `Sin conexión${pendingCount > 0 ? ` (${pendingCount} pendientes)` : ""}`
-    } else {
-      if (offlineStatus) {
-        offlineStatus.remove()
-      }
-    }
   }
 
   setupNavigation() {
@@ -341,7 +403,12 @@ class App {
   }
 
   loadDashboard() {
-    window.dashboard.loadDashboard(this.currentUser)
+    if (window.dashboard) {
+      window.dashboard.loadDashboard(this.currentUser)
+    } else {
+      console.error("[v0] Dashboard not available")
+      document.getElementById("content-container").innerHTML = "<p>Error: Dashboard no disponible</p>"
+    }
   }
 
   loadAvailableTests() {
@@ -614,9 +681,69 @@ class App {
             </div>
         `
   }
+
+  updateOfflineStatus() {
+    const userInfo = document.querySelector(".nav-user")
+    let offlineStatus = document.getElementById("offline-status")
+
+    if (!navigator.onLine) {
+      if (!offlineStatus) {
+        offlineStatus = document.createElement("span")
+        offlineStatus.id = "offline-status"
+        offlineStatus.style.cssText = `
+          background: #f59e0b;
+          color: white;
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.8rem;
+          margin-left: 0.5rem;
+        `
+        userInfo.appendChild(offlineStatus)
+      }
+
+      const syncStatus = window.offlineManager ? window.offlineManager.getSyncStatus() : null
+      const pendingCount = syncStatus ? syncStatus.pendingItems : 0
+      offlineStatus.textContent = `Sin conexión${pendingCount > 0 ? ` (${pendingCount} pendientes)` : ""}`
+    } else {
+      if (offlineStatus) {
+        offlineStatus.remove()
+      }
+    }
+  }
+
+  loadMyResults() {
+    // Placeholder for loading user results
+    document.getElementById("content-container").innerHTML = "<p>Mis Resultados</p>"
+  }
+
+  loadMyTests() {
+    // Placeholder for loading user tests
+    document.getElementById("content-container").innerHTML = "<p>Mis Pruebas</p>"
+  }
+
+  loadUserManagement() {
+    // Placeholder for loading user management
+    document.getElementById("content-container").innerHTML = "<p>Gestión de Usuarios</p>"
+  }
+
+  loadAllTests() {
+    // Placeholder for loading all tests
+    document.getElementById("content-container").innerHTML = "<p>Todas las Pruebas</p>"
+  }
+
+  loadGeneralStats() {
+    // Placeholder for loading general statistics
+    document.getElementById("content-container").innerHTML = "<p>Estadísticas Generales</p>"
+  }
+
+  loadSettings() {
+    // Placeholder for loading settings
+    document.getElementById("content-container").innerHTML = "<p>Configuración</p>"
+  }
 }
 
 // Initialize app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("[v0] DOM loaded, initializing app...")
   window.app = new App()
 })
