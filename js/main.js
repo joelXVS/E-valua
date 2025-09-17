@@ -39,48 +39,66 @@ class EvaluaApp {
 
   async waitForDatabase() {
     let attempts = 0
-    const maxAttempts = 10
+    const maxAttempts = 20
 
-    while (!window.db || !window.db.data.settings) {
+    while (!window.db || !window.db.data || !window.db.data.settings) {
       if (attempts >= maxAttempts) {
         throw new Error("Database initialization timeout")
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      console.log(`[v0] Waiting for database... attempt ${attempts + 1}/${maxAttempts}`)
+      await new Promise((resolve) => setTimeout(resolve, 250))
       attempts++
     }
 
-    console.log("[v0] Database ready")
+    if (!window.db.data.students || !window.db.data.teachers || !window.db.data.tests || !window.db.data.results) {
+      throw new Error("Database data incomplete")
+    }
+
+    console.log("[v0] Database ready with all data loaded")
   }
 
   async initializeManagers() {
-    // Auth manager is already initialized in auth.js
+    try {
+      // Auth manager is already initialized in auth.js
 
-    // Initialize other managers when they're loaded
-    const DashboardManager = window.DashboardManager
-    const TestCreator = window.TestCreator
-    const TestEvaluator = window.TestEvaluator
-    const ResultsAnalyzer = window.ResultsAnalyzer
-    const OfflineManager = window.OfflineManager
+      // Initialize dashboard manager
+      const DashboardManager = window.DashboardManager // Declare the variable before using it
+      if (typeof DashboardManager !== "undefined") {
+        window.dashboardManager = new DashboardManager()
+        console.log("[v0] Dashboard manager initialized")
+      }
 
-    if (DashboardManager) {
-      window.dashboardManager = new DashboardManager()
-    }
+      // Initialize test creator
+      const TestCreator = window.TestCreator // Declare the variable before using it
+      if (typeof TestCreator !== "undefined") {
+        window.testCreator = new TestCreator()
+        console.log("[v0] Test creator initialized")
+      }
 
-    if (TestCreator) {
-      window.testCreator = new TestCreator()
-    }
+      // Initialize test evaluator
+      const TestEvaluator = window.TestEvaluator // Declare the variable before using it
+      if (typeof TestEvaluator !== "undefined") {
+        window.testEvaluator = new TestEvaluator()
+        console.log("[v0] Test evaluator initialized")
+      }
 
-    if (TestEvaluator) {
-      window.testEvaluator = new TestEvaluator()
-    }
+      // Initialize results analyzer
+      const ResultsAnalyzer = window.ResultsAnalyzer // Declare the variable before using it
+      if (typeof ResultsAnalyzer !== "undefined") {
+        window.resultsAnalyzer = new ResultsAnalyzer()
+        console.log("[v0] Results analyzer initialized")
+      }
 
-    if (ResultsAnalyzer) {
-      window.resultsAnalyzer = new ResultsAnalyzer()
-    }
-
-    if (OfflineManager) {
-      window.offlineManager = new OfflineManager()
+      // Initialize offline manager
+      const OfflineManager = window.OfflineManager // Declare the variable before using it
+      if (typeof OfflineManager !== "undefined") {
+        window.offlineManager = new OfflineManager()
+        console.log("[v0] Offline manager initialized")
+      }
+    } catch (error) {
+      console.warn("[v0] Some managers failed to initialize:", error)
+      // Continue initialization even if some managers fail
     }
   }
 
@@ -131,8 +149,10 @@ class EvaluaApp {
 
   checkMaintenanceMode() {
     const settings = window.db.data.settings
-    if (settings.app.maintenance) {
-      this.showMaintenanceMode(settings.app.maintenanceMessage)
+    if (settings && settings.app && settings.app.maintenance) {
+      this.showMaintenanceMode(
+        settings.app.maintenanceMessage || "El sistema está en mantenimiento. Por favor intente más tarde.",
+      )
     }
   }
 
@@ -291,13 +311,67 @@ class EvaluaApp {
   }
 
   showMessage(message, type = "info") {
-    // Use auth manager's message system if available
-    if (window.authManager) {
+    // Create a simple notification system if auth manager is not available
+    if (window.authManager && window.authManager.showMessage) {
       window.authManager.showMessage(message, type)
     } else {
-      // Fallback to console
-      console.log(`[v0] ${type.toUpperCase()}: ${message}`)
+      // Fallback notification system
+      this.createNotification(message, type)
     }
+  }
+
+  createNotification(message, type) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll(".app-notification")
+    existingNotifications.forEach((n) => n.remove())
+
+    // Create notification element
+    const notification = document.createElement("div")
+    notification.className = `app-notification notification-${type}`
+    notification.textContent = message
+
+    // Add styles
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      z-index: 10000;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease-out;
+    `
+
+    // Set background color based on type
+    const colors = {
+      error: "#dc3545",
+      success: "#28a745",
+      warning: "#ffc107",
+      info: "#17a2b8",
+    }
+    notification.style.backgroundColor = colors[type] || colors.info
+
+    // Add animation styles
+    const style = document.createElement("style")
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `
+    document.head.appendChild(style)
+
+    // Add to page
+    document.body.appendChild(notification)
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      notification.style.animation = "slideIn 0.3s ease-out reverse"
+      setTimeout(() => notification.remove(), 300)
+    }, 5000)
   }
 
   // Utility methods
@@ -428,15 +502,32 @@ class EvaluaApp {
   }
 }
 
-// Initialize the application when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  window.evaluaApp = new EvaluaApp()
+  try {
+    window.evaluaApp = new EvaluaApp()
+  } catch (error) {
+    console.error("[v0] Failed to initialize EvaluaApp:", error)
+    // Show basic error message
+    document.body.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; font-family: Arial, sans-serif;">
+        <div>
+          <h2 style="color: #dc3545;">Error de Inicialización</h2>
+          <p>No se pudo inicializar la aplicación. Por favor recargue la página.</p>
+          <button onclick="location.reload()" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Recargar Página
+          </button>
+        </div>
+      </div>
+    `
+  }
 })
 
 // Global error handler
 window.addEventListener("error", (e) => {
   if (window.evaluaApp) {
     window.evaluaApp.handleError(e.error, "Global Error Handler")
+  } else {
+    console.error("[v0] Global error before app initialization:", e.error)
   }
 })
 
@@ -444,5 +535,7 @@ window.addEventListener("error", (e) => {
 window.addEventListener("unhandledrejection", (e) => {
   if (window.evaluaApp) {
     window.evaluaApp.handleError(e.reason, "Unhandled Promise Rejection")
+  } else {
+    console.error("[v0] Unhandled promise rejection before app initialization:", e.reason)
   }
 })
