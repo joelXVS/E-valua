@@ -1,0 +1,56 @@
+{
+  "results": [
+    {
+      "id": "RES001",
+      "testId": "TEST001",
+      "studentId": "EST001",
+      "studentName": "Carlos Rodríguez",
+      "startTime": "2024-12-16T09:00:00Z",
+      "endTime": "2024-12-16T10:15:00Z",
+      "duration": 75,
+      "status": "completed",
+      "score": 85,
+      "totalPoints": 100,
+      "percentage": 85.0,
+      "passed": true,
+      "answers": [
+        {
+          "questionId": "Q001",
+          "answer": "A",
+          "isCorrect": true,
+          "points": 10,
+          "timeSpent": 45
+        },
+        {
+          "questionId": "Q002",
+          "answer": true,
+          "isCorrect": true,
+          "points": 5,
+          "timeSpent": 20
+        },
+        {
+          "questionId": "Q003",
+          "answer": "Una función lineal representa una relación directa entre variables, su gráfica es una línea recta. Ejemplo: y = 3x + 2",
+          "isCorrect": true,
+          "points": 15,
+          "timeSpent": 180,
+          "feedback": "Respuesta correcta y completa. Buen ejemplo proporcionado."
+        }
+      ],
+      "feedback": {
+        "strengths": ["Excelente comprensión de ecuaciones lineales", "Buena explicación de conceptos"],
+        "improvements": ["Revisar conceptos de funciones cuadráticas"],
+        "teacherComments": "Muy buen desempeño. Continúa así."
+      },
+      "submittedAt": "2024-12-16T10:15:00Z",
+      "gradedAt": "2024-12-16T11:30:00Z",
+      "gradedBy": "DOC001"
+    }
+  ],
+  "metadata": {
+    "totalResults": 2847,
+    "pendingGrading": 12,
+    "lastUpdated": "2024-12-16T10:00:00Z",
+    "version": "1.0"
+  }
+}

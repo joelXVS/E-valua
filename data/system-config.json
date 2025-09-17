@@ -1,0 +1,93 @@
+{
+  "system": {
+    "name": "Sistema de Evaluación Online",
+    "version": "1.0.0",
+    "institution": {
+      "name": "Colegio San José",
+      "address": "Calle 123 #45-67, Bogotá, Colombia",
+      "phone": "+57 1 234 5678",
+      "email": "info@colegiosanjose.edu.co",
+      "website": "https://colegiosanjose.edu.co",
+      "logo": "/images/logo.png"
+    },
+    "settings": {
+      "maxStudents": 1600,
+      "maxTestDuration": 180,
+      "defaultPassingScore": 70,
+      "maxAttempts": 3,
+      "sessionTimeout": 30,
+      "autoSave": true,
+      "offlineMode": true,
+      "languages": ["es", "en"],
+      "defaultLanguage": "es",
+      "timezone": "America/Bogota"
+    },
+    "features": {
+      "authentication": true,
+      "roleBasedAccess": true,
+      "testCreator": true,
+      "resultAnalyzer": true,
+      "offlineSync": true,
+      "dataExport": true,
+      "notifications": true,
+      "reporting": true
+    },
+    "security": {
+      "passwordMinLength": 8,
+      "sessionTimeout": 1800,
+      "maxLoginAttempts": 5,
+      "lockoutDuration": 900,
+      "encryptData": true,
+      "auditLog": true
+    }
+  },
+  "subjects": [
+    "Matemáticas",
+    "Español",
+    "Ciencias Naturales",
+    "Ciencias Sociales",
+    "Inglés",
+    "Educación Física",
+    "Artes",
+    "Tecnología",
+    "Ética",
+    "Religión"
+  ],
+  "grades": ["6°", "7°", "8°", "9°", "10°", "11°"],
+  "sections": ["A", "B", "C", "D"],
+  "questionTypes": [
+    {
+      "id": "multiple-choice",
+      "name": "Selección Múltiple",
+      "description": "Pregunta con múltiples opciones donde solo una es correcta",
+      "maxOptions": 6,
+      "allowImages": true
+    },
+    {
+      "id": "true-false",
+      "name": "Verdadero/Falso",
+      "description": "Pregunta con respuesta binaria",
+      "maxOptions": 2,
+      "allowImages": false
+    },
+    {
+      "id": "open-ended",
+      "name": "Respuesta Abierta",
+      "description": "Pregunta que requiere respuesta escrita",
+      "maxOptions": 0,
+      "allowImages": true
+    },
+    {
+      "id": "fill-blank",
+      "name": "Completar Espacios",
+      "description": "Pregunta con espacios en blanco para completar",
+      "maxOptions": 0,
+      "allowImages": false
+    }
+  ],
+  "metadata": {
+    "createdAt": "2024-01-15T10:00:00Z",
+    "lastUpdated": "2024-12-16T10:00:00Z",
+    "version": "1.0"
+  }
+}
