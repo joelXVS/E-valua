@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua — Estudiantes</title>
+  <!-- estilos comunes -->
+  <link rel="icon" type="image/png" href="utils/logo.png">
+  <link rel="stylesheet" href="/utils/common-styles.css" />
+</head>
+<body style="margin: 0; height: 100vh; display: grid; place-items: center;">
+  <div class="container">
+    <header class="header card">
+      <h1>📝 E-valua — Estudiantes</h1>
+      <p class="sub">Ingresa tu nombre, curso y código para iniciar la prueba. La prueba se auto-enviará si cambias de pestaña.</p>
+    </header>
+
+    <main>
+      <!-- PANTALLA DE INICIO -->
+      <section id="start" class="card" aria-labelledby="inicio-title">
+        <h2 id="inicio-title" class="sr-only">Inicio - Datos del estudiante</h2>
+
+        <label class="field">
+          <span>Nombre completo</span>
+          <input id="studentName" type="text" placeholder="Ej: Juan Pérez" autocomplete="name" />
+        </label>
+
+        <label class="field">
+          <span>Curso / Grupo</span>
+          <select id="gradeSelect" aria-label="Seleccionar curso">
+            <option value="">-- Seleccionar curso --</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Código de aplicación</span>
+          <input id="applyCode" type="text" placeholder="Ej: C-0801" autocomplete="off" />
+        </label>
+
+        <div class="row">
+          <button id="btnContinue" class="btn primary" disabled>Continuar</button>
+        </div>
+        <div id="startMsg" class="small" style="margin-top:8px;"></div>
+      </section>
+
+      <!-- PANTALLA DE EXAMEN -->
+      <section id="exam" class="card hidden" aria-hidden="true">
+        <div class="exam-header">
+          <div>
+            <h2 id="testTitle" class="test-title">Título de la prueba</h2>
+            <p id="testInstructions" class="small"></p>
+          </div>
+          <div class="meta" role="status" aria-live="polite">
+            <div>Estudiante: <strong id="metaName">-</strong></div>
+            <div>Curso: <strong id="metaGrade">-</strong></div>
+            <div>Tiempo: <strong id="timer">00:00</strong></div>
+          </div>
+        </div>
+
+        <div id="questionContainer" class="question-card" aria-live="polite"></div>
+
+        <div class="row nav-buttons" style="margin-top:12px;">
+          <button id="prevBtn" class="btn" disabled aria-label="Pregunta anterior">← Anterior</button>
+          <button id="nextBtn" class="btn" disabled aria-label="Siguiente pregunta">Siguiente →</button>
+        </div>
+
+        <div class="row end-buttons" style="margin-top:12px;">
+          <button id="finishBtn" class="btn danger" aria-label="Terminar prueba" disabled>Terminar prueba</button>
+        </div>
+      </section>
+
+      <!-- PANTALLA DE RESULTADO -->
+      <section id="result" class="card hidden" aria-hidden="true">
+        <h2>Resultados</h2>
+        <div id="resultSummary" class="result-summary"></div>
+        <div id="detailedAnswers" class="detailed-answers"></div>
+        <div class="row" style="margin-top:12px;">
+          <button id="downloadBtn" class="btn">Descargar JSON</button>
+          <button id="downloadPdfBtn" class="btn">Exportar PDF</button>
+          <button id="backBtn" class="btn">Volver</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer card">
+      <p class="small">E-valua — creado por Joel Valencia</p>
+    </footer>
+  </div>
+
+  <!-- libs y app -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script type="module" src="student-app.js" defer></script>
+</body>
+</html>
