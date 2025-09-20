@@ -327,7 +327,8 @@ async function generatePDF(res){
   try{
     const t = await fetch("./tests.json"); testsData = await t.json();
     const c = await fetch("./codes.json"); codesData = await c.json();
-    const g = await fetch("./grades.json"); gradesData = await g.json(); populateGrades();
+    const g = await fetch("./grades.json"); gradesData = await g.json();
+    populateGrades();
     showAvailable();
   }catch(e){
     console.error("Error cargando JSONs desde raíz:", e);
