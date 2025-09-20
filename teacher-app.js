@@ -3,41 +3,30 @@
 let testsData = { tests: [] };
 let codesData = { codes: [] };
 let teachersData = { teachers: [] };
-let resultsData = []; // desde localStorage o upload
+let resultsData = [];
 
 let currentTeacher = null;
 let editingTest = null;
 
 const $ = id => document.getElementById(id);
 
-/* ---------- Inicial ---------- */
-(async function init(){
-  try{
-    const t = await fetch("./tests.json"); testsData = await t.json();
-    const c = await fetch("./codes.json"); codesData = await c.json();
-    const r = await fetch("./results.json"); resultsData = await r.json();
-    const th = await fetch("./teachers.json"); teachersData = await th.json();
-    renderTestsList();
-    renderResults();
-  }catch(e){
-    console.error("Error cargando JSONs desde raíz:", e);
-  }
-})();
-
 /* ---------- Login ---------- */
 $('btnLogin').addEventListener('click', ()=> {
   const user = $('teacherUser').value.trim();
   const pass = $('teacherPass').value.trim();
-  if(!teachersData || !teachersData.teachers.length){ $('loginMsg').textContent = 'Carga teachers.json (lista de docentes) para iniciar.'; return; }
+
+  if(!teachersData || !teachersData.teachers.length){
+    $('loginMsg').textContent = 'No se encontró teachers.json en la raíz.';
+    return;
+  }
+
   const found = teachersData.teachers.find(t => t.username === user && t.password === pass);
   if(!found){ $('loginMsg').textContent = 'Credenciales inválidas.'; return; }
+
   currentTeacher = found;
   $('login').classList.add('hidden');
   $('panel').classList.remove('hidden');
   $('welcome').textContent = `Hola, ${found.name}`;
-  // intentar cargar tests guardados en localStorage
-  const storedTests = localStorage.getItem('tests_json_v2');
-  if(storedTests) testsData = JSON.parse(storedTests);
   renderTestsList();
   renderResults();
 });
@@ -56,7 +45,8 @@ function renderTestsList(){
   if(!testsData || !testsData.tests.length){ div.innerHTML = '<div class="small">No hay pruebas.</div>'; return; }
   testsData.tests.forEach(t=>{
     const node = document.createElement('div'); node.className='result-card';
-    node.innerHTML = `<strong>${t.name}</strong> <div class="small">ID: ${t.id} • Preguntas: ${t.questions.length} • Código público: ${t.publicCode||'-'}</div>
+    node.innerHTML = `<strong>${t.name}</strong>
+      <div class="small">ID: ${t.id} • Preguntas: ${t.questions.length} • Código público: ${t.publicCode||'-'} • Grupos: ${t.groups?t.groups.join(", "):"Todos"}</div>
       <div class="row gap" style="margin-top:8px">
         <button class="btn" data-id="${t.id}" data-action="edit">Editar</button>
         <button class="btn" data-id="${t.id}" data-action="delete">Eliminar</button>
@@ -92,6 +82,7 @@ $('btnNewTest').addEventListener('click', ()=> {
     instructions: '',
     showResults:true,
     showCorrectAnswers:true,
+    groups: [], // grupos permitidos
     questions: []
   });
 });
@@ -107,6 +98,7 @@ function openEditor(test){
   $('editTo').value = editingTest.availableTo || '';
   $('editShowRes').value = editingTest.showResults ? 'true' : 'false';
   $('editShowCorrect').value = editingTest.showCorrectAnswers ? 'true' : 'false';
+  $('editGroups').value = editingTest.groups ? editingTest.groups.join(",") : "";
   renderQuestionsEditor();
 }
 
@@ -123,7 +115,8 @@ $('btnSaveTest').addEventListener('click', ()=> {
   editingTest.availableTo = $('editTo').value.trim();
   editingTest.showResults = $('editShowRes').value === 'true';
   editingTest.showCorrectAnswers = $('editShowCorrect').value === 'true';
-  // persist into testsData
+  editingTest.groups = $('editGroups').value ? $('editGroups').value.split(",").map(s=>s.trim()) : [];
+
   const idx = testsData.tests.findIndex(t=>t.id===editingTest.id);
   if(idx>=0) testsData.tests[idx] = editingTest;
   else testsData.tests.push(editingTest);
@@ -161,12 +154,10 @@ function renderQuestionsEditor(){
         <button data-idx="${idx}" class="btn qDelete">Eliminar</button>
       </div>`;
     container.appendChild(node);
-    // populate fields
     node.querySelector('.qType').value = q.type;
-    // options area
     const optsDiv = node.querySelector('.qOptions');
     if(q.type === 'mcq'){
-      optsDiv.innerHTML = '<span class="small">Opciones (editar, marca índice de respuesta)</span>';
+      optsDiv.innerHTML = '<span class="small">Opciones</span>';
       q.options.forEach((opt,i)=>{
         const optHtml = document.createElement('div');
         optHtml.innerHTML = `<input data-idx="${idx}" data-opt="${i}" class="optInput" value="${escapeHtml(opt)}" />
@@ -178,11 +169,10 @@ function renderQuestionsEditor(){
         <label><input type="radio" name="tf-${idx}" data-idx="${idx}" data-select="0" ${q.answer===0?'checked':''}/> Verdadero</label>
         <label><input type="radio" name="tf-${idx}" data-idx="${idx}" data-select="1" ${q.answer===1?'checked':''}/> Falso</label>`;
     } else if(q.type === 'open'){
-      optsDiv.innerHTML = `<label class="field"><span>Keywords (json array) — ejemplo: [{"word":"lado","weight":1},{"word":"hipotenusa","weight":2}]</span>
+      optsDiv.innerHTML = `<label class="field"><span>Keywords (json array)</span>
         <textarea data-idx="${idx}" class="openKeywords" rows="3">${q.keywords?JSON.stringify(q.keywords): ''}</textarea></label>`;
     }
 
-    // events: change type
     node.querySelector('.qType').addEventListener('change', (ev)=>{
       const val = ev.target.value;
       editingTest.questions[idx].type = val;
@@ -192,7 +182,6 @@ function renderQuestionsEditor(){
       renderQuestionsEditor();
     });
 
-    // save button
     node.querySelector('.qSave').addEventListener('click', ()=>{
       const newTitle = node.querySelector('.qTitle').value;
       editingTest.questions[idx].title = newTitle;
@@ -207,14 +196,12 @@ function renderQuestionsEditor(){
         if(sel) editingTest.questions[idx].answer = Number(sel.getAttribute('data-select'));
       } else if(type === 'open'){
         const ta = node.querySelector('.openKeywords').value;
-        try{
-          editingTest.questions[idx].keywords = ta ? JSON.parse(ta) : [];
-        }catch(e){ alert('JSON inválido en keywords'); return; }
+        try{ editingTest.questions[idx].keywords = ta ? JSON.parse(ta) : []; }
+        catch(e){ alert('JSON inválido en keywords'); return; }
       }
       alert('Pregunta guardada en editor.');
     });
 
-    // delete
     node.querySelector('.qDelete').addEventListener('click', ()=>{
       if(!confirm('Eliminar pregunta?')) return;
       editingTest.questions.splice(idx,1);
@@ -223,108 +210,38 @@ function renderQuestionsEditor(){
   });
 }
 
-/* ---------- Guardar tests en localStorage ---------- */
-$('btnSaveJSON').addEventListener('click', ()=> {
-  localStorage.setItem('tests_json_v2', JSON.stringify(testsData));
-  localStorage.setItem('codes_json_v2', JSON.stringify(codesData));
-  alert('Tests y códigos guardados en localStorage (tests_json_v2 / codes_json_v2).');
-});
-
-/* ---------- Generar código aleatorio ---------- */
+/* ---------- Helpers ---------- */
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function genRandomCode(){ return 'C-'+Math.random().toString(36).slice(2,8).toUpperCase(); }
 
-/* ---------- Results management ---------- */
-$('btnLoadResultsFromLS').addEventListener('click', ()=> {
-  const key = 'examResults_v2';
-  const arr = localStorage.getItem(key);
-  if(!arr){ alert('No hay resultados en localStorage. Pide a los estudiantes que descarguen y suban los JSON, o carga un archivo results.json'); return; }
-  resultsData = JSON.parse(arr);
-  renderResults();
-});
-$('btnUploadResultsFile').addEventListener('click', ()=> $('fileInputResultsT').click());
-
+/* ---------- Render Results ---------- */
 function renderResults(){
   const div = $('resultsList'); div.innerHTML = '';
   if(!resultsData || resultsData.length===0){ div.innerHTML = '<div class="small">No hay resultados cargados.</div>'; return; }
-  // agrupamos por testId
   const byTest = {};
   resultsData.forEach(r => { byTest[r.testId] = byTest[r.testId] || []; byTest[r.testId].push(r); });
   Object.keys(byTest).forEach(testId=>{
     const header = document.createElement('div'); header.className='result-card';
     header.innerHTML = `<strong>Test: ${testId}</strong> <div class="small">Entradas: ${byTest[testId].length}</div>`;
-    const list = document.createElement('div');
+    div.appendChild(header);
     byTest[testId].forEach((r, idx)=>{
       const item = document.createElement('div'); item.className='result-card';
-      item.innerHTML = `<strong>${r.student.name}</strong> <div class="small">Grupo: ${r.student.group} • Puntaje: ${Math.round(r.score*100)/100} / ${r.maxScore}</div>
-        <div class="row gap" style="margin-top:6px">
-          <button class="btn" data-test="${testId}" data-idx="${idx}" data-action="view">Ver</button>
-          <button class="btn" data-test="${testId}" data-idx="${idx}" data-action="pdf">PDF</button>
-        </div>`;
-      list.appendChild(item);
-      // handlers
-      item.querySelectorAll('button').forEach(b=>{
-        b.addEventListener('click', ()=> {
-          const action = b.getAttribute('data-action');
-          if(action==='view') showResultModal(r);
-          if(action==='pdf') exportSinglePDF(r);
-        });
-      });
+      item.innerHTML = `<strong>${r.student.name}</strong> <div class="small">Grupo: ${r.student.group} • Puntaje: ${Math.round(r.score*100)/100} / ${r.maxScore}</div>`;
+      div.appendChild(item);
     });
-    div.appendChild(header); div.appendChild(list);
   });
 }
-
-/* ---------- Show single result (modal-like) ---------- */
-function showResultModal(r){
-  let txt = `Resultado: ${r.student.name}\nGrupo: ${r.student.group}\nPuntaje: ${Math.round(r.score*100)/100} / ${r.maxScore}\n\nPreguntas:\n`;
-  r.questionResults.forEach((q,i)=> txt += `${i+1}. ${q.title} - Puntos: ${q.earned}/${q.max} - Respuesta: ${q.answer ? (q.answer.selected ?? q.answer.value) : '---'}\n`);
-  alert(txt);
-}
-
-/* ---------- Export single result to PDF ---------- */
-async function exportSinglePDF(r){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(12); doc.text(`Resultado - ${r.testName}`,10,10);
-  doc.setFontSize(10); doc.text(`Estudiante: ${r.student.name}`,10,18);
-  doc.text(`Grupo: ${r.student.group}`,10,24);
-  doc.text(`Puntaje: ${Math.round(r.score*100)/100} / ${r.maxScore}`,10,30);
-  let y=38;
-  r.questionResults.forEach((q,i)=>{
-    if(y>270){ doc.addPage(); y=10; }
-    doc.text(`${i+1}. ${q.title}`, 10, y); y+=6;
-    doc.text(`Respuesta: ${q.answer ? (q.answer.selected ?? q.answer.value) : 'Sin respuesta'}`, 12, y); y+=6;
-    doc.text(`Puntos: ${q.earned} / ${q.max}`, 12, y); y+=8;
-  });
-  doc.save(`resultado_${r.student.name.replace(/\s+/g,'_')}.pdf`);
-}
-
-/* ---------- Export all results to single PDF ---------- */
-$('btnExportAll').addEventListener('click', async ()=> {
-  if(!resultsData || resultsData.length===0){ alert('No hay resultados'); return; }
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(12);
-  let y=10;
-  resultsData.forEach((r, idx)=>{
-    if(y>260){ doc.addPage(); y=10; }
-    doc.text(`${idx+1}. ${r.testName} - ${r.student.name} - ${Math.round(r.score*100)/100}/${r.maxScore}`, 10, y); y+=8;
-    doc.text(`Grupo: ${r.student.group} • Fecha: ${r.submittedAt}`, 12, y); y+=8;
-  });
-  doc.save(`todos_resultados_${Date.now()}.pdf`);
-});
-
-/* ---------- Helpers ---------- */
-function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function renderTestsListIfNeeded(){ if(document.body.contains($('testsList'))) renderTestsList(); }
 
 /* ---------- Inicial ---------- */
-(function init(){
-  // intentar cargar tests desde localStorage si existen
-  const t = localStorage.getItem('tests_json_v2');
-  if(t) testsData = JSON.parse(t);
-  const c = localStorage.getItem('codes_json_v2');
-  if(c) codesData = JSON.parse(c);
-  const r = localStorage.getItem('examResults_v2');
-  if(r) resultsData = JSON.parse(r);
+(async function init(){
+  try{
+    const t = await fetch("./tests.json"); testsData = await t.json();
+    const c = await fetch("./codes.json"); codesData = await c.json();
+    const r = await fetch("./results.json"); resultsData = await r.json();
+    const th = await fetch("./teachers.json"); teachersData = await th.json();
+    renderTestsList();
+    renderResults();
+  }catch(e){
+    console.error("Error cargando JSONs desde raíz:", e);
+  }
 })();
