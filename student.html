@@ -3,60 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>E-valua para Estudiantes</title>
+  <title>E-valua — Estudiantes</title>
+  <!-- estilos comunes -->
   <link rel="stylesheet" href="common-styles.css" />
 </head>
 <body>
   <div class="container">
     <header class="header card">
-      <h1>📝 E-valua para Estudiantes</h1>
-      <p class="sub">Ingresa tu nombre, grupo y código.<br>La prueba se auto-envía si cambias de pestaña.</p>
+      <h1>📝 E-valua — Estudiantes</h1>
+      <p class="sub">Ingresa tu nombre, curso y código para iniciar la prueba. La prueba se auto-enviará si cambias de pestaña.</p>
     </header>
 
     <main>
-      <section id="start" class="card">
-        <label class="field"><span>Nombre:</span><input id="studentName" type="text" placeholder="Ej: Juan Pérez" /></label>
-        <label class="field"><span>Grupo Literal:</span><input id="studentGroup" type="text" placeholder="Ej: Septimo 1" /></label>
+      <!-- PANTALLA DE INICIO -->
+      <section id="start" class="card" aria-labelledby="inicio-title">
+        <h2 id="inicio-title" class="sr-only">Inicio - Datos del estudiante</h2>
 
-        <label class="field"><span>Grupo (selecciona tu grupo para asegurarse de que es el correcto):</span>
-          <select id="gradeSelect"><option value="">-- Seleccionar curso --</option></select>
+        <label class="field">
+          <span>Nombre completo</span>
+          <input id="studentName" type="text" placeholder="Ej: Juan Pérez" autocomplete="name" />
         </label>
 
-        <label class="field"><span>Código de aplicación de prueba:</span><input id="applyCode" type="text" placeholder="Ej: ABC123" /></label>
+        <label class="field">
+          <span>Curso / Grupo</span>
+          <select id="gradeSelect" aria-label="Seleccionar curso">
+            <option value="">-- Seleccionar curso --</option>
+          </select>
+        </label>
 
-        <div class="row gap">
-          <button id="btnContinue" class="btn primary">Continuar</button>
+        <label class="field">
+          <span>Código de aplicación</span>
+          <input id="applyCode" type="text" placeholder="Ej: C-0801" autocomplete="off" />
+        </label>
+
+        <div class="row">
+          <button id="btnContinue" class="btn primary" disabled>Continuar</button>
         </div>
       </section>
 
-      <section id="exam" class="card hidden">
+      <!-- PANTALLA DE EXAMEN -->
+      <section id="exam" class="card hidden" aria-hidden="true">
         <div class="exam-header">
-          <h2 id="testTitle"></h2>
-          <div class="meta">
-            <div>Estudiante: <strong id="metaName"></strong></div>
-            <div>Grupo: <strong id="metaGroup"></strong></div>
-            <div>Grado: <strong id="metaGrade"></strong></div>
+          <div>
+            <h2 id="testTitle" class="test-title">Título de la prueba</h2>
+            <p id="testInstructions" class="small"></p>
+          </div>
+          <div class="meta" role="status" aria-live="polite">
+            <div>Estudiante: <strong id="metaName">-</strong></div>
+            <div>Curso: <strong id="metaGrade">-</strong></div>
             <div>Tiempo: <strong id="timer">00:00</strong></div>
           </div>
         </div>
 
-        <div id="questionContainer" class="question-card"></div>
+        <div id="questionContainer" class="question-card" aria-live="polite"></div>
 
-        <div class="row nav-buttons">
-          <button id="prevBtn" class="btn">← Anterior</button>
-          <button id="nextBtn" class="btn">Siguiente →</button>
+        <div class="row nav-buttons" style="margin-top:12px;">
+          <button id="prevBtn" class="btn" disabled aria-label="Pregunta anterior">← Anterior</button>
+          <button id="nextBtn" class="btn" disabled aria-label="Siguiente pregunta">Siguiente →</button>
         </div>
 
-        <div class="row end-buttons">
-          <button id="finishBtn" class="btn danger">Terminar prueba</button>
+        <div class="row end-buttons" style="margin-top:12px;">
+          <button id="finishBtn" class="btn danger" aria-label="Terminar prueba" disabled>Terminar prueba</button>
         </div>
       </section>
 
-      <section id="result" class="card hidden">
+      <!-- PANTALLA DE RESULTADO -->
+      <section id="result" class="card hidden" aria-hidden="true">
         <h2>Resultados</h2>
-        <div id="resultSummary"></div>
-        <div id="detailedAnswers"></div>
-        <div class="row gap">
+        <div id="resultSummary" class="result-summary"></div>
+        <div id="detailedAnswers" class="detailed-answers"></div>
+        <div class="row" style="margin-top:12px;">
           <button id="downloadBtn" class="btn">Descargar JSON</button>
           <button id="downloadPdfBtn" class="btn">Exportar PDF</button>
           <button id="backBtn" class="btn">Volver</button>
@@ -64,13 +80,13 @@
       </section>
     </main>
 
-    <footer class="footer">
-      <p class="small">E-valua fue creado por Joel Valencia</p>
+    <footer class="footer card">
+      <p class="small">E-valua — creado por Joel Valencia</p>
     </footer>
   </div>
 
-  <!-- jsPDF CDN para exportar PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="student-app.js"></script>
+  <!-- libs y app -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="student-app.js" defer></script>
 </body>
 </html>
