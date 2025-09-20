@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua</title>
+  <link rel="stylesheet" href="common-styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header card" style="text-align:center;">
+      <h1 style="font-size:2.5rem; color:#e65100;">E-valua</h1>
+      <p class="sub" style="margin-top:8px;">
+        Plataforma educativa para gestionar y realizar evaluaciones en línea.  
+        (Aquí puedes añadir tu descripción más bonita después ✨).
+      </p>
+    </header>
+
+    <main class="card" style="text-align:center;">
+      <div class="row" style="justify-content:center; margin-top:20px;">
+        <button id="btnStudent" class="btn primary">Ir a E-valua para Estudiantes</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnTeacher" class="btn danger">Ir a E-valua para Docentes</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById('btnStudent').addEventListener('click', () => {
+      window.location.href = 'student.html';
+    });
+
+    document.getElementById('btnTeacher').addEventListener('click', () => {
+      const code = prompt('Ingrese el código de acceso para docentes:');
+      if (code === '@GAMERKER') {
+        window.location.href = 'teacher.html';
+      } else if (code !== null) {
+        alert('Código incorrecto.');
+      }
+    });
+  </script>
+</body>
+</html>
