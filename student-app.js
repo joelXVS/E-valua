@@ -67,7 +67,15 @@ $('btnContinue').addEventListener('click', ()=>{
   if(!name || !group || !code){ alert('Completa nombre, grupo y código.'); return; }
   student = {name, group, grade};
   currentTest = resolveTestFromCode(code);
-  if(!currentTest){ alert('Código inválido o JSON no cargado.'); return; }
+  if(!currentTest){ alert('Código inválido.'); return; }
+
+  // Verificar si la prueba aplica al grupo
+  if(currentTest.groups && currentTest.groups.length > 0){
+    if(!currentTest.groups.includes(student.group)){
+      alert("Esta prueba no está disponible para tu grupo.");
+      return;
+    }
+  }
 
   // Verificar disponibilidad horaria si existe
   const now = new Date();
