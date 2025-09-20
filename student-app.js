@@ -1,4 +1,5 @@
 // student-app.js
+// Funciona sin servidor: carga JSONs desde la raíz del proyecto con fetch("./archivo.json")
 
 let testsData = null;   // estructura completa de tests
 let codesData = null;   // map codes -> testId
@@ -18,11 +19,13 @@ const $ = id => document.getElementById(id);
 /* ---------- UI: mostrar pruebas disponibles ---------- */
 function showAvailable(){
   const out = $('available');
-  if(!testsData && !codesData){  
+  if(!testsData && !codesData){ 
+    out.innerHTML = '<div class="small">No se cargaron pruebas.</div>'; 
     return; 
   }
   const testsCount = testsData ? testsData.tests.length : 0;
-  }
+  out.innerHTML = `<div class="small">Pruebas cargadas: ${testsCount}. Usa un código de aplicación válido.</div>`;
+}
 
 /* ---------- Grados dropdown ---------- */
 function populateGrades(){
@@ -286,7 +289,7 @@ function showResult(res){
 /* ---------- Helpers ---------- */
 function formatRight(qres, qDef){
   if(qDef.type==='mcq') return qDef.options[qDef.answer];
-  if(qDef.type==='tf') return qDef.answer ? 'Verdadero' : 'Falso';
+  if(qDef.type==='tf') return qDef.answer ? 'Falso' : 'Verdadero';
   if(qDef.type==='open') {
     if(qDef.keywords) return qDef.keywords.map(k=>k.word).join(', ');
     if(qDef.answer) return qDef.answer.join(', ');
@@ -327,8 +330,7 @@ async function generatePDF(res){
   try{
     const t = await fetch("./tests.json"); testsData = await t.json();
     const c = await fetch("./codes.json"); codesData = await c.json();
-    const g = await fetch("./grades.json"); gradesData = await g.json();
-    populateGrades();
+    const g = await fetch("./grades.json"); gradesData = await g.json(); populateGrades();
     showAvailable();
   }catch(e){
     console.error("Error cargando JSONs desde raíz:", e);
