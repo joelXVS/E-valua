@@ -15,29 +15,17 @@ let currentIndex = 0;
 
 const $ = id => document.getElementById(id);
 
-/* ---------- Manejo de archivos locales (File inputs) ---------- */
-$('btnLoadJSON').addEventListener('click', ()=> {
-  $('fileInputTests').click();
-});
-
-$('fileInputTests').addEventListener('change', async (e)=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  testsData = JSON.parse(await f.text());
-  showAvailable();
-});
-$('fileInputCodes').addEventListener('change', async (e)=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  codesData = JSON.parse(await f.text());
-  showAvailable();
-});
-$('fileInputGrades').addEventListener('change', async (e)=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  gradesData = JSON.parse(await f.text());
-  populateGrades();
-});
+/* ---------- Cargar JSONs desde raíz ---------- */
+(async function loadFromRoot(){
+  try{
+    const t = await fetch("./tests.json"); testsData = await t.json();
+    const c = await fetch("./codes.json"); codesData = await c.json();
+    const g = await fetch("./grades.json"); gradesData = await g.json(); populateGrades();
+    showAvailable();
+  }catch(e){
+    console.error("Error cargando JSONs desde raíz:", e);
+  }
+})();
 
 /* ---------- UI: mostrar pruebas disponibles ---------- */
 function showAvailable(){
