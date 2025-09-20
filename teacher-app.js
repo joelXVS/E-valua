@@ -25,7 +25,7 @@ function showPanelSection(name) {
 function login() {
   const user = $('teacherUser').value.trim();
   const pass = $('teacherPass').value.trim();
-  const found = teachers.find(t => t.user === user && t.pass === pass);
+  const found = teachers.teachers.find(t => t.user === user && t.pass === pass);
   if (!found) {
     alert('Usuario o contraseña incorrecta.');
     return;
@@ -51,7 +51,7 @@ function logout() {
 // ======================
 function renderTests() {
   const div = $('testsList');
-  div.innerHTML = tests.map(t => `
+  div.innerHTML = tests.tests.map(t => `
     <div class="card">
       <h5>${t.name}</h5>
       <p>Duración: ${t.time} min | Código: ${t.code}</p>
@@ -64,7 +64,7 @@ function renderTests() {
 // Editor de prueba
 // ======================
 function editTest(code) {
-  editingTest = tests.find(t => t.code === code) || { questions: [], points: { ok: 1, bad: 0 } };
+  editingTest = tests.tests.find(t => t.code === code) || { questions: [], points: { ok: 1, bad: 0 } };
   $('editName').value = editingTest.name || '';
   $('editTime').value = editingTest.time || 0;
   $('editPtsOk').value = editingTest.points.ok || 1;
@@ -89,9 +89,9 @@ function saveTest() {
   editingTest.showCorrect = $('editShowCorrect').value === 'true';
   editingTest.groups = $('editGroups').value ? $('editGroups').value.split(',').map(g => g.trim()) : [];
 
-  if (!tests.find(t => t.code === editingTest.code)) {
+  if (!tests.tests.find(t => t.code === editingTest.code)) {
     editingTest.code = `T-${Date.now()}`;
-    tests.push(editingTest);
+    tests.tests.push(editingTest);
   }
   alert('Prueba guardada.');
   renderTests();
