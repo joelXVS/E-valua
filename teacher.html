@@ -3,28 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Examen - Docentes (Panel)</title>
+  <title>E-valua para Docentes</title>
   <link rel="stylesheet" href="common-styles.css" />
 </head>
 <body>
   <div class="container">
     <header class="header card">
-      <h1>👩‍🏫 Panel de Docentes</h1>
+      <h1>E-valua -- Panel de Docentes</h1>
       <p class="sub">Inicia sesión, crea y administra pruebas, y exporta resultados.</p>
     </header>
 
     <main>
       <!-- Login -->
       <section id="login" class="card">
-        <label class="field"><span>Usuario</span><input id="teacherUser" type="text" /></label>
-        <label class="field"><span>Contraseña</span><input id="teacherPass" type="password" /></label>
+        <label class="field"><span>Usuario:</span><input id="teacherUser" type="text" /></label>
+        <label class="field"><span>Contraseña:</span><input id="teacherPass" type="password" /></label>
         <div class="row gap">
           <button id="btnLogin" class="btn primary">Entrar</button>
-          <button id="btnLoadLocal" class="btn">Cargar JSONs</button>
-          <input id="fileInputTestsT" type="file" accept=".json" style="display:none"/>
-          <input id="fileInputCodesT" type="file" accept=".json" style="display:none"/>
-          <input id="fileInputResultsT" type="file" accept=".json" style="display:none"/>
-          <input id="fileInputTeachers" type="file" accept=".json" style="display:none"/>
         </div>
         <div id="loginMsg" class="small"></div>
       </section>
