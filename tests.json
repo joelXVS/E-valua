@@ -1,14 +1,16 @@
 {
-    "code": "CONS-0801A033",
-    "name": "Prueba de Conocimiento 8° Grado - Parcial 1",
-    "time": 40,
-    "points": { "ok": 0.1785714286, "bad": 0 },
-    "from": "07:00",
-    "to": "12:40",
-    "showResults": true,
-    "showCorrect": false,
-    "groups": ["Octavo 1", "Octavo 2"],
-    "questions": [
+  "tests": [
+    {
+      "code": "CONS-0801A033",
+      "name": "Prueba de Conocimiento 8° Grado - Parcial 1",
+      "time": 40,
+      "points": { "ok": 0.1785714286, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Octavo 1", "Octavo 2"],
+      "questions": [
         {
           "type": "mcq",
           "title": "¿Cuál es el propósito principal del preámbulo de la Constitución Política de Colombia?",
@@ -275,3 +277,5 @@
         }
       ]
     }
+  ]
+}
