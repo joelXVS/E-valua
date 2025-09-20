@@ -12,10 +12,10 @@ let guia = {};
 async function loadInitialData() {
   try {
     const [teResp, tResp, bResp, gResp] = await Promise.all([
-      fetch('/teachers.json'),
-      fetch('/tests.json'),
-      fetch('/banco_preguntas.json').catch(()=>({ ok:false })),
-      fetch('/guia.json').catch(()=>({ ok:false }))
+      fetch('../teachers.json'),
+      fetch('../.tests.json'),
+      fetch('../banco_preguntas.json').catch(()=>({ ok:false })),
+      fetch('../guia.json').catch(()=>({ ok:false }))
     ]);
     teachers = teResp.ok ? await teResp.json() : { teachers: [] };
     tests = tResp.ok ? await tResp.json() : { tests: [] };
