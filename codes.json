@@ -1,7 +1,5 @@
 {
   "codes" : [
-    { "code": "CONS-0801-P3", "description": "Prueba de Conocimiento 8° Parcial 1" },
-    { "code": "MAT-0701-P1", "description": "Matemáticas 7° Parcial 1" },
-    { "code": "LEN-0901-P2", "description": "Lengua Castellana 9° Parcial 2" }    
+    { "code": "CONS-0801A033", "description": "Prueba de Conocimiento 8° Parcial 1" }
   ]
 }
