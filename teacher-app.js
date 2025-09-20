@@ -2,7 +2,12 @@
 
 let testsData = { tests: [] };
 let codesData = { codes: [] };
-let teachersData = { teachers: [] };
+let teachersData = {
+  "teachers": [
+    { "username": "profe1", "password": "pass123", "name": "Profesor Uno" },
+    { "username": "maria", "password": "secret", "name": "María López" }
+  ]
+};
 let resultsData = [];
 
 let currentTeacher = null;
@@ -238,7 +243,7 @@ function renderResults(){
     const t = await fetch("./tests.json"); testsData = await t.json();
     const c = await fetch("./codes.json"); codesData = await c.json();
     const r = await fetch("./results.json"); resultsData = await r.json();
-    const th = await fetch("./teachers.json"); teachersData = await th.json();
+    // const th = await fetch("./teachers.json"); teachersData = await th.json();
     renderTestsList();
     renderResults();
   }catch(e){
