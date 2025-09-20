@@ -1,0 +1,41 @@
+{
+  "questions": [
+    {
+      "type": "mcq",
+      "title": "¿Cuál es la capital de Francia?",
+      "options": [
+        "Madrid",
+        "París",
+        "Roma",
+        "Berlín"
+      ],
+      "answer": 1,
+      "subject": "Geografía",
+      "grade": "Octavo",
+      "topic": "Capitales",
+      "tags": ["capitales","sociales"]
+    },
+    {
+      "type": "tf",
+      "title": "La Tierra gira alrededor del Sol.",
+      "answer": 1,
+      "subject": "Ciencias",
+      "grade": "Séptimo",
+      "topic": "Astronomía",
+      "tags": ["astronomía"]
+    },
+    {
+      "type": "open",
+      "title": "Explica brevemente el ciclo del agua.",
+      "keywords": [
+        { "word": "evaporación", "weight": 1 },
+        { "word": "condensación", "weight": 1 },
+        { "word": "precipitación", "weight": 1 }
+      ],
+      "subject": "Ciencias",
+      "grade": "Octavo",
+      "topic": "Ciclo del agua",
+      "tags": ["naturaleza"]
+    }
+  ]
+}

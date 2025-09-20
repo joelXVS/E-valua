@@ -1,0 +1,281 @@
+{
+  "tests": [
+    {
+      "code": "CONS-0801A033",
+      "name": "Prueba de Conocimiento 8° Grado - Parcial 1",
+      "time": 40,
+      "points": { "ok": 0.1785714286, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Octavo 1", "Octavo 2"],
+      "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el propósito principal del preámbulo de la Constitución Política de Colombia?",
+          "options": [
+            "Dar una lista de cargos públicos",
+            "Exponer objetivos y valores que inspiran la Constitución",
+            "Establecer sanciones penales",
+            "Regular impuestos"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La soberanía en Colombia reside en:",
+          "options": [
+            "El pueblo",
+            "El poder judicial",
+            "El Congreso exclusivamente",
+            "Una asamblea de notables"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "Una de las características centrales de la Constitución de 1991 es:",
+          "options": [
+            "Reducir los derechos sociales",
+            "Concentrar más poder en el Ejecutivo",
+            "Reconocer y ampliar derechos fundamentales y la participación ciudadana",
+            "Suprimir la separación de poderes"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de los siguientes es un derecho fundamental reconocido por la Constitución?",
+          "options": [
+            "Trabajar únicamente en el sector público",
+            "Libertad de expresión",
+            "Tener vivienda gratuita obligatoria para todos sin condiciones",
+            "No pagar impuestos"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La acción de tutela está destinada a:",
+          "options": [
+            "Resolver rápidamente la protección de derechos fundamentales cuando no hay otro recurso judicial efectivo",
+            "Crear leyes de carácter general",
+            "Imponer sanciones administrativas",
+            "Convocar referendos"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "Los jóvenes, en el marco constitucional y de políticas públicas, tienen garantizado especialmente:",
+          "options": [
+            "Solo acceso al empleo formal",
+            "Derecho a voto desde los 14 años sin restricciones",
+            "Acceso a educación, participación y protección integral",
+            "Servicio militar obligatorio e indiscriminado"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "El deber de solidaridad en la Constitución busca principalmente:",
+          "options": [
+            "Fomentar el apoyo entre ciudadanos para el bien común",
+            "Obligar a donar todos los bienes personales",
+            "Excluir a grupos vulnerables de servicios",
+            "Privatizar servicios públicos"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "Según la Constitución, la familia es considerada:",
+          "options": [
+            "Una entidad económica sin funciones sociales",
+            "Base de la sociedad y responsable de la formación de la persona",
+            "Responsabilidad exclusiva del Estado sin autonomía",
+            "Un grupo que no merece protección legal"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Empatía en el contexto familiar implica principalmente:",
+          "options": [
+            "Ignorar los sentimientos ajenos",
+            "Comprender y ponerse en el lugar del otro para apoyarlo",
+            "Sancionar emocionalmente a los miembros",
+            "Imponer autoridad sin diálogo"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Un deber típico de los integrantes de una familia es:",
+          "options": [
+            "Respetar los derechos y deberes mutuos entre sus miembros",
+            "Excluir a los mayores del cuidado",
+            "Evadir responsabilidad parental",
+            "Interferir en la vida política de otros"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "Un papel esencial de la familia en la sociedad es:",
+          "options": [
+            "Socializar valores, educar y cuidar a sus miembros",
+            "Dictar normas nacionales",
+            "Administrar justicia",
+            "Gestionar la economía del país"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La Constitución de 1991 introdujo medidas para reconocer la diversidad étnica mediante:",
+          "options": [
+            "La imposición de una sola identidad cultural",
+            "El reconocimiento del pluralismo étnico y la protección de culturas indígenas y afrodescendientes",
+            "La prohibición de lenguas indígenas",
+            "La centralización cultural en una sola región"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué entidad tiene como función la protección de los derechos e intereses de los ciudadanos frente a la administración pública?",
+          "options": [
+            "Defensoría del Pueblo",
+            "Ministerio de Cultura",
+            "Policía Nacional",
+            "Banco de la República"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "Entre los deberes ciudadanos está:",
+          "options": [
+            "Participar en la vida cívica y respetar las leyes",
+            "No respetar decisiones judiciales",
+            "Excluir a otros por su opinión",
+            "Evadir obligaciones fiscales"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El preámbulo de la Constitución contiene normas de obligatorio cumplimiento.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La Corte Constitucional es la encargada de interpretar la Constitución.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "La acción de tutela puede interponerla cualquier persona para proteger sus derechos fundamentales.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Los derechos fundamentales en Colombia son absolutos y no pueden ser limitados por ninguna ley.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La familia solo está reconocida por la Constitución si está conformada por madre y padre biológicos.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La empatía contribuye a la resolución de conflictos familiares.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Los jóvenes en Colombia tienen deberes además de derechos según la Constitución.",
+          "answer": 1
+        },
+        {
+          "type": "open",
+          "title": "Enumera al menos cinco valores presentes en el preámbulo de la Constitución de Colombia.",
+          "keywords": [
+            { "word": "libertad", "weight": 1 },
+            { "word": "justicia", "weight": 1 },
+            { "word": "solidaridad", "weight": 1 },
+            { "word": "democracia", "weight": 1 },
+            { "word": "equidad", "weight": 1 },
+            { "word": "pluralismo", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Describe brevemente qué es una acción de tutela y en qué situaciones procede.",
+          "keywords": [
+            { "word": "protección", "weight": 2 },
+            { "word": "urgente", "weight": 1 },
+            { "word": "derechos fundamentales", "weight": 2 },
+            { "word": "remedio judicial", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Menciona tres derechos fundamentales y explica por qué son importantes para los jóvenes.",
+          "keywords": [
+            { "word": "salud", "weight": 2 },
+            { "word": "educación", "weight": 2 },
+            { "word": "participación", "weight": 1 },
+            { "word": "libertad de expresión", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Define el concepto de familia y explica cómo la empatía mejora las relaciones familiares.",
+          "keywords": [
+            { "word": "apoyo", "weight": 1 },
+            { "word": "respeto", "weight": 1 },
+            { "word": "comunicación", "weight": 1 },
+            { "word": "empatía", "weight": 2 },
+            { "word": "cuidado", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Enumera deberes que tienen los miembros de una familia hacia sus hijos y demás miembros.",
+          "keywords": [
+            { "word": "protección", "weight": 2 },
+            { "word": "educación", "weight": 1 },
+            { "word": "respeto", "weight": 1 },
+            { "word": "sustento", "weight": 1 },
+            { "word": "cuidado", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Explica el papel de la familia en la formación de ciudadanos responsables.",
+          "keywords": [
+            { "word": "valores", "weight": 2 },
+            { "word": "educación cívica", "weight": 2 },
+            { "word": "responsabilidad", "weight": 1 },
+            { "word": "ejemplo", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Propón medidas que el Estado puede adoptar para proteger la diversidad cultural reconocida en la Constitución de 1991.",
+          "keywords": [
+            { "word": "políticas públicas", "weight": 1 },
+            { "word": "autonomía cultural", "weight": 2 },
+            { "word": "territorios", "weight": 1 },
+            { "word": "educación bilingüe", "weight": 2 },
+            { "word": "protección", "weight": 1 }
+          ]
+        }
+      ]
+    }
+  ]
+}

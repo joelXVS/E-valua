@@ -1,0 +1,15 @@
+{
+  "grades" : [
+    { "id": "7-1", "name": "Séptimo 1" },
+    { "id": "7-2", "name": "Séptimo 2" },
+    { "id": "7-3", "name": "Séptimo 3" },
+    { "id": "7-4", "name": "Séptimo 4" },
+    { "id": "8-1", "name": "Octavo 1" },
+    { "id": "8-2", "name": "Octavo 2" },
+    { "id": "8-3", "name": "Octavo 3" },
+    { "id": "8-4", "name": "Octavo 4" },
+    { "id": "11-1", "name": "Undécimo 1" },
+    { "id": "11-2", "name": "Undécimo 2" },
+    { "id": "11-3", "name": "Undécimo 3" }
+  ]
+}
