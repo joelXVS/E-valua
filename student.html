@@ -3,33 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Examen - Estudiante</title>
+  <title>E-valua para Estudiantes</title>
   <link rel="stylesheet" href="common-styles.css" />
 </head>
 <body>
   <div class="container">
     <header class="header card">
-      <h1>📝 Examen — Estudiantes</h1>
-      <p class="sub">Ingresa tu nombre, grupo y código. La prueba se auto-envía si cambias de pestaña.</p>
+      <h1>📝 E-valua para Estudiantes</h1>
+      <p class="sub">Ingresa tu nombre, grupo y código.<br>La prueba se auto-envía si cambias de pestaña.</p>
     </header>
 
     <main>
       <section id="start" class="card">
-        <label class="field"><span>Nombre</span><input id="studentName" type="text" placeholder="Ej: Juan Pérez" /></label>
-        <label class="field"><span>Grupo</span><input id="studentGroup" type="text" placeholder="Ej: Septimo 1" /></label>
+        <label class="field"><span>Nombre:</span><input id="studentName" type="text" placeholder="Ej: Juan Pérez" /></label>
+        <label class="field"><span>Grupo Literal:</span><input id="studentGroup" type="text" placeholder="Ej: Septimo 1" /></label>
 
-        <label class="field"><span>Grado (selecciona)</span>
-          <select id="gradeSelect"><option value="">-- Cargar cursos (archivo) --</option></select>
+        <label class="field"><span>Grupo (selecciona tu grupo para asegurarse de que es el correcto):</span>
+          <select id="gradeSelect"><option value="">-- Seleccionar curso --</option></select>
         </label>
 
-        <label class="field"><span>Código de aplicación</span><input id="applyCode" type="text" placeholder="Ej: ABC123" /></label>
+        <label class="field"><span>Código de aplicación de prueba:</span><input id="applyCode" type="text" placeholder="Ej: ABC123" /></label>
 
         <div class="row gap">
           <button id="btnContinue" class="btn primary">Continuar</button>
-          <button id="btnLoadJSON" class="btn">Cargar JSONs</button>
-          <input id="fileInputTests" type="file" accept=".json" style="display:none" />
-          <input id="fileInputCodes" type="file" accept=".json" style="display:none" />
-          <input id="fileInputGrades" type="file" accept=".json" style="display:none" />
         </div>
 
         <div id="available" class="available-tests small"></div>
@@ -71,7 +67,7 @@
     </main>
 
     <footer class="footer">
-      <p class="small">Resultados guardados localmente y disponibles para docentes desde su panel.</p>
+      <p class="small">E-valua fue creado por Joel Valencia</p>
     </footer>
   </div>
 
