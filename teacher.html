@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel Docentes — Crear Pruebas</title>
+  <link rel="stylesheet" href="teacher.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div id="root" class="container">
+    <header class="header">
+      <h1>🧑‍🏫 Panel de Docentes</h1>
+      <p class="sub">Crea, edita y administra pruebas. Exporta resultados a PDF o descarga JSON.</p>
+    </header>
+
+    <!-- LOGIN -->
+    <section class="card" id="loginCard">
+      <h2>Ingreso docente</h2>
+      <p class="small">Introduce la contraseña del docente para poder crear/guardar pruebas.</p>
+      <div class="field-row">
+        <div class="field"><input id="teacherPassword" type="password" placeholder="Contraseña" /></div>
+        <div class="row"><button id="btnTeacherLogin" class="btn primary">Ingresar</button></div>
+      </div>
+      <p class="small">Contraseña por defecto: <code>profesor2025</code> (cámbiala en teacher.js)</p>
+      <div id="loginStatus" class="small"></div>
+    </section>
+
+    <main id="teacherMain" class="hidden">
+      <section class="card">
+        <h2>Crear / editar prueba</h2>
+        <div class="field">
+          <label>Nombre de la prueba</label>
+          <input id="testName" type="text" placeholder="Nombre de la prueba" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Código público</label>
+            <input id="testPublicCode" type="text" placeholder="PUBLIC-001" />
+          </div>
+          <div class="field">
+            <label>Duración (min)</label>
+            <input id="testTime" type="number" min="1" value="30"/>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Disponible desde (HH:MM)</label>
+            <input id="availFrom" type="text" placeholder="08:00"/>
+          </div>
+          <div class="field">
+            <label>Disponible hasta (HH:MM)</label>
+            <input id="availTo" type="text" placeholder="23:59"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Instrucciones</label>
+          <textarea id="instructions" rows="2"></textarea>
+        </div>
+
+        <div class="card small">
+          <h3>Preguntas de la prueba</h3>
+          <div id="questionsList"></div>
+          <div class="row gap">
+            <button id="btnAddQuestion" class="btn">+ Agregar pregunta</button>
+            <button id="btnSaveTest" class="btn primary">Guardar prueba (servidor)</button>
+            <button id="btnDownloadTest" class="btn">Descargar tests.json</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Pruebas existentes</h2>
+        <div id="testsOverview"></div>
+      </section>
+
+      <section class="card">
+        <h2>Resultados</h2>
+        <div class="row gap">
+          <select id="selectTestForResults"></select>
+          <button id="btnLoadResults" class="btn">Cargar resultados</button>
+          <button id="btnExportPdf" class="btn primary">Exportar a PDF</button>
+          <button id="btnDownloadResultsJson" class="btn">Descargar results.json</button>
+        </div>
+        <div id="resultsArea" class="result-area"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p class="small">Funciona mejor con servidor Node (opcional). Sin servidor guarda local y permite descarga.</p>
+    </footer>
+  </div>
+
+  <script src="teacher.js"></script>
+</body>
+</html>
