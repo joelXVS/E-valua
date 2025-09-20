@@ -1,3 +1,8 @@
-{
-  "grades": ["Septimo 1","Septimo 2","Septimo 3","Septimo 4","Octavo 1","Octavo 2","Octavo 3","Octavo 4"]
-}
+[
+  { "id": "7-1", "name": "Séptimo 1" },
+  { "id": "7-2", "name": "Séptimo 2" },
+  { "id": "8-1", "name": "Octavo 1" },
+  { "id": "8-2", "name": "Octavo 2" },
+  { "id": "9-1", "name": "Noveno 1" },
+  { "id": "9-2", "name": "Noveno 2" }
+]
