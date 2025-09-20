@@ -3,12 +3,12 @@
     {
       "id": "test-001",
       "publicCode": "PUBLIC-001",
-      "name": "Prueba ejemplo: Matematicas básicas",
+      "name": "Prueba ejemplo: Matemáticas",
       "timeMinutes": 15,
       "points": { "correct": 1, "incorrect": 0 },
       "availableFrom": "08:00",
       "availableTo": "23:59",
-      "instructions": "Responde con calma. No recargues la página. Cambiar de pestaña termina la prueba.",
+      "instructions": "No cambiar de pestaña. Respuestas abiertas puntúan parcialmente.",
       "showResults": true,
       "showCorrectAnswers": true,
       "questions": [
@@ -25,8 +25,12 @@
         },
         {
           "type": "open",
-          "title": "Nombra una palabra clave relacionada con 'triángulo' (buscamos al menos una de las keywords).",
-          "answer": ["lado", "ángulo", "hipotenusa"]
+          "title": "Menciona términos relacionados con triángulos",
+          "keywords": [
+            { "word": "lado", "weight": 1 },
+            { "word": "ángulo", "weight": 1 },
+            { "word": "hipotenusa", "weight": 2 }
+          ]
         }
       ]
     }
