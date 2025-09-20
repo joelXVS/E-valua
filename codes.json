@@ -1,8 +1,7 @@
 {
-  "codes": [
-    {
-      "applyCode": "C-0801",
-      "testId": "CONS-0801-P3"
-    }
+  "codes" : [
+    { "code": "CONS-0801-P3", "description": "Prueba de Conocimiento 8° Parcial 3" }'
+    { "code": "MAT-0701-P1", "description": "Matemáticas 7° Parcial 1" },
+    { "code": "LEN-0901-P2", "description": "Lengua Castellana 9° Parcial 2" }    
   ]
 }
