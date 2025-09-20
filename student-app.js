@@ -18,13 +18,11 @@ const $ = id => document.getElementById(id);
 /* ---------- UI: mostrar pruebas disponibles ---------- */
 function showAvailable(){
   const out = $('available');
-  if(!testsData && !codesData){ 
-    out.innerHTML = '<div class="small">No se cargaron pruebas.</div>'; 
+  if(!testsData && !codesData){  
     return; 
   }
   const testsCount = testsData ? testsData.tests.length : 0;
-  out.innerHTML = `<div class="small">Pruebas cargadas: ${testsCount}. Usa un código de aplicación válido.</div>`;
-}
+  }
 
 /* ---------- Grados dropdown ---------- */
 function populateGrades(){
