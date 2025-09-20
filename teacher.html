@@ -3,90 +3,127 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>E-valua para Docentes</title>
+  <title>E-valua — Docentes</title>
+  <!-- estilos comunes -->
   <link rel="stylesheet" href="common-styles.css" />
 </head>
 <body>
   <div class="container">
     <header class="header card">
       <h1>E-valua — Panel de Docentes</h1>
-      <p class="sub">Inicia sesión, crea y administra pruebas, y exporta resultados.</p>
+      <p class="sub">Gestiona pruebas, grupos y resultados de forma segura.</p>
     </header>
 
     <main>
-      <!-- Login -->
-      <section id="login" class="card">
-        <label class="field"><span>Usuario:</span><input id="teacherUser" type="text" /></label>
-        <label class="field"><span>Contraseña:</span><input id="teacherPass" type="password" /></label>
-        <div class="row gap">
+      <!-- LOGIN -->
+      <section id="login" class="card" aria-labelledby="login-title">
+        <h2 id="login-title" class="sr-only">Iniciar sesión docente</h2>
+
+        <label class="field">
+          <span>Usuario</span>
+          <input id="teacherUser" type="text" autocomplete="username" />
+        </label>
+
+        <label class="field">
+          <span>Contraseña</span>
+          <input id="teacherPass" type="password" autocomplete="current-password" />
+        </label>
+
+        <div class="row">
           <button id="btnLogin" class="btn primary">Entrar</button>
         </div>
-        <div id="loginMsg" class="small"></div>
       </section>
 
-      <!-- Panel -->
-      <section id="panel" class="card hidden">
-        <div class="row space">
+      <!-- PANEL PRINCIPAL -->
+      <section id="panel" class="card hidden" aria-hidden="true">
+        <div class="row" style="justify-content:space-between;align-items:center;">
           <div>
-            <h3 id="welcome"></h3>
+            <h3 id="welcome">Hola</h3>
             <p class="small">Administración de pruebas y resultados</p>
           </div>
-          <div class="row gap">
-            <button id="btnNewTest" class="btn">Crear prueba</button>
-            <button id="btnExportAll" class="btn">Exportar todos resultados (PDF)</button>
-            <button id="btnSaveJSON" class="btn">Guardar tests en localStorage</button>
+
+          <!-- Barra de navegación de secciones -->
+          <nav id="teacherNav" class="nav" role="navigation" aria-label="Navegación panel docente">
+            <button class="nav-btn btn" data-section="tests">Pruebas</button>
+            <button class="nav-btn btn" data-section="editor">Editor</button>
+            <button class="nav-btn btn" data-section="results">Resultados</button>
+            <button class="nav-btn btn" data-section="settings">Ajustes</button>
             <button id="btnLogout" class="btn">Cerrar sesión</button>
+          </nav>
+        </div>
+
+        <hr/>
+
+        <!-- Sección: Pruebas -->
+        <section id="panel-tests" class="panel-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h4>Pruebas disponibles</h4>
+            <div class="row">
+              <button id="btnNewTest" class="btn">Crear prueba</button>
+              <button id="btnExportAll" class="btn">Exportar todos (PDF)</button>
+              <button id="btnSaveJSON" class="btn">Guardar tests (localStorage)</button>
+            </div>
           </div>
-        </div>
+          <div id="testsList" style="margin-top:12px;"></div>
+        </section>
 
-        <hr/>
-
-        <!-- Lista pruebas -->
-        <div>
-          <h4>Pruebas disponibles</h4>
-          <div id="testsList"></div>
-        </div>
-
-        <hr/>
-
-        <!-- Editor prueba -->
-        <div id="testEditor" class="hidden">
+        <!-- Sección: Editor -->
+        <section id="panel-editor" class="panel-section hidden">
           <h4>Editor de prueba</h4>
-          <label class="field"><span>Nombre de la prueba</span><input id="editName" type="text" /></label>
-          <label class="field"><span>Duración (min)</span><input id="editTime" type="number" min="1" /></label>
-          <label class="field"><span>Puntos por acierto</span><input id="editPtsOk" type="number" min="0" /></label>
-          <label class="field"><span>Puntos por error</span><input id="editPtsBad" type="number" /></label>
-          <label class="field"><span>Disponible desde (HH:MM)</span><input id="editFrom" type="text" placeholder="08:00" /></label>
-          <label class="field"><span>Disponible hasta (HH:MM)</span><input id="editTo" type="text" placeholder="23:59" /></label>
-          <label class="field"><span>Mostrar resultados a estudiantes</span><select id="editShowRes"><option value="true">Sí</option><option value="false">No</option></select></label>
-          <label class="field"><span>Mostrar respuestas correctas</span><select id="editShowCorrect"><option value="true">Sí</option><option value="false">No</option></select></label>
+          <div id="testEditor">
+            <label class="field"><span>Nombre de la prueba</span><input id="editName" type="text" /></label>
+            <label class="field"><span>Duración (min)</span><input id="editTime" type="number" min="1" /></label>
+            <label class="field"><span>Puntos por acierto</span><input id="editPtsOk" type="number" min="0" /></label>
+            <label class="field"><span>Puntos por error</span><input id="editPtsBad" type="number" min="0" /></label>
+            <label class="field"><span>Disponible desde (HH:MM)</span><input id="editFrom" type="text" placeholder="08:00" /></label>
+            <label class="field"><span>Disponible hasta (HH:MM)</span><input id="editTo" type="text" placeholder="23:59" /></label>
+            <label class="field"><span>Mostrar resultados a estudiantes</span>
+              <select id="editShowRes"><option value="true">Sí</option><option value="false">No</option></select>
+            </label>
+            <label class="field"><span>Mostrar respuestas correctas</span>
+              <select id="editShowCorrect"><option value="true">Sí</option><option value="false">No</option></select>
+            </label>
 
-          <div class="row gap">
-            <button id="btnAddQuestion" class="btn">Agregar pregunta</button>
-            <button id="btnSaveTest" class="btn primary">Guardar prueba</button>
-            <button id="btnCancelEdit" class="btn">Cancelar</button>
+            <label class="field"><span>Grupos permitidos (coma-separados) — vacío = todos</span>
+              <input id="editGroups" type="text" placeholder="Ej: Octavo 1,Octavo 2" />
+            </label>
+
+            <div class="row" style="margin-top:8px;">
+              <button id="btnAddQuestion" class="btn">Agregar pregunta</button>
+              <button id="btnSaveTest" class="btn primary">Guardar prueba</button>
+              <button id="btnCancelEdit" class="btn">Cancelar</button>
+            </div>
+
+            <div id="questionsEditor" style="margin-top:12px;"></div>
           </div>
+        </section>
 
-          <div id="questionsEditor"></div>
-        </div>
-
-        <hr/>
-
-        <!-- Resultados -->
-        <div>
+        <!-- Sección: Resultados -->
+        <section id="panel-results" class="panel-section hidden">
           <h4>Resultados presentados</h4>
-          <div class="row gap">
+          <div class="row" style="margin-bottom:8px;">
             <button id="btnLoadResultsFromLS" class="btn">Cargar resultados (localStorage)</button>
             <button id="btnUploadResultsFile" class="btn">Cargar results.json</button>
           </div>
           <div id="resultsList"></div>
-        </div>
+        </section>
+
+        <!-- Sección: Ajustes -->
+        <section id="panel-settings" class="panel-section hidden">
+          <h4>Ajustes</h4>
+          <p class="small">Opciones administrativas y utilidades.</p>
+          <div class="row" style="margin-top:8px;">
+            <button id="btnCreateYolanda" class="btn">Crear docente: yvalencia</button>
+            <button id="btnLinkCONS" class="btn">Enlazar prueba CONS-0801-P3</button>
+          </div>
+          <div id="settingsMsg" class="small" style="margin-top:8px;"></div>
+        </section>
       </section>
     </main>
   </div>
 
-  <!-- jsPDF CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="teacher-app.js"></script>
+  <!-- libs y app -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="teacher-app.js" defer></script>
 </body>
 </html>
