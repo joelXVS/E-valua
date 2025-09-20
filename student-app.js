@@ -15,24 +15,15 @@ let currentIndex = 0;
 
 const $ = id => document.getElementById(id);
 
-/* ---------- Cargar JSONs desde raíz ---------- */
-(async function loadFromRoot(){
-  try{
-    const t = await fetch("./tests.json"); testsData = await t.json();
-    const c = await fetch("./codes.json"); codesData = await c.json();
-    const g = await fetch("./grades.json"); gradesData = await g.json(); populateGrades();
-    showAvailable();
-  }catch(e){
-    console.error("Error cargando JSONs desde raíz:", e);
-  }
-})();
-
 /* ---------- UI: mostrar pruebas disponibles ---------- */
 function showAvailable(){
   const out = $('available');
-  if(!testsData && !codesData){ out.innerHTML = '<div class="small">Carga tests.json y codes.json con el botón "Cargar JSONs".</div>'; return; }
+  if(!testsData && !codesData){ 
+    out.innerHTML = '<div class="small">No se cargaron pruebas.</div>'; 
+    return; 
+  }
   const testsCount = testsData ? testsData.tests.length : 0;
-  out.innerHTML = `<div class="small">Pruebas cargadas: ${testsCount}. Código -> prueba se resuelve con codes.json.</div>`;
+  out.innerHTML = `<div class="small">Pruebas cargadas: ${testsCount}. Usa un código de aplicación válido.</div>`;
 }
 
 /* ---------- Grados dropdown ---------- */
@@ -67,17 +58,9 @@ $('btnContinue').addEventListener('click', ()=>{
   if(!name || !group || !code){ alert('Completa nombre, grupo y código.'); return; }
   student = {name, group, grade};
   currentTest = resolveTestFromCode(code);
-  if(!currentTest){ alert('Código inválido.'); return; }
+  if(!currentTest){ alert('Código inválido o JSON no cargado.'); return; }
 
-  // Verificar si la prueba aplica al grupo
-  if(currentTest.groups && currentTest.groups.length > 0){
-    if(!currentTest.groups.includes(student.group)){
-      alert("Esta prueba no está disponible para tu grupo.");
-      return;
-    }
-  }
-
-  // Verificar disponibilidad horaria si existe
+  // 🔹 Verificar disponibilidad horaria
   const now = new Date();
   if(currentTest.availableFrom){
     const from = parseTime(currentTest.availableFrom);
@@ -86,6 +69,14 @@ $('btnContinue').addEventListener('click', ()=>{
   if(currentTest.availableTo){
     const to = parseTime(currentTest.availableTo);
     if(to && now > to){ alert('Prueba cerrada.'); return; }
+  }
+
+  // 🔹 Verificar si la prueba aplica al grupo
+  if(currentTest.groups && currentTest.groups.length > 0){
+    if(!currentTest.groups.includes(student.group)){
+      alert("Esta prueba no está disponible para tu grupo.");
+      return;
+    }
   }
 
   startExam();
@@ -139,7 +130,7 @@ function renderQuestion(idx){
     container.appendChild(wrap);
   } else if(q.type === 'tf'){
     const wrap = document.createElement('div'); wrap.className='options';
-    ['Verdadero','Falso'].forEach((t,i)=>{
+    ['Falso','Verdadero'].forEach((t,i)=>{
       const label = document.createElement('label'); label.className='option';
       const radio = document.createElement('input'); radio.type='radio'; radio.name='opt'; radio.value = i;
       if(answers[idx] && answers[idx].selected===i) radio.checked = true;
@@ -227,15 +218,14 @@ function evaluateResults(reason){
         else { qr.earned = ptsWrong; qr.correct = false; result.score += ptsWrong; }
       }
     } else if(q.type === 'open'){
-      // Validación avanzada: q.keywords => [{word, weight}, ...]
       qr.max = ptsCorrect; result.maxScore += ptsCorrect;
       const text = answers[i] && answers[i].value ? answers[i].value.toLowerCase() : '';
       if(!text){ qr.earned = 0; qr.correct = false; }
       else {
-        const kws = q.keywords || []; // support older q.answer list by mapping to keywords equal weight
+        const kws = q.keywords || [];
         let totalWeight = 0;
         let foundWeight = 0;
-        if(kws.length === 0 && Array.isArray(q.answer)){ // compatibilidad retro
+        if(kws.length === 0 && Array.isArray(q.answer)){
           q.answer.forEach(k=>{ totalWeight += 1; if(text.includes(k.toLowerCase())) foundWeight += 1; });
         } else {
           kws.forEach(k => { totalWeight += (k.weight || 1); if(text.includes(k.word.toLowerCase())) foundWeight += (k.weight || 1); });
@@ -243,7 +233,7 @@ function evaluateResults(reason){
         const fraction = totalWeight > 0 ? (foundWeight/totalWeight) : 0;
         const earned = Math.round(fraction * ptsCorrect * 100)/100;
         qr.earned = earned;
-        if(fraction >= 0.5) qr.correct = true; // criterio: >=50% -> correcto
+        if(fraction >= 0.5) qr.correct = true;
         result.score += earned;
       }
     }
@@ -253,13 +243,13 @@ function evaluateResults(reason){
   return result;
 }
 
-/* ---------- Persistir resultado (localStorage list) ---------- */
+/* ---------- Persistir resultado ---------- */
 function persistResult(res){
   const key = 'examResults_v2';
   const arr = JSON.parse(localStorage.getItem(key) || '[]');
   arr.push(res);
   localStorage.setItem(key, JSON.stringify(arr));
-  // también preparar descarga JSON
+
   const blob = new Blob([JSON.stringify(res, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   $('downloadBtn').onclick = ()=> {
@@ -268,11 +258,10 @@ function persistResult(res){
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
   };
-  // PDF
   $('downloadPdfBtn').onclick = ()=> generatePDF(res);
 }
 
-/* ---------- Mostrar resultado en pantalla ---------- */
+/* ---------- Mostrar resultado ---------- */
 function showResult(res){
   $('exam').classList.add('hidden');
   $('result').classList.remove('hidden');
@@ -288,7 +277,7 @@ function showResult(res){
       node.innerHTML = `<strong>Pregunta ${q.index+1}:</strong> ${q.title}
         <p class="small">Tipo: ${q.type} • Puntos: ${q.earned} / ${q.max} • Correcto: ${q.correct}</p>
         <p class="small">Respuesta: ${q.answer ? (q.answer.selected ?? q.answer.value) : 'Sin respuesta'}</p>
-        ${showCorrects ? `<p class="small">Respuesta correcta (si aplica): ${formatRight(q, currentTest.questions[q.index])}</p>` : ''}`;
+        ${showCorrects ? `<p class="small">Respuesta correcta: ${formatRight(q, currentTest.questions[q.index])}</p>` : ''}`;
       det.appendChild(node);
     });
   } else {
@@ -315,7 +304,7 @@ function parseTime(str){
 }
 function formatTime(s){ const mm = Math.floor(s/60).toString().padStart(2,'0'); const ss = (s%60).toString().padStart(2,'0'); return `${mm}:${ss}`; }
 
-/* ---------- PDF export (jsPDF) ---------- */
+/* ---------- PDF export ---------- */
 async function generatePDF(res){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -335,17 +324,14 @@ async function generatePDF(res){
   doc.save(`resultado_${res.student.name.replace(/\s+/g,'_')}.pdf`);
 }
 
-/* ---------- Cargar JSONs por defecto (si existen en la misma carpeta) ---------- */
-// Intentamos cargar tests.json, codes.json y grades.json vía fetch sólo si la página se sirve.
-// Pero como pediste sin servidor, no forzamos fetch. Si están en localStorage ya, los cargamos:
-(function loadFromLocalIfExists(){
+/* ---------- Cargar JSONs desde raíz ---------- */
+(async function loadFromRoot(){
   try{
-    const testsLS = localStorage.getItem('tests_json_v2');
-    const codesLS = localStorage.getItem('codes_json_v2');
-    const gradesLS = localStorage.getItem('grades_json_v2');
-    if(testsLS){ testsData = JSON.parse(testsLS); }
-    if(codesLS){ codesData = JSON.parse(codesLS); }
-    if(gradesLS){ gradesData = JSON.parse(gradesLS); populateGrades(); }
+    const t = await fetch("./tests.json"); testsData = await t.json();
+    const c = await fetch("./codes.json"); codesData = await c.json();
+    const g = await fetch("./grades.json"); gradesData = await g.json(); populateGrades();
     showAvailable();
-  }catch(e){ console.warn('No hay JSONs en localStorage'); }
+  }catch(e){
+    console.error("Error cargando JSONs desde raíz:", e);
+  }
 })();
