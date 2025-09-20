@@ -1,0 +1,12 @@
+{
+  "codes": [
+    {
+      "applyCode": "ABC123",
+      "testId": "test-001"
+    },
+    {
+      "applyCode": "DOCENTE-2025",
+      "testId": "test-001"
+    }
+  ]
+}
