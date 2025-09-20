@@ -7,9 +7,9 @@ let teachers = { teachers: [] };
 async function loadInitialData() {
   try {
     const [gResp, tResp, teResp] = await Promise.all([
-      fetch('/grades.json'),
-      fetch('/tests.json'),
-      fetch('/teachers.json')
+      fetch('../grades.json'),
+      fetch('../tests.json'),
+      fetch('../teachers.json')
     ]);
     grades = gResp.ok ? await gResp.json() : { grades: [] };
     tests = tResp.ok ? await tResp.json() : { tests: [] };
