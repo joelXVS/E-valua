@@ -1,18 +1,14 @@
 {
-  "tests": [
-    {
-      "id": "CONS-0801-P3",
-      "publicCode": "C-0801",
-      "name": "Prueba: Constitución y Familia",
-      "timeMinutes": 40,
-      "points": { "correct": 0.1785714286, "incorrect": 0 },
-      "availableFrom": "08:00",
-      "availableTo": "23:59",
-      "instructions": "No cambiar de pestaña o perdera la oportunidad de resolver la prueba. Respuestas abiertas puntúan parcialmente.",
-      "showResults": true,
-      "showCorrectAnswers": false,
-      "groups": ["Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
-      "questions": [
+    "code": "CONS-0801A033",
+    "name": "Prueba de Conocimiento 8° Grado - Parcial 1",
+    "time": 40,
+    "points": { "ok": 0.1785714286, "bad": 0 },
+    "from": "07:00",
+    "to": "12:40",
+    "showResults": true,
+    "showCorrect": false,
+    "groups": ["Octavo 1", "Octavo 2"],
+    "questions": [
         {
           "type": "mcq",
           "title": "¿Cuál es el propósito principal del preámbulo de la Constitución Política de Colombia?",
@@ -279,4 +275,3 @@
         }
       ]
     }
-  }
