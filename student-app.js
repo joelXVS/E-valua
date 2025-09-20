@@ -31,7 +31,7 @@ function showSection(id) {
 // ======================
 function loadGrades() {
   const select = $('gradeSelect');
-  grades.forEach(g => {
+  grades.grades.forEach(g => {
     const opt = document.createElement('option');
     opt.value = g.id;
     opt.textContent = g.name;
@@ -54,7 +54,7 @@ function validateStartForm() {
 // ======================
 function startExam() {
   const code = $('applyCode').value.trim();
-  currentTest = tests.find(t => t.code === code);
+  currentTest = tests.tests.find(t => t.code === code);
   if (!currentTest) {
     alert('Código inválido o prueba no encontrada.');
     return;
