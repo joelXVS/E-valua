@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua — Docentes</title>
+  <link rel="icon" type="image/png" href="utils/logo.png">
+  <link rel="stylesheet" href="/utils/common-styles.css" />
+  <!-- Librerías necesarias para exportar/importar -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body style="margin: 0; height: 100vh; display: grid; place-items: center;">
+  <div class="container">
+    <header class="header card">
+      <h1>E-valua — Panel de Docentes</h1>
+      <p class="sub">Gestiona pruebas, banco de preguntas y resultados.</p>
+    </header>
+
+    <main class="card panel-grid">
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h3 id="welcome">Hola, docente</h3>
+          <div class="row">
+            <button id="btnLogout" class="btn">Cerrar sesión</button>
+          </div>
+        </div>
+
+        <nav id="teacherNav" class="nav" style="margin-top:12px;">
+          <button class="nav-btn btn active" data-section="tests">Pruebas</button>
+          <button class="nav-btn btn" data-section="editor">Editor</button>
+          <button class="nav-btn btn" data-section="results">Resultados</button>
+          <button class="nav-btn btn" data-section="bank">Banco de preguntas</button>
+          <button class="nav-btn btn" data-section="guide">Guía</button>
+          <button class="nav-btn btn" data-section="blocked">Bloqueados</button>
+        </nav>
+
+        <hr/>
+
+        <!-- Sección: Pruebas -->
+        <section id="panel-tests" class="panel-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h4>Pruebas disponibles</h4>
+            <div class="row">
+              <button id="btnNewTest" class="btn">Crear prueba</button>
+              <button id="btnExportAllJson" class="btn">Exportar todos (.json)</button>
+              <button id="btnExportAllPdf" class="btn">Exportar todos (PDF)</button>
+              <button id="btnSaveJSON" class="btn">Guardar tests (localStorage)</button>
+              <label class="file-input btn">
+                Importar prueba
+                <input id="fileImport" type="file" accept=".json,.docx,.pdf" style="display:none" />
+              </label>
+            </div>
+          </div>
+          <div id="testsList" style="margin-top:12px;"></div>
+        </section>
+
+        <!-- Sección: Editor -->
+        <section id="panel-editor" class="panel-section hidden">
+          <h4>Editor de prueba</h4>
+          <div id="testEditor">
+            <label class="field"><span>Nombre de la prueba</span><input id="editName" type="text" /></label>
+            <label class="field"><span>Duración (min)</span><input id="editTime" type="number" min="1" /></label>
+            <label class="field"><span>Puntos por acierto</span><input id="editPtsOk" type="number" min="0" /></label>
+            <label class="field"><span>Puntos por error</span><input id="editPtsBad" type="number" min="0" /></label>
+            <label class="field"><span>Disponible desde (HH:MM)</span><input id="editFrom" type="text" placeholder="08:00" /></label>
+            <label class="field"><span>Disponible hasta (HH:MM)</span><input id="editTo" type="text" placeholder="23:59" /></label>
+            <label class="field"><span>Mostrar resultados</span>
+              <select id="editShowRes"><option value="true">Sí</option><option value="false">No</option></select>
+            </label>
+            <label class="field"><span>Mostrar correctas</span>
+              <select id="editShowCorrect"><option value="true">Sí</option><option value="false">No</option></select>
+            </label>
+            <label class="field"><span>Grupos permitidos</span>
+              <input id="editGroups" type="text" placeholder="Ej: Octavo 1,Octavo 2" />
+            </label>
+            <div class="row" style="margin-top:8px;">
+              <button id="btnAddQuestion" class="btn">Agregar pregunta</button>
+              <button id="btnSaveTest" class="btn primary">Guardar prueba</button>
+              <button id="btnCancelEdit" class="btn">Cancelar</button>
+            </div>
+            <div id="questionsEditor" style="margin-top:12px;"></div>
+          </div>
+        </section>
+
+        <!-- Sección: Resultados -->
+        <section id="panel-results" class="panel-section hidden">
+          <h4>Resultados presentados</h4>
+          <div class="row" style="margin-bottom:8px;">
+            <button id="btnLoadResultsFromLS" class="btn">Cargar resultados (localStorage)</button>
+            <button id="btnExportResultsJson" class="btn">Exportar resultados (.json)</button>
+            <button id="btnExportResultsPdf" class="btn">Exportar resultados (PDF)</button>
+          </div>
+          <div id="resultsList"></div>
+        </section>
+
+        <!-- Sección: Banco -->
+        <section id="panel-bank" class="panel-section hidden">
+          <div class="card small">
+            <h4>Banco de preguntas</h4>
+            <div id="bankFilters">
+              <label class="field"><span>Título</span><input id="bankFilterTitle" type="text" /></label>
+              <label class="field"><span>Asignatura</span><input id="bankFilterSubject" type="text" /></label>
+              <label class="field"><span>Grado</span><input id="bankFilterGrade" type="text" /></label>
+              <label class="field"><span>Tema</span><input id="bankFilterTopic" type="text" /></label>
+              <div class="row" style="margin-top:6px;">
+                <button id="btnFilterBank" class="btn">Filtrar</button>
+                <button id="btnClearBankFilter" class="btn">Limpiar</button>
+              </div>
+            </div>
+            <div class="bank-list" id="bankList" style="margin-top:8px; max-height:380px; overflow:auto;"></div>
+            <div class="row" style="margin-top:8px;">
+              <button id="btnImportBank" class="btn">Importar banco (.json)</button>
+              <button id="btnExportBank" class="btn">Exportar banco (.json)</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Guía -->
+        <section id="panel-guide" class="panel-section hidden">
+          <div class="card small">
+            <h4>Guía</h4>
+            <div id="guideShort" class="small-muted"></div>
+            <div style="margin-top:8px;">
+              <button id="btnOpenGuide" class="btn">Abrir guía completa</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Bloqueados -->
+        <section id="panel-blocked" class="panel-section hidden">
+          <h4>Estudiantes bloqueados</h4>
+          <div id="blockedList"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer card">
+      <p class="small">E-valua — creado por Joel Valencia</p>
+      <p class="small" style="font-size: 0.75rem;">Contacta con Joel Valencia vía WA - <strong>+57 302 818 6841</strong></p>
+    </footer>
+  </div>
+
+  <!-- Modal elegir prueba destino -->
+  <div id="modalChooseTest" class="modal" aria-hidden="true">
+    <div class="card">
+      <h4>Selecciona la prueba destino</h4>
+      <div id="modalTestsList" style="margin-top:8px; max-height:300px; overflow:auto;"></div>
+      <div style="margin-top:10px;" class="row">
+        <button id="modalClose" class="btn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App -->
+  <script type="module" src="teacher-app.js" defer></script>
+</body>
+</html>
