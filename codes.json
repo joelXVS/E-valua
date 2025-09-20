@@ -1,12 +1,8 @@
 {
   "codes": [
     {
-      "applyCode": "ABC123",
-      "testId": "test-001"
-    },
-    {
-      "applyCode": "DOCENTE-2025",
-      "testId": "test-001"
+      "applyCode": "C-0801",
+      "testId": "CONS-0801-P3"
     }
   ]
 }
