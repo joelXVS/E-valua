@@ -1,14 +1,16 @@
-[
-  {
-    "name": "Joel Valencia",
-    "user": "jvalencia",
-    "pass": "@jvalencia",
-    "tests": ["CONS-0801-P3"]
-  },
-  {
-    "name": "Yolanda Valencia Valenzuela",
-    "user": "yvalencia",
-    "pass": "@yvalencia",
-    "tests": ["CONS-0801-P3"]
-  }
-]
+{
+  "teachers" : [
+    {
+      "name": "Joel Valencia",
+      "user": "jvalencia",
+      "pass": "@jvalencia",
+      "tests": ["CONS-0801-P3"],
+    },
+    {
+      "name": "Yolanda Valencia Valenzuela",
+      "user": "yvalencia",
+      "pass": "@yvalencia",
+      "tests": ["CONS-0801-P3"]
+    }
+  ]
+}
