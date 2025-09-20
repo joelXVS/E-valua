@@ -11,6 +11,7 @@
       "instructions": "No cambiar de pestaña. Respuestas abiertas puntúan parcialmente.",
       "showResults": true,
       "showCorrectAnswers": true,
+      "groups": ["Septimo 1", "Octavo 2"],
       "questions": [
         {
           "type": "mcq",
