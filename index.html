@@ -3,57 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Examen JSON — Proyecto</title>
-  <link rel="stylesheet" href="styles.css" />
-  <!-- libs para PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <title>Examen - Estudiante</title>
+  <link rel="stylesheet" href="common-styles.css" />
 </head>
 <body>
-  <div id="app" class="container">
-    <header class="header">
-      <h1>📝 Plataforma de Exámenes</h1>
-      <p class="sub">Introduce tu nombre, grupo y código de aplicación para comenzar.</p>
+  <div class="container">
+    <header class="header card">
+      <h1>📝 Examen — Estudiantes</h1>
+      <p class="sub">Ingresa tu nombre, grupo y código. La prueba se auto-envía si cambias de pestaña.</p>
     </header>
 
-    <main id="main">
-      <!-- pantalla de ingreso -->
-      <section id="start-screen" class="card">
-        <label class="field">
-          <span>Nombre del estudiante</span>
-          <input id="studentName" type="text" placeholder="Ej: Juan Pérez" />
+    <main>
+      <section id="start" class="card">
+        <label class="field"><span>Nombre</span><input id="studentName" type="text" placeholder="Ej: Juan Pérez" /></label>
+        <label class="field"><span>Grupo</span><input id="studentGroup" type="text" placeholder="Ej: Septimo 1" /></label>
+
+        <label class="field"><span>Grado (selecciona)</span>
+          <select id="gradeSelect"><option value="">-- Cargar cursos (archivo) --</option></select>
         </label>
 
-        <label class="field">
-          <span>Grupo</span>
-          <input id="studentGroup" type="text" placeholder="Ej: Septimo 1" />
-        </label>
-
-        <label class="field">
-          <span>Código de aplicación</span>
-          <input id="applyCode" type="text" placeholder="Ej: ABC123" />
-        </label>
+        <label class="field"><span>Código de aplicación</span><input id="applyCode" type="text" placeholder="Ej: ABC123" /></label>
 
         <div class="row gap">
           <button id="btnContinue" class="btn primary">Continuar</button>
-          <button id="btnLoadTests" class="btn">Ver pruebas disponibles</button>
+          <button id="btnLoadJSON" class="btn">Cargar JSONs</button>
+          <input id="fileInputTests" type="file" accept=".json" style="display:none" />
+          <input id="fileInputCodes" type="file" accept=".json" style="display:none" />
+          <input id="fileInputGrades" type="file" accept=".json" style="display:none" />
         </div>
 
-        <div id="availableTests" class="available-tests"></div>
+        <div id="available" class="available-tests small"></div>
       </section>
 
-      <!-- pantalla de examen -->
-      <section id="exam-screen" class="hidden">
+      <section id="exam" class="card hidden">
         <div class="exam-header">
           <h2 id="testTitle"></h2>
           <div class="meta">
             <div>Estudiante: <strong id="metaName"></strong></div>
             <div>Grupo: <strong id="metaGroup"></strong></div>
+            <div>Grado: <strong id="metaGrade"></strong></div>
             <div>Tiempo: <strong id="timer">00:00</strong></div>
           </div>
         </div>
 
-        <div id="questionContainer" class="card question-card"></div>
+        <div id="questionContainer" class="question-card"></div>
 
         <div class="row nav-buttons">
           <button id="prevBtn" class="btn">← Anterior</button>
@@ -65,24 +58,25 @@
         </div>
       </section>
 
-      <!-- resultado -->
-      <section id="result-screen" class="hidden card">
+      <section id="result" class="card hidden">
         <h2>Resultados</h2>
         <div id="resultSummary"></div>
         <div id="detailedAnswers"></div>
         <div class="row gap">
-          <button id="downloadBtn" class="btn">Descargar resultado JSON</button>
-          <button id="downloadPdfBtn" class="btn primary">Generar PDF del resultado</button>
-          <button id="restartBtn" class="btn">Volver al inicio</button>
+          <button id="downloadBtn" class="btn">Descargar JSON</button>
+          <button id="downloadPdfBtn" class="btn">Exportar PDF</button>
+          <button id="backBtn" class="btn">Volver</button>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <p>Diseño responsive • Funciona en móvil y escritorio</p>
+      <p class="small">Resultados guardados localmente y disponibles para docentes desde su panel.</p>
     </footer>
   </div>
 
-  <script src="app.js"></script>
+  <!-- jsPDF CDN para exportar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="student-app.js"></script>
 </body>
 </html>
