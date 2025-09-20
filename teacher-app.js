@@ -10,27 +10,19 @@ let editingTest = null;
 
 const $ = id => document.getElementById(id);
 
-/* ---------- File loaders ---------- */
-$('btnLoadLocal').addEventListener('click', ()=> {
-  $('fileInputTestsT').click();
-});
-$('fileInputTestsT').addEventListener('change', async (e)=>{
-  const f = e.target.files[0]; if(!f) return;
-  testsData = JSON.parse(await f.text());
-  renderTestsList();
-});
-$('fileInputCodesT').addEventListener('change', async (e)=> {
-  const f = e.target.files[0]; if(!f) return;
-  codesData = JSON.parse(await f.text());
-});
-$('fileInputResultsT').addEventListener('change', async (e)=> {
-  const f = e.target.files[0]; if(!f) return;
-  resultsData = JSON.parse(await f.text()); renderResults();
-});
-$('fileInputTeachers').addEventListener('change', async (e)=> {
-  const f = e.target.files[0]; if(!f) return;
-  teachersData = JSON.parse(await f.text());
-});
+/* ---------- Inicial ---------- */
+(async function init(){
+  try{
+    const t = await fetch("./tests.json"); testsData = await t.json();
+    const c = await fetch("./codes.json"); codesData = await c.json();
+    const r = await fetch("./results.json"); resultsData = await r.json();
+    const th = await fetch("./teachers.json"); teachersData = await th.json();
+    renderTestsList();
+    renderResults();
+  }catch(e){
+    console.error("Error cargando JSONs desde raíz:", e);
+  }
+})();
 
 /* ---------- Login ---------- */
 $('btnLogin').addEventListener('click', ()=> {
