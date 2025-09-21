@@ -9,7 +9,7 @@
       "to": "12:40",
       "showResults": true,
       "showCorrect": false,
-      "groups": ["Todos"],
+      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4", "Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
       "questions": [
         {
           "type": "mcq",
