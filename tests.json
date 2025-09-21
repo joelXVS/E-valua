@@ -2,7 +2,7 @@
   "tests": [
     {
       "code": "CONS-0801A033",
-      "name": "Prueba de Conocimiento 8° Grado - Parcial 1",
+      "name": "Prueba de Conocimiento 8° - La Constitución Política de Colombia, La Familia - COPODP",
       "time": 40,
       "points": { "ok": 0.1785714286, "bad": 0 },
       "from": "07:00",
@@ -279,33 +279,363 @@
     },
     {
       "code": "GEO-0701P026",
-      "name": "Prueba de Conocimiento 7° - Geografía - Parcial 1",
+      "name": "Prueba de Conocimiento 7° - Geografía Física del Mundo - GEOG",
       "time": 40,
-      "points": { "ok": 0.1785714286, "bad": 0 },
+      "points": { "ok": 0.2777777778, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
       "showResults": true,
       "showCorrect": false,
       "groups": ["Septimo 1", "Septimo 2", "Septimo 3", "Septimo 4"],
       "questions": [
+        {
+          "type": "mcq",
+          "title": "Desde la perspectiva de la geografía física, ¿cuál de los siguientes factores influye directamente en la formación de un desierto frío?",
+          "options": [
+            "Proximidad a corrientes oceánicas frías",
+            "Elevada humedad atmosférica",    
+            "Alta radiación solar constante",
+            "Cercanía al ecuador"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "En el contexto histórico, ¿qué aportó Alexander von Humboldt al desarrollo de la geografía física moderna?",
+          "options": [
+            "Cartografía simbólica",
+            "Estudios cuantitativos y observacionales del relieve y clima",
+            "Introducción del concepto de monzones",
+            "Teoría de la deriva continental"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué continente posee la mayor proporción de relieve formado por mesetas elevadas?",
+          "options": [
+            "África",
+            "Europa",
+            "Oceanía",
+            "América"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El lago Baikal, considerado el más profundo del mundo, se localiza en:",
+          "options": [
+            "Japón",
+            "Mongolia",
+            "Rusia",
+            "China"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de los siguientes elementos no es un componente de estudio de la geografía física?",
+          "options": [
+            "Clima",
+            "Vegetación",
+            "Sistemas políticos",
+            "Hidrografía"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "En términos de dinámica climática, la presencia de corrientes cálidas como la del Golfo en Europa contribuye principalmente a:",
+          "options": [
+            "Incrementar la aridez de las costas atlánticas",
+            "Suavizar las temperaturas invernales",
+            "Reducir las precipitaciones en zonas interiores",
+            "Prolongar la temporada de monzones"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "El relieve montañoso de los Himalayas afecta la distribución poblacional asiática debido a:",
+          "options": [
+            "Suelos fértiles y alta densidad demográfica",
+            "Barreras naturales que limitan asentamientos",
+            "Alta conectividad entre regiones",
+            "Climas templados que atraen migraciones"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "En el continente americano, la cuenca hidrográfica con mayor biodiversidad es la del:",
+          "options": [
+            "Misisipi",
+            "Orinoco",
+            "Amazonas",
+            "Paraná"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "El clima polar de la Antártida se explica principalmente por:",
+          "options": [
+            "Su altitud promedio",
+            "Su elevada latitud",
+            "Su proximidad a corrientes cálidas",
+            "Su relieve volcánico"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La presencia de suelos volcánicos fértiles en ciertas islas de Oceanía está vinculada a:",
+          "options": [
+            "Actividad tectónica reciente",
+            "Aportes de sedimentos fluviales",
+            "Clima monzónico",
+            "Formación coralina"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de los siguientes continentes alberga la mayor cantidad de desiertos cálidos?",
+          "options": [
+            "Asia",
+            "Oceanía",
+            "África",
+            "América"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "En geografía física, la vegetación de tundra está principalmente determinada por:",
+          "options": [
+            "Elevada radiación solar",
+            "Permafrost y bajas temperaturas",
+            "Suelos volcánicos",
+            "Lluvias monzónicas"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "El río más caudaloso del mundo es el:",
+          "options": [
+            "Congo",
+            "Nilo",
+            "Amazonas",
+            "Yangtsé"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "La ubicación geográfica de Europa favorece su diversidad climática debido a:",
+          "options": [
+            "Su forma compacta",
+            "La interacción de masas de aire oceánicas y continentales",
+            "Su altitud promedio baja",
+            "Su latitud ecuatorial"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "En la geografía física del mundo, ¿qué continente se caracteriza por su aislamiento biogeográfico, generando especies únicas como canguros y koalas?",
+          "options": [
+            "Asia",
+            "África",
+            "Oceanía",
+            "América"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "La erosión fluvial intensa en regiones de clima tropical húmedo se debe principalmente a:",
+          "options": [
+            "Baja pendiente del relieve",
+            "Altas precipitaciones constantes",
+            "Vientos secos",
+            "Escasa vegetación"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La cordillera de los Andes se considera:",
+          "options": [
+            "El sistema montañoso más alto del mundo",
+            "El sistema montañoso más extenso de América",
+            "Una cadena montañosa de origen volcánico exclusivo",
+            "El límite natural entre América del Norte y Central"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "El derretimiento de glaciares en la Antártida podría provocar:",
+          "options": [
+            "Expansión de áreas desérticas",
+            "Aumento del nivel del mar a escala global",
+            "Incremento de la actividad sísmica",
+            "Formación de nuevos océanos cerrados"
+          ],
+          "answer": 1
+        }
       ]
     },
     {
       "code": "HIST-0701C028",
-      "name": "Prueba de Conocimiento 7° - Historia - Parcial 1",
+      "name": "Prueba de Conocimiento 7° - Civilizaciones Antiguas - HIST",
       "time": 40,
-      "points": { "ok": 0.1785714286, "bad": 0 },
+      "points": { "ok": 0.4166666667, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
       "showResults": true,
       "showCorrect": false,
       "groups": ["Septimo 2", "Septimo 3", "Septimo 4"],
       "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Qué elemento fue clave para que las civilizaciones antiguas pasaran de ser nómadas a sedentarias?",
+          "options": [
+            "Desarrollo de armas de hierro",
+            "Producción agrícola sistemática",
+            "Invención de la brújula",
+            "Construcción de acueductos"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de las siguientes NO es una civilización antigua mencionada en la guía?",
+          "options": [
+            "Grecia",
+            "Roma",
+            "Babilonia",
+            "Cartago"
+          ],
+          "answer": 3
+        },
+        {
+          "type": "mcq",
+          "title": "En Mesopotamia, el Código de Hammurabi se basaba principalmente en:",
+          "options": [
+            "Ley del talión",
+            "Principios democráticos",
+            "La Biblia hebrea",
+            "Costumbres griegas"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La escritura cuneiforme fue desarrollada por:",
+          "options": [     
+            "Babilonios",
+            "Egipcios",
+            "Sumerios",
+            "Asirios"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué relación tenían la religión y el gobierno en Mesopotamia?",
+          "options": [
+            "Eran totalmente independientes",
+            "El poder político dependía de la Iglesia",
+            "Los reyes eran vistos como representantes de los dioses",
+            "Los sacerdotes no influían en la política"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "En Egipto, la creencia en la vida después de la muerte influyó directamente en:",
+          "options": [
+            "La escritura jeroglífica",
+            "La momificación y construcción de pirámides",
+            "El comercio de especias",
+            "La creación de monedas"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Una diferencia clave entre la India y China antiguas es que:",
+          "options": [
+            "China desarrolló la brújula y la pólvora",
+            "India inventó el papel y la imprenta",
+            "China practicó el hinduismo",
+            "India no tuvo planificación urbana"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de estos inventos NO es de China?",
+          "options": [
+            "Pólvora",
+            "Brújula",
+            "Telar mecánico",
+            "Papel"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué ciudad griega fue cuna de la democracia directa?",
+          "options": [
+            "Esparta",
+            "Atenas",
+            "Corinto",
+            "Mileto"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "El Derecho Romano fue fundamental porque:",
+          "options": [
+            "Se basaba en tradiciones orales",
+            "Sirvió de base a sistemas jurídicos modernos",
+            "Solo aplicaba en Roma",
+            "Prohibía la ciudadanía"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Los incas se diferenciaban de mayas y aztecas porque:",
+          "options": [
+            "No tenían escritura alfabética",
+            "No desarrollaron sistemas agrícolas",
+            "No construyeron caminos",
+            "No tenían religión organizada"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué civilización era conocida como la 'cultura madre' de Mesoamérica?",
+          "options": [
+            "Zapoteca",
+            "Olmeca",
+            "Maya",
+            "Inca"
+          ],
+          "answer": 1
+        }
       ]
     },
     {
       "code": "CONS-0701M030",
-      "name": "Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 1",
+      "name": "Prueba de Conocimiento 7° - La Familia - COPODP / CDPYD",
       "time": 20,
       "points": { "ok": 0.25, "bad": 0 },
       "from": "07:00",
@@ -538,7 +868,7 @@
     },
     {
       "code": "CONS-0702M033",
-      "name": "Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 2",
+      "name": "Prueba de Conocimiento 7° - Los Derechos - COPODP / CDPYD",
       "time": 15,
       "points": { "ok": 0.4166666667, "bad": 0 },
       "from": "07:00",
@@ -549,26 +879,136 @@
       "questions": [
         {
           "type": "mcq",
-          "title": "¿Cuál de las siguientes situaciones refleja mejor un entorno familiar empático?",
+          "title": "Según la guía, ¿cuál de estas características NO corresponde a los derechos humanos?",
           "options": [
-            "La familia corrige los errores con burlas para “fortalecer” al joven.",
-            "La familia evita hablar de emociones para no generar conflictos.",
-            "La familia escucha activamente y valida los sentimientos de cada miembro.",
-            "La familia prioriza la obediencia por encima del diálogo."
+            "Son universales",
+            "Son inalienables",
+            "Pueden ser suspendidos permanentemente por decisión individual",
+            "Están reconocidos por la ley"
           ],
           "answer": 2
         },
         {
           "type": "mcq",
-          "title": "¿Qué efecto puede generar la ausencia constante de expresiones de cariño en el hogar?",
+          "title": "La Constitución es considerada la norma suprema de un país porque:",
           "options": [
-            "Incremento de la empatía y confianza.",
-            "Inseguridad emocional y dificultad para establecer vínculos profundos.",
-            "Capacidad elevada para resolver conflictos.",
-            "Mayor tolerancia a las emociones ajenas."
+            "Define cómo se organiza el Estado y protege los derechos ciudadanos",
+            "Regula únicamente las relaciones internacionales",
+            "Es un conjunto de tradiciones culturales",
+            "Es un código moral no escrito"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué sucede en una sociedad sin justicia según el texto?",
+          "options": [
+            "Se fortalecen las instituciones públicas",
+            "La fuerza y el abuso sustituyen al derecho",
+            "Se garantiza la igualdad ante la ley",
+            "Los conflictos se resuelven pacíficamente"
           ],
           "answer": 1
         },
+        {
+          "type": "mcq",
+          "title": "En el caso 'Negativa de transporte a una persona con psoriasis visible', la vulneración corresponde a:",
+          "options": [
+            "Libre expresión",
+            "Discriminación por enfermedades",
+            "Violación de la integridad social",
+            "Discriminación por aspectos físicos"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La frase 'La justicia es el puente entre las leyes y la vida real' significa que:",
+          "options": [
+            "Las leyes no necesitan aplicarse para ser efectivas",
+            "Basta con que existan derechos escritos",
+            "Los derechos deben ser respetados y aplicados para tener impacto real",
+            "La justicia solo se logra mediante acuerdos informales"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué derecho se vulnera en el caso 'Censura en asamblea estudiantil'?",
+          "options": [
+            "Libertad de expresión",
+            "Derecho a la educación",
+            "Derecho al trabajo",
+            "Derecho a la propiedad"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La ausencia de leyes provoca que:",
+          "options": [
+            "Los más vulnerables queden indefensos",
+            "Se reduzca la violencia",
+            "Los derechos se fortalezcan por costumbre",
+            "Se respeten las normas comunitarias espontáneamente"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "“Voz legal” en la guía significa:",
+          "options": [
+            "La capacidad de los líderes de dar órdenes",
+            "El derecho ciudadano a exigir respeto y defenderse en un marco jurídico",
+            "El permiso especial para hablar en público",
+            "La participación exclusiva en asambleas políticas"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Según el texto, la responsabilidad ciudadana implica:",
+          "options": [
+            "Conocer y exigir los derechos propios y ajenos",
+            "Delegar totalmente en las autoridades la defensa de derechos",
+            "Actuar solo cuando se ve afectado personalmente",
+            "Aceptar injusticias menores por mantener la paz"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál sería una consecuencia directa de la impunidad según la guía?",
+          "options": [
+            "Mayor confianza ciudadana",
+            "Fortalecimiento del Estado",
+            "Normalización de la injusticia",
+            "Reducción de la violencia social"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "En un escenario sin Constitución:",
+          "options": [
+            "Se eliminan las diferencias de poder entre personas",
+            "El poder se concentra en quienes tienen más fuerza o recursos",
+            "Se fomenta la igualdad de oportunidades",
+            "Los derechos humanos se mantienen intactos"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Defender los derechos propios también beneficia a otros porque:",
+          "options": [
+            "Es un acto de egoísmo positivo",
+            "Garantiza que esos derechos se respeten colectivamente",
+            "Evita cualquier tipo de protesta",
+            "Sustituye la necesidad de leyes escritas"
+          ],
+          "answer": 1
+        }
       ]
     }
   ]
