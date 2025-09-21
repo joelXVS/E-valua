@@ -9,7 +9,7 @@
       "to": "12:40",
       "showResults": true,
       "showCorrect": false,
-      "groups": ["Octavo 1", "Octavo 2"],
+      "groups": ["Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
       "questions": [
         {
           "type": "mcq",
@@ -275,6 +275,45 @@
             { "word": "protección", "weight": 1 }
           ]
         }
+      ]
+    },
+    {
+      "code": "GEO-0701P026",
+      "name": "Prueba de Conocimiento 7° - Geografía - Parcial 1",
+      "time": 40,
+      "points": { "ok": 0.1785714286, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Septimo 1", "Septimo 2", "Septimo 3", "Septimo 4"],
+      "questions": [
+      ]
+    },
+    {
+      "code": "HIST-0701C028",
+      "name": "Prueba de Conocimiento 7° - Historia - Parcial 1",
+      "time": 40,
+      "points": { "ok": 0.1785714286, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Septimo 2", "Septimo 3", "Septimo 4"],
+      "questions": [
+      ]
+    },
+    {
+      "code": "CONS-0701M030",
+      "name": "Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 1",
+      "time": 40,
+      "points": { "ok": 0.1785714286, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Septimo 1", "Septimo 2", "Septimo 3", "Septimo 4"],
+      "questions": [
       ]
     }
   ]
