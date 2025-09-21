@@ -867,8 +867,8 @@
       ]
     },
     {
-      "code": "CONS-0702M033",
-      "name": "Prueba de Conocimiento 7° - Los Derechos - COPODP / CDPYD",
+      "code": "CONS-0001M030",
+      "name": "Prueba de Conocimiento 7° y 8° - Los Derechos - COPODP / CDPYD",
       "time": 15,
       "points": { "ok": 0.4166666667, "bad": 0 },
       "from": "07:00",
