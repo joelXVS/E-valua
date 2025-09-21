@@ -1,0 +1,158 @@
+{
+  "tests": [
+    {
+      "code": "SOC-POWER-015",
+      "name": "Prueba: El poder de las Ciencias Sociales",
+      "time": 30,
+      "points": { "ok": 0.0666666667, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Todos"],
+      "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el principal aporte de las ciencias sociales a las políticas públicas?",
+          "options": [
+            "Desarrollar nuevas tecnologías médicas",
+            "Entender procesos sociales para diseñar intervenciones efectivas",
+            "Reducir costes de producción industrial",
+            "Predecir fenómenos astronómicos"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué método es característico de las ciencias sociales para recolectar opiniones y comportamientos?",
+          "options": [
+            "Encuestas y entrevistas",
+            "Espectrometría de masas",
+            "Ensayos clínicos de laboratorio",
+            "Análisis de partículas"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La investigación cualitativa se enfoca en:",
+          "options": [
+            "Medir variables numéricas exclusivamente",
+            "Comprender significados, experiencias y contextos",
+            "Crear modelos físicos",
+            "Calcular transacciones financieras"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Una aplicación concreta del poder de las ciencias sociales es:",
+          "options": [
+            "Diseñar campañas de salud pública basadas en comportamientos sociales",
+            "Construir satélites",
+            "Descubrir elementos químicos",
+            "Fabricar microchips"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de estas disciplinas NO pertenece a las ciencias sociales?",
+          "options": [
+            "Sociología",
+            "Economía",
+            "Física",
+            "Antropología"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Por qué es crucial la ética en la investigación social?",
+          "options": [
+            "Porque garantiza el bienestar y la protección de las personas participantes",
+            "Porque acelera los resultados estadísticos",
+            "Porque elimina la necesidad de consentimiento informado",
+            "Porque reemplaza la revisión metodológica"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué papel tienen los datos sociales en la toma de decisiones públicas?",
+          "options": [
+            "Informar y evaluar políticas para aumentar su efectividad",
+            "Sustituir totalmente la deliberación ciudadana",
+            "Solo servir para la publicación académica",
+            "Ocultar desigualdades"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué enfoque combina números y narrativas para un análisis más completo?",
+          "options": [
+            "Métodos mixtos",
+            "Solo cuantitativo",
+            "Solo experimental",
+            "Método físico"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Las ciencias sociales solo producen teoría y no tienen aplicaciones prácticas.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El análisis de datos sociodemográficos puede revelar desigualdades estructurales.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "La participación ciudadana es irrelevante para el diseño de políticas públicas efectivas.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Las ciencias sociales contribuyen a prevenir y gestionar conflictos sociales mediante diagnóstico y mediación.",
+          "answer": 1
+        },
+        {
+          "type": "open",
+          "title": "Explica brevemente cómo las ciencias sociales pueden mejorar una campaña de salud pública (da un ejemplo).",
+          "keywords": [
+            { "word": "comportamiento", "weight": 2 },
+            { "word": "comunicación", "weight": 2 },
+            { "word": "segmentación", "weight": 1 },
+            { "word": "evaluación", "weight": 1 },
+            { "word": "contexto", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Menciona tres herramientas metodológicas que usan las ciencias sociales y explica brevemente para qué sirve cada una.",
+          "keywords": [
+            { "word": "encuestas", "weight": 2 },
+            { "word": "entrevistas", "weight": 2 },
+            { "word": "observación participante", "weight": 1 },
+            { "word": "análisis estadístico", "weight": 2 },
+            { "word": "estudio de caso", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Propón una política pública para reducir la desigualdad y explica qué evidencia social necesitarías para diseñarla.",
+          "keywords": [
+            { "word": "redistribución", "weight": 1 },
+            { "word": "educación", "weight": 2 },
+            { "word": "salud", "weight": 1 },
+            { "word": "datos", "weight": 2 },
+            { "word": "evaluación", "weight": 2 }
+          ]
+        }
+      ]
+    }
+  ]
+}
