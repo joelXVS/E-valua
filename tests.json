@@ -306,14 +306,269 @@
     {
       "code": "CONS-0701M030",
       "name": "Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 1",
-      "time": 40,
-      "points": { "ok": 0.1785714286, "bad": 0 },
+      "time": 20,
+      "points": { "ok": 0.25, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
       "showResults": true,
       "showCorrect": false,
       "groups": ["Septimo 1", "Septimo 2", "Septimo 3", "Septimo 4"],
       "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Cuál de las siguientes situaciones refleja mejor un entorno familiar empático?",
+          "options": [
+            "La familia corrige los errores con burlas para “fortalecer” al joven.",
+            "La familia evita hablar de emociones para no generar conflictos.",
+            "La familia escucha activamente y valida los sentimientos de cada miembro.",
+            "La familia prioriza la obediencia por encima del diálogo."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué efecto puede generar la ausencia constante de expresiones de cariño en el hogar?",
+          "options": [
+            "Incremento de la empatía y confianza.",
+            "Inseguridad emocional y dificultad para establecer vínculos profundos.",
+            "Capacidad elevada para resolver conflictos.",
+            "Mayor tolerancia a las emociones ajenas."
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Un adolescente que responde con sarcasmo a un gesto de afecto probablemente…",
+          "options": [
+            "Busca fortalecer la relación mediante el humor.",
+            "Tiene un alto nivel de autoestima.",
+            "Ha desarrollado un mecanismo de defensa frente a la incomodidad emocional.",
+            "Está practicando la empatía."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "Según la guía, ¿qué papel cumple la pregunta “¿Cómo te sientes?” en la formación de la empatía?",
+          "options": [
+            "Transmite que las emociones del otro son importantes y dignas de atención.",
+            "Permite que las personas eviten conflictos emocionales.",
+            "Genera incomodidad y rechazo hacia el afecto.",
+           "Sirve únicamente para resolver problemas escolares."
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es una característica típica de un entorno escolar indiferente?",
+          "options": [
+            "Promueve la ayuda mutua y el respeto.",
+            "Reconoce las emociones de los estudiantes.",
+            "Favorece la comunicación afectiva.",
+            "Minimiza o ignora las necesidades emocionales de los alumnos."
+          ],
+          "answer": 3
+        },
+        {
+          "type": "mcq",
+          "title": "La validación emocional implica…",
+          "options": [
+            "Aprobar todas las conductas de un hijo.",
+            "Reconocer los sentimientos como legítimos y ofrecer apoyo para gestionarlos.",
+            "Evitar hablar de emociones para prevenir conflictos.",
+            "Obligar a los miembros de la familia a compartir todo lo que sienten."
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "Un entorno familiar hostil puede provocar…",
+          "options": [
+            "Empatía elevada hacia extraños.",
+            "Habilidad natural para perdonar.",
+            "Baja tolerancia a la frustración y desconfianza hacia los demás.",
+            "Desarrollo equilibrado de la autoestima."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué consecuencia social puede generar crecer en un hogar sin validación emocional?",
+          "options": [
+            "Capacidad para reconocer y gestionar emociones ajenas.",
+            "Minimizar los problemas de otros y mostrar poca empatía.",
+            "Desarrollo de vínculos afectivos profundos.",
+            "Tendencia a evitar relaciones superficiales."
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de los siguientes ejemplos representa una demostración afectiva no verbal?",
+          "options": [
+            "Decir “te quiero” de forma directa.",
+            "Escribir una carta de amor.",
+            "Escuchar con atención y ofrecer ayuda en silencio.",
+            "Explicar verbalmente cómo se siente uno."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "Según el texto, ¿qué puede ocurrir si un joven crece sin modelos visibles de afecto?",   
+          "options": [
+            "Aprenderá a expresar cariño de forma abierta.",
+            "Desarrollará empatía sin dificultad.",
+            "Sentirá incomodidad al demostrar afecto, incluso con personas cercanas.",
+            "Buscará relaciones emocionales saludables."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "Un hogar que fomenta la comunicación afectiva logra…",
+          "options": [
+            "Que los miembros desarrollen seguridad y confianza para expresarse.",
+            "Reducir la autoestima de sus integrantes.",
+            "Limitar la expresión emocional para evitar conflictos.",
+            "Reemplazar la empatía por la obediencia."
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de las siguientes NO es una consecuencia directa de la burla hacia las muestras de cariño?",
+          "options": [
+            "Creación de un ambiente poco empático.",
+            "Fortalecimiento del vínculo emocional.",
+            "Fomento de la distancia afectiva.",
+            "Incomodidad al recibir afecto."
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La “armadura emocional” mencionada en la guía se refiere a…",
+          "options": [
+            "La capacidad de resistir enfermedades.",
+            "Un mecanismo para superar problemas escolares.",
+            "Una barrera que impide conectar emocionalmente con otros.",
+            "Un método para fortalecer la empatía."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué emoción es más probable que florezca en un entorno familiar sano y respetuoso?",
+          "options": [
+            "Miedo.",
+            "Inseguridad.",
+            "Gratitud.",
+            "Ira contenida."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "Según la guía, ¿qué característica define a un hogar empático?",
+          "options": [
+            "Fomenta la competencia constante entre miembros.",
+            "Promueve la comprensión, la ayuda mutua y el respeto.",
+            "Evita el contacto físico para prevenir conflictos.",
+            "Minimiza los problemas emocionales."
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué afirma la guía sobre la relación entre trato familiar y relaciones de pareja futuras?",
+          "options": [
+            "No existe relación significativa.",
+            "Depende exclusivamente del contexto social.",
+            "El trato familiar influye en la forma en que se expresan y reciben emociones en la pareja.",
+            "Solo afecta a las relaciones de amistad."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué acción ayudaría más a mejorar la comunicación emocional en una familia?",
+          "options": [
+            "Evitar preguntar sobre los sentimientos para prevenir conflictos.",
+            "Imponer reglas estrictas sin explicación.",
+            "Hablar solo de temas prácticos como estudios o finanzas.",
+            "Crear espacios para expresar y escuchar emociones sin juicios."
+          ],
+          "answer": 3
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué implica “escucha activa” según la guía?",
+          "options": [
+            "Esperar en silencio mientras el otro habla.",
+            "Interrumpir para dar consejos rápidos.",
+            "Prestar atención genuina, mostrando interés y respeto por lo que se dice.",
+            "Evitar responder para no generar discusiones."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "Un joven que busca afecto en entornos superficiales probablemente…",
+          "options": [
+            "Ha recibido validación emocional constante en su hogar.",
+            "Tiene vínculos familiares sólidos.",
+            "Carece de respaldo afectivo genuino en su familia.",
+            "Prefiere relaciones profundas y duraderas."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué afirma la guía sobre el aprendizaje de la empatía?",
+          "options": [
+            "Surge de manera natural sin influencia externa.",
+            "Depende únicamente de la personalidad individual.",
+            "Se aprende y entrena a través de ejemplos y experiencias.",
+            "No puede desarrollarse fuera del hogar."
+          ],
+          "answer": 2
+        }
+      ]
+    },
+    {
+      "code": "CONS-0702M033",
+      "name": "Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 2",
+      "time": 15,
+      "points": { "ok": 0.4166666667, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4", "Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
+      "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Cuál de las siguientes situaciones refleja mejor un entorno familiar empático?",
+          "options": [
+            "La familia corrige los errores con burlas para “fortalecer” al joven.",
+            "La familia evita hablar de emociones para no generar conflictos.",
+            "La familia escucha activamente y valida los sentimientos de cada miembro.",
+            "La familia prioriza la obediencia por encima del diálogo."
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué efecto puede generar la ausencia constante de expresiones de cariño en el hogar?",
+          "options": [
+            "Incremento de la empatía y confianza.",
+            "Inseguridad emocional y dificultad para establecer vínculos profundos.",
+            "Capacidad elevada para resolver conflictos.",
+            "Mayor tolerancia a las emociones ajenas."
+          ],
+          "answer": 1
+        },
       ]
     }
   ]
