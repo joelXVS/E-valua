@@ -1,8 +1,8 @@
 {
   "codes" : [
     { "code": "CONS-0801A033", "description": "Prueba de Conocimiento 8° - Constitución Política, Democracia y Paz - Parcial 1" },
-    { "code": "GEO-0701A026", "description": "Prueba de Conocimiento 7° - Geografía - Parcial 1" },
-    { "code": "HIST-0701A028", "description": "Prueba de Conocimiento 7° - Historia - Parcial 1" },
-    { "code": "CONS-0701A029", "description": "Prueba de Conocimiento 7° - Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 1" }
+    { "code": "GEO-0701P026", "description": "Prueba de Conocimiento 7° - Geografía - Parcial 1" },
+    { "code": "HIST-0701C028", "description": "Prueba de Conocimiento 7° - Historia - Parcial 1" },
+    { "code": "CONS-0701M030", "description": "Prueba de Conocimiento 7° - Constitución Política, Democracia y Paz / Cátedra de Paz y Democracia - Parcial 1" }
   ]
 }
