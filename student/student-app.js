@@ -65,15 +65,9 @@ function getBlockedStudents() {
 function isStudentBlocked(name, code) {
   const blocked = getBlockedStudents();
   const deviceId = getDeviceId();
-  return blocked.some(b => (b.name === name && b.code === code) || b.deviceId === deviceId);
-}
-function blockStudent(name, code, reason = 'cheating') {
-  const blocked = getBlockedStudents();
-  const deviceId = getDeviceId();
-  if (!blocked.some(b => (b.name === name && b.code === code) || b.deviceId === deviceId)) {
-    blocked.push({ name, code, reason, deviceId, timestamp: new Date().toISOString() });
-    localStorage.setItem('blockedStudents', JSON.stringify(blocked));
-  }
+
+  // Bloqueo válido solo si coincide code + deviceId
+  return blocked.some(b => b.code === code && b.deviceId === deviceId);
 }
 
 // cheat logs: por intento (se guarda también en localStorage bajo 'cheatLogs' por sesión)
@@ -222,19 +216,20 @@ function attachAntiCheatListeners() {
 
   function handleVisibilityChange() {
     if (document.hidden) {
-      tabSwitchCount++; // aumentar contador solo si se oculta la pestaña
-
+      // Antes de sumar, pedimos el código
+      const codeInput = prompt('Se detectó un intento de plagio. Ingresa el código @ANT1PL4G1O para anularlo:');
+      
+      if (codeInput === '@ANT1PL4G1O') {
+        alert('Intento de plagio anulado. Continúa con tu examen.');
+        return; // no cuenta el intento
+      }
+  
+      tabSwitchCount++;
+  
       if (tabSwitchCount === 1) {
-        const codeInput = prompt('Se detectó un intento de plagio: Cambio de pestaña. Pidele al docente encargado que ingrese el código de docente para que no se cuente:');
-        if (codeInput !== '@ANT1PL4G1O') {
-          alert('Código incorrecto. Se cuenta como intento de plagio.');
-        } else {
-          // no se cuenta este intento, reducimos el contador
-          tabSwitchCount--;
-          return;
-        }
+        alert('Atención: primer intento de plagio detectado.');
       } else if (tabSwitchCount >= 3) {
-        alert('Se detectaron 3 intentos de plagio. La prueba se terminará y tu acceso quedará bloqueado.');
+        alert('Se detectaron 3 intentos de plagio. La prueba se terminará.');
         examTerminatedForCheating = true;
         const name = $('studentName').value.trim();
         const code = $('applyCode').value.trim();
@@ -245,23 +240,23 @@ function attachAntiCheatListeners() {
   }
 
   function handleWindowBlur() {
+    const codeInput = prompt('Se detectó un intento de plagio. Ingresa el código @ANT1PL4G1O para anularlo:');
+    
+    if (codeInput === '@ANT1PL4G1O') {
+      alert('Intento de plagio anulado. Continúa con tu examen.');
+      return; // no cuenta el intento
+    }
+  
     blurCount++;
-
+  
     if (blurCount === 1) {
-      const codeInput = prompt('Se detectó un intento de plagio: Pantalla de prueba en segundo plano. Pidele al docente encargado que ingrese el código de docente para que no se cuente:');
-      if (codeInput !== '@ANT1PL4G1O') {
-        alert('Código incorrecto. Se cuenta como intento de plagio.');
-      } else {
-        // no se cuenta este intento, reducimos el contador
-        blurCount--;
-        return;
-      }
+      alert('Atención: primer intento de plagio detectado.');
     } else if (blurCount >= 3) {
-      alert('Se detectaron 3 intentos de plagio. La prueba se terminará y tu acceso quedará bloqueado.');
+      alert('Se detectaron 3 intentos de plagio. La prueba se terminará.');
       examTerminatedForCheating = true;
       const name = $('studentName').value.trim();
       const code = $('applyCode').value.trim();
-      blockStudent(name, code, 'visibility-violation');
+      blockStudent(name, code, 'blur-violation');
       finishExam(true);
     }
   }
