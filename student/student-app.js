@@ -62,6 +62,7 @@ function getBlockedStudents() {
     return [];
   }
 }
+
 function isStudentBlocked(name, code) {
   const blocked = getBlockedStudents();
   const deviceId = getDeviceId();
@@ -82,6 +83,7 @@ function appendCheatLogForAttempt(sessionId, entry) {
     console.error('Error guardando cheat log:', e);
   }
 }
+
 function getCheatLogsForSession(sessionId) {
   try {
     const all = JSON.parse(localStorage.getItem('cheatLogs') || '{}');
@@ -103,6 +105,7 @@ function validateStartForm() {
     msg.textContent = 'Este dispositivo está bloqueado para esta prueba y no puede iniciar la prueba.';
   }
 }
+
 function canStartExam() {
   const name = $('studentName').value.trim();
   const code = $('applyCode').value.trim();
@@ -188,6 +191,7 @@ function enterFullScreen() {
     el.webkitRequestFullscreen();
   }
 }
+
 function exitFullScreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen().catch(() => {});
@@ -212,52 +216,64 @@ function attachAntiCheatListeners() {
   }
 
   let tabSwitchCount = 0; // contador de cambios de pestaña
+  let visibilityLock = false; // 🔑 evita bucles
+  
   let blurCount = 0; // contador de cambios a segundo plano
+  let blurLock = false; // 🔑 evita spam de prompts
 
   function handleVisibilityChange() {
-    if (document.hidden) {
+    if (document.hidden  && !visibilityLock) {
+      visibilityLock = true; // se bloquea para no repetir
+      
       // Antes de sumar, pedimos el código
       const codeInput = prompt('Se detectó un intento de plagio: Cambio de pestaña. Pide a tu docente que ingresa el código asignado para anularlo:');
       
       if (codeInput === '@ANT1PL4G1O') {
         alert('Intento de plagio anulado. Continúa con tu examen.');
-        return; // no cuenta el intento
+      } else {
+        tabSwitchCount++;
+        if (tabSwitchCount === 1) {
+          alert('Atención: No se le avisará si comete otro intento de plagio, tenga cuidado o perdera el derecho a realizar la prueba.');
+        } else if (tabSwitchCount >= 3) {
+          alert('Se detectaron 3 intentos de plagio. La prueba ha terminado.');
+          examTerminatedForCheating = true;
+          const name = $('studentName').value.trim();
+          const code = $('applyCode').value.trim();
+          blockStudent(name, code, 'visibility-violation');
+          finishExam(true);
+        }
       }
+
+    // liberar el lock después de 1s
+    setTimeout(() => visibilityLock = false, 1000);
   
-      tabSwitchCount++;
-  
-      if (tabSwitchCount === 1) {
-        alert('Atención: primer intento de plagio detectado. No se le avisará si intenta plagiar nuevamente.');
-      } else if (tabSwitchCount >= 3) {
-        alert('Se detectaron 3 intentos de plagio. La prueba ha terminado.');
-        examTerminatedForCheating = true;
-        const name = $('studentName').value.trim();
-        const code = $('applyCode').value.trim();
-        blockStudent(name, code, 'visibility-violation');
-        finishExam(true);
-      }
     }
   }
 
   function handleWindowBlur() {
-    const codeInput = prompt('Se detectó un intento de plagio: Pestaña en segundo plano. Pide a tu docente que ingresa el código asignado para anularlo:');
+    if (!blurLock) {
+      blurLock = true;
+      const codeInput = prompt('Se detectó un intento de plagio: Pestaña en segundo plano. Pide a tu docente que ingresa el código asignado para anularlo:');
+      
+      if (codeInput === '@ANT1PL4G1O') {
+        alert('Intento de plagio anulado. Continúa con tu examen.');
+        return; // no cuenta el intento
+      } else {
+        blurCount++;
+        if (blurCount === 1) {
+          alert('Atención: No se le avisará si comete otro intento de plagio, tenga cuidado o perdera el derecho a realizar la prueba.');
+        } else if (blurCount >= 3) {
+          alert('Se detectaron 3 intentos de plagio. La prueba ha terminado.');
+          examTerminatedForCheating = true;
+          const name = $('studentName').value.trim();
+          const code = $('applyCode').value.trim();
+          blockStudent(name, code, 'blur-violation');
+          finishExam(true);
+        }
+      }
     
-    if (codeInput === '@ANT1PL4G1O') {
-      alert('Intento de plagio anulado. Continúa con tu examen.');
-      return; // no cuenta el intento
-    }
-  
-    blurCount++;
-  
-    if (blurCount === 1) {
-      alert('Atención: primer intento de plagio detectado. No se le avisará si intenta plagiar nuevamente.');
-    } else if (blurCount >= 3) {
-      alert('Se detectaron 3 intentos de plagio. La prueba ha terminado.');
-      examTerminatedForCheating = true;
-      const name = $('studentName').value.trim();
-      const code = $('applyCode').value.trim();
-      blockStudent(name, code, 'blur-violation');
-      finishExam(true);
+      // liberar el lock después de 1s
+      setTimeout(() => blurLock = false, 1000);
     }
   }
 
@@ -266,6 +282,7 @@ function attachAntiCheatListeners() {
 
   document._antiCheatHandles = { handleVisibilityChange, handleWindowBlur };
 }
+
 function detachAntiCheatListeners() {
   if (document._antiCheatHandles) {
     document.removeEventListener('visibilitychange', document._antiCheatHandles.handleVisibilityChange);
@@ -365,6 +382,7 @@ function renderQuestion() {
   $('nextBtn').disabled = currentQuestionIndex === currentTest.questions.length - 1;
   updateNavButtonsAndFinishButton();
 }
+
 function updateNavButtonsAndFinishButton() {
   const total = currentTest.questions.length;
   let answeredCount = 0;
@@ -374,6 +392,7 @@ function updateNavButtonsAndFinishButton() {
   });
   $('finishBtn').disabled = answeredCount < currentTest.questions.length;
 }
+
 function saveExamProgress() {
   try {
     const progress = {
@@ -399,12 +418,14 @@ function loadExamProgress() {
     console.error('Error cargando progreso:', e);
   }
 }
+
 function prevQuestion() {
   if (currentQuestionIndex > 0) {
     currentQuestionIndex--;
     renderQuestion();
   }
 }
+
 function nextQuestion() {
   if (currentQuestionIndex < currentTest.questions.length - 1) {
     currentQuestionIndex++;
@@ -417,6 +438,7 @@ function escapeHtml(s) {
   if (!s && s !== 0) return '';
   return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m]));
 }
+
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -518,7 +540,15 @@ function finishExam(cheatingForced = false) {
     return `<div style="margin-bottom:8px;">
       <strong>${d.index}. ${escapeHtml(d.title)}</strong><br/>
       Tipo: ${escapeHtml(d.type)}<br/>
-      ${d.answered ? `<strong>Tu respuesta:</strong> ${escapeHtml(String(d.studentAnswer))}` : `<strong>Tu respuesta:</strong> <em>Sin responder</em>`}<br/>
+      ${d.answered 
+        ? `<strong>Tu respuesta:</strong> ${
+            d.studentAnswer === '1' 
+              ? 'VERDADERO' 
+              : d.studentAnswer === '0' 
+                ? 'FALSO' 
+                : escapeHtml(String(d.studentAnswer))
+          }`
+        : `<strong>Tu respuesta:</strong> <em>Sin responder</em>`}<br/>
       ${showCorrect ? `<strong>Respuesta correcta:</strong> ${escapeHtml(String(d.correctAnswer))}<br/>` : ''}
       <strong>Puntos obtenidos:</strong> ${d.points}<br/>
       ${d.type === 'open' ? `<div class="small">Evaluación palabras clave: ${d.openEval.found.length > 0 ? d.openEval.found.map(f=>escapeHtml(f.word)+' (x'+f.count+')').join(', ') : 'No se encontraron'}</div>` : ''}
@@ -617,53 +647,87 @@ function downloadResultsPdf() {
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'pt', 'letter');
-  const margin = 40;
-  let y = 40;
 
-  doc.setFontSize(14);
-  doc.text(`Resultados — ${docData.test}`, margin, y);
-  y += 20;
-  doc.setFontSize(10);
-  doc.text(`Estudiante: ${docData.student}`, margin, y); y += 15;
-  doc.text(`Curso: ${docData.grade}`, margin, y); y += 15;
-  doc.text(`Código de prueba: ${docData.testCode}`, margin, y); y += 15;
-  doc.text(`Fecha: ${docData.timestamp}`, margin, y); y += 20;
-  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, margin, y); y += 20;
+  // Cabecera
+  doc.setFontSize(16);
+  doc.setTextColor(40, 40, 40);
+  doc.text(`Resultados — ${docData.test}`, 40, 40);
 
-  // Cabecera tabla simple
   doc.setFontSize(11);
-  doc.text('No', margin, y);
-  doc.text('Pregunta', margin + 30, y);
-  doc.text('Respuesta alumno', margin + 260, y);
-  doc.text('Puntos', margin + 460, y);
-  y += 12;
+  doc.setTextColor(80, 80, 80);
+  let y = 70;
+  doc.text(`Estudiante: ${docData.student}`, 40, y); y += 15;
+  doc.text(`Curso: ${docData.grade}`, 40, y); y += 15;
+  doc.text(`Código de prueba: ${docData.testCode}`, 40, y); y += 15;
+  doc.text(`Fecha: ${docData.timestamp}`, 40, y); y += 15;
+  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y); 
+  y += 30;
 
-  doc.setFontSize(10);
-  (docData.details || []).forEach(d => {
-    if (y > 700) { doc.addPage(); y = 40; }
-    doc.text(String(d.index || ''), margin, y);
-    const qTitle = String(d.title || '').substring(0, 60);
-    doc.text(qTitle, margin + 30, y);
-    const aText = String(d.studentAnswer || '').substring(0, 40);
-    doc.text(aText, margin + 260, y);
-    doc.text(String(d.points || ''), margin + 460, y);
-    y += 12;
-  });
+  // ✅ Tabla de resultados bonitos con colores
+  if (docData.details && docData.details.length) {
+    const rows = docData.details.map(d => [
+      d.index || '',
+      String(d.title || '').substring(0, 60),
+      String(d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : d.studentAnswer || ''),
+      d.points || ''
+    ]);
 
-  // Events de cheat
+    doc.autoTable({
+      startY: y,
+      head: [['N°', 'Pregunta', 'Respuesta alumno', 'Puntos']],
+      body: rows,
+      styles: {
+        fontSize: 9,
+        halign: 'center',
+        valign: 'middle'
+      },
+      headStyles: {
+        fillColor: [41, 128, 185], // azul bonito
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [245, 245, 245]
+      },
+      margin: { left: 40, right: 40 }
+    });
+
+    y = doc.lastAutoTable.finalY + 20;
+  }
+
+  // ✅ Eventos de seguridad (plagio, trampas, etc.)
   if ((docData.cheatLogs || []).length) {
-    if (y > 650) { doc.addPage(); y = 40; }
+    doc.setFontSize(12);
+    doc.setTextColor(200, 0, 0);
+    doc.text('Eventos de seguridad detectados:', 40, y);
     y += 10;
-    doc.setFontSize(11);
-    doc.text('Eventos de seguridad detectados:', margin, y); y += 14;
-    doc.setFontSize(10);
-    (docData.cheatLogs || []).forEach(e => {
-      doc.text(`${e.when} — ${e.kind}`, margin, y);
-      y += 12;
-      if (y > 750) { doc.addPage(); y = 40; }
+
+    const cheatRows = (docData.cheatLogs || []).map(e => [
+      e.when || '',
+      e.kind || ''
+    ]);
+
+    doc.autoTable({
+      startY: y,
+      head: [['Fecha/Hora', 'Evento']],
+      body: cheatRows,
+      styles: {
+        fontSize: 9,
+        halign: 'left'
+      },
+      headStyles: {
+        fillColor: [192, 57, 43], // rojo
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      alternateRowStyles: {
+        fillColor: [252, 230, 230]
+      },
+      margin: { left: 40, right: 40 }
     });
   }
 
+  // Guardar archivo
   doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
 }
 
