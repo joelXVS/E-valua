@@ -3,7 +3,7 @@
     {
       "code": "CONS-0801A033",
       "name": "Prueba de Conocimiento 8° - La Constitución Política de Colombia, La Familia - COPODP",
-      "time": 40,
+      "time": 35,
       "points": { "ok": 0.1785714286, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
@@ -280,7 +280,7 @@
     {
       "code": "GEO-0701P026",
       "name": "Prueba de Conocimiento 7° - Geografía Física del Mundo - GEOG",
-      "time": 40,
+      "time": 22.5,
       "points": { "ok": 0.2777777778, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
@@ -491,7 +491,7 @@
     {
       "code": "HIST-0701C028",
       "name": "Prueba de Conocimiento 7° - Civilizaciones Antiguas - HIST",
-      "time": 40,
+      "time": 15,
       "points": { "ok": 0.4166666667, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
@@ -636,7 +636,7 @@
     {
       "code": "CONS-0701M030",
       "name": "Prueba de Conocimiento 7° - La Familia - COPODP / CDPYD",
-      "time": 20,
+      "time": 25,
       "points": { "ok": 0.25, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
