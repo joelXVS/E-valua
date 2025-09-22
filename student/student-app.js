@@ -4,6 +4,15 @@ let grades = { grades: [] };
 let tests = { tests: [] };
 let teachers = { teachers: [] };
 
+function getDeviceId() {
+  let id = localStorage.getItem('deviceId');
+  if (!id) {
+    id = 'dev-' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('deviceId', id);
+  }
+  return id;
+}
+
 async function loadInitialData() {
   try {
     const [gResp, tResp, teResp] = await Promise.all([
@@ -55,12 +64,14 @@ function getBlockedStudents() {
 }
 function isStudentBlocked(name, code) {
   const blocked = getBlockedStudents();
-  return blocked.some(b => b.name === name && b.code === code);
+  const deviceId = getDeviceId();
+  return blocked.some(b => (b.name === name && b.code === code) || b.deviceId === deviceId);
 }
 function blockStudent(name, code, reason = 'cheating') {
   const blocked = getBlockedStudents();
-  if (!blocked.some(b => b.name === name && b.code === code)) {
-    blocked.push({ name, code, reason, timestamp: new Date().toISOString() });
+  const deviceId = getDeviceId();
+  if (!blocked.some(b => (b.name === name && b.code === code) || b.deviceId === deviceId)) {
+    blocked.push({ name, code, reason, deviceId, timestamp: new Date().toISOString() });
     localStorage.setItem('blockedStudents', JSON.stringify(blocked));
   }
 }
@@ -168,6 +179,7 @@ async function startExam() {
   // enganchar listeners anti-trampa
   attachAntiCheatListeners();
 
+  loadExamProgress();
   renderQuestion();
   startTimer((currentTest.time || 0) * 60);
   showSection('exam');
@@ -213,9 +225,16 @@ function attachAntiCheatListeners() {
       tabSwitchCount++; // aumentar contador solo si se oculta la pestaña
 
       if (tabSwitchCount === 1) {
-        alert('Atención: no cambies de pestaña ni minimices el navegador. Si lo vuelves a hacer, la prueba terminará y se bloqueará tu acceso.');
-      } else if (tabSwitchCount >= 2) {
-        alert('Cambio de pestaña detectado nuevamente. La prueba se terminará y tu acceso quedará bloqueado.');
+        const codeInput = prompt('Se detectó un intento de plagio: Cambio de pestaña. Pidele al docente encargado que ingrese el código de docente para que no se cuente:');
+        if (codeInput !== '@ANT1PL4G1O') {
+          alert('Código incorrecto. Se cuenta como intento de plagio.');
+        } else {
+          // no se cuenta este intento, reducimos el contador
+          tabSwitchCount--;
+          return;
+        }
+      } else if (tabSwitchCount >= 3) {
+        alert('Se detectaron 3 intentos de plagio. La prueba se terminará y tu acceso quedará bloqueado.');
         examTerminatedForCheating = true;
         const name = $('studentName').value.trim();
         const code = $('applyCode').value.trim();
@@ -229,13 +248,20 @@ function attachAntiCheatListeners() {
     blurCount++;
 
     if (blurCount === 1) {
-      alert('Atención: no cambies de pestaña ni minimices el navegador. Si lo vuelves a hacer, la prueba terminará y se bloqueará tu acceso.');
-    } else if (blurCount >= 2) {
-      alert('Se detectó pérdida de foco nuevamente. La prueba se terminará y tu acceso quedará bloqueado.');
+      const codeInput = prompt('Se detectó un intento de plagio: Pantalla de prueba en segundo plano. Pidele al docente encargado que ingrese el código de docente para que no se cuente:');
+      if (codeInput !== '@ANT1PL4G1O') {
+        alert('Código incorrecto. Se cuenta como intento de plagio.');
+      } else {
+        // no se cuenta este intento, reducimos el contador
+        blurCount--;
+        return;
+      }
+    } else if (blurCount >= 3) {
+      alert('Se detectaron 3 intentos de plagio. La prueba se terminará y tu acceso quedará bloqueado.');
       examTerminatedForCheating = true;
       const name = $('studentName').value.trim();
       const code = $('applyCode').value.trim();
-      blockStudent(name, code, 'blur-violation');
+      blockStudent(name, code, 'visibility-violation');
       finishExam(true);
     }
   }
@@ -327,7 +353,7 @@ function renderQuestion() {
     inp.addEventListener('change', () => {
       const val = inp.value;
       answers[q.title] = q.type === 'mcq' ? parseInt(val) : parseInt(val);
-      updateNavButtonsAndFinishButton();
+      updateNavButtonsAndFinishButton(); 
     });
   });
   const ta = container.querySelector(`#open_${currentQuestionIndex}`);
@@ -337,6 +363,8 @@ function renderQuestion() {
       updateNavButtonsAndFinishButton();
     });
   }
+
+  saveExamProgress();
 
   $('prevBtn').disabled = currentQuestionIndex === 0;
   $('nextBtn').disabled = currentQuestionIndex === currentTest.questions.length - 1;
@@ -350,6 +378,31 @@ function updateNavButtonsAndFinishButton() {
     if (a !== undefined && a !== null && String(a).trim() !== '') answeredCount++;
   });
   $('finishBtn').disabled = answeredCount < currentTest.questions.length;
+}
+function saveExamProgress() {
+  try {
+    const progress = {
+      currentTestCode: currentTest?.code || '',
+      currentQuestionIndex,
+      answers,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('examProgress', JSON.stringify(progress));
+  } catch (e) {
+    console.error('Error guardando progreso:', e);
+  }
+}
+
+function loadExamProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('examProgress') || '{}');
+    if (saved && saved.currentTestCode === currentTest?.code) {
+      currentQuestionIndex = saved.currentQuestionIndex || 0;
+      answers = saved.answers || {};
+    }
+  } catch (e) {
+    console.error('Error cargando progreso:', e);
+  }
 }
 function prevQuestion() {
   if (currentQuestionIndex > 0) {
