@@ -564,8 +564,22 @@ function finishExam(cheatingForced = false) {
       title: q.title,
       type: q.type,
       answered,
-      studentAnswer: (q.type === 'mcq' || q.type === 'tf') ? (answered ? (q.options ? q.options[studentAns] : String(studentAns)) : 'Sin responder') : (answered ? String(studentAns) : 'Sin responder'),
-      correctAnswer: (q.type === 'mcq' || q.type === 'tf') ? ((q.options && q.options[q.answer]) ? q.options[q.answer] : String(q.answer)) : (q.type === 'open' ? '(Respuesta abierta - evaluada por palabras clave)' : ''),
+      studentAnswer: (q.type === 'mcq' || q.type === 'tf') 
+        ? (answered 
+            ? (q.options && q.options[studentAns] 
+                ? (q.options[studentAns].text || '') 
+                : String(studentAns)) 
+            : 'Sin responder') 
+        : (answered ? String(studentAns) : 'Sin responder'),
+      
+      correctAnswer: (q.type === 'mcq' || q.type === 'tf') 
+        ? ((q.options && q.options[q.answer]) 
+            ? (q.options[q.answer].text || '') 
+            : String(q.answer)) 
+        : (q.type === 'open' 
+            ? '(Respuesta abierta - evaluada por palabras clave)' 
+            : ''),
+      
       points: qPoints
     };
     if (q.type === 'open') {
@@ -725,10 +739,16 @@ function downloadResultsPdf() {
     const rows = docData.details.map(d => [
       d.index || '',
       truncateText(String(d.title || ''), 60),
-      String(d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : d.studentAnswer || ''),
+      String(
+        d.type === 'mcq'
+          ? (d.studentAnswer?.text || d.studentAnswer || '')
+          : d.type === 'tf'
+            ? (d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : d.studentAnswer || '')
+            : d.studentAnswer || ''
+      ),
       d.points || ''
     ]);
-
+    
     doc.autoTable({
       startY: y,
       head: [['N°', 'Pregunta', 'Respuesta alumno', 'Puntos']],
