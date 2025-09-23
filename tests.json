@@ -279,8 +279,8 @@
     },
     {
       "code": "CONS-0802M030",
-      "name": "Prueba de Conocimiento 8° - Colombia y Los Derechos - COPODP / CDPYD",
-      "time": 15,
+      "name": "Prueba de Conocimiento 8° - Colombia, Los Derechos - COPODP / CDPYD",
+      "time": 37.5,
       "points": { "ok": 0.15625, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
@@ -626,6 +626,41 @@
             { "word": "territorio", "weight": 1 },
             { "word": "triunfo", "weight": 1 }
           ]
+        }
+      ]
+    },
+    {
+      "code": "CONS-M030",
+      "name": "Prueba de Conocimiento 8° - Colombia, Los Derechos - COPODP / CDPYD",
+      "time": 1,
+      "points": { "ok": 2.5, "bad": 0 },
+      "from": "07:00",
+      "to": "12:40",
+      "showResults": true,
+      "showCorrect": true,
+      "groups": ["Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
+      "questions": [
+        {
+          "type": "mcq",
+          "title": "Según la guía, ¿cuál de estas características NO corresponde a los derechos humanos?",
+          "options": [
+            "Son universales",
+            "Son inalienables",
+            "Pueden ser suspendidos permanentemente por decisión individual",
+            "Están reconocidos por la ley"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "La Constitución es considerada la norma suprema de un país porque:",
+          "options": [
+            "Define cómo se organiza el Estado y protege los derechos ciudadanos",
+            "Regula únicamente las relaciones internacionales",
+            "Es un conjunto de tradiciones culturales",
+            "Es un código moral no escrito"
+          ],
+          "answer": 0
         }
       ]
     }
