@@ -556,14 +556,13 @@ function finishExam(cheatingForced = false) {
 
   // mostrar sección de resultados
   showSection('result');
-  $('resultSummary').textContent = `Puntaje: ${totalScore} / ≈ / ${totalScore.toFixed(1)}`;
-
+  
   const elapsedMs = Date.now() - examStartTime;
   const elapsedSec = Math.floor(elapsedMs / 1000);
   const min = String(Math.floor(elapsedSec / 60));
   const sec = String(elapsedSec % 60).padStart(2, '0');
 
-  $('resultSummary').textContent = `Tiempo tomado: ${min}:${sec}`;
+  $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)}<br>Tiempo tomado: ${min}:${sec}`;
 
   const showCorrect = !!currentTest.showCorrect;
   const teacherContact = findTeacherContactForTest(currentTest.code);
