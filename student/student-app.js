@@ -63,24 +63,29 @@ function getBlockedStudents() {
   }
 }
 
-function isStudentBlocked(name, code) {
+function isStudentBlocked(_name, code) {
   const blocked = getBlockedStudents();
   const deviceId = getDeviceId();
 
-  // Bloqueo válido solo si coincide code + deviceId
-  return blocked.some(b => 
-    b.code === code &&
-    b.deviceId === deviceId &&
-    b.name && name.toLowerCase().includes(b.name.toLowerCase())
-  );
+  // Solo valida si el mismo dispositivo ya fue bloqueado para este código
+  return blocked.some(b => b.code === code && b.deviceId === deviceId);
 }
 
-function blockStudent(name, code, reason) {
+function blockStudent(_name, code, reason) {
   try {
     const blocked = getBlockedStudents();
     const deviceId = getDeviceId();
-    blocked.push({ name, code, deviceId, reason, when: new Date().toISOString() });
-    localStorage.setItem('blockedStudents', JSON.stringify(blocked));
+
+    // Evitar duplicados por si ya está bloqueado
+    if (!blocked.some(b => b.code === code && b.deviceId === deviceId)) {
+      blocked.push({
+        code,
+        deviceId,
+        reason,
+        when: new Date().toISOString()
+      });
+      localStorage.setItem('blockedStudents', JSON.stringify(blocked));
+    }
   } catch (e) {
     console.error('Error bloqueando estudiante:', e);
   }
@@ -116,16 +121,16 @@ function validateStartForm() {
   $('btnContinue').disabled = !(name && grade && code);
   const msg = $('startMsg');
   msg.textContent = '';
-  if (name && code && isStudentBlocked(name, code)) {
-    msg.textContent = 'Este dispositivo está bloqueado para esta prueba y no puede iniciar la prueba.';
+  if (code && isStudentBlocked(name, code)) {
+    msg.textContent = 'Este dispositivo está bloqueado para esta prueba y no se puede iniciar.';
   }
 }
 
 function canStartExam() {
   const name = $('studentName').value.trim();
   const code = $('applyCode').value.trim();
-  if (name.length < 18) {
-    alert('El nombre completo debe tener al menos 18 caracteres.');
+  if (name.length < 16) {
+    alert('El nombre completo debe tener al menos 16 caracteres.');
     return false;
   }
   if (code.length < 8) {
@@ -133,7 +138,7 @@ function canStartExam() {
     return false;
   }
   if (isStudentBlocked(name, code)) {
-    alert('No puedes iniciar la prueba: se detectó plagio en esta prueba desde este dispositivo. Este código está bloqueado.');
+    alert('No puedes iniciar la prueba: se detectó plagio desde este dispositivo. Este código está bloqueado.');
     return false;
   }
   return true;
@@ -562,10 +567,9 @@ function finishExam(cheatingForced = false) {
   const min = String(Math.floor(elapsedSec / 60));
   const sec = String(elapsedSec % 60).padStart(2, '0');
 
-  $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)} —— Tiempo: ${min}:${sec}`;
+  $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)} \n Tiempo: ${min}:${sec}`;
   
   const showCorrect = !!currentTest.showCorrect;
-  const teacherContact = findTeacherContactForTest(currentTest.code);
 
   const detailsHtml = details.map(d => {
     const tipoLiteral = d.type === 'mcq'
@@ -592,13 +596,10 @@ function finishExam(cheatingForced = false) {
       ${d.type === 'open' ? `<div class="small">Evaluación palabras clave: ${d.openEval.found.length > 0 ? d.openEval.found.map(f=>escapeHtml(f.word)+' (x'+f.count+')').join(', ') : 'No se encontraron'}</div>` : ''}
     </div><hr/>`;
   }).join('');
-
-  const teacherLine = teacherContact ? `<div style="margin-top:8px;"><strong>Docente creador:</strong> ${escapeHtml(teacherContact.name || '')} — <strong>Correo:</strong> ${escapeHtml(teacherContact.email || teacherContact.derivedEmail || '')}</div>` : '';
-
+  
   $('detailedAnswers').innerHTML = `<div><strong>Resumen de la prueba:</strong></div>
     <div style="margin-top:8px">${detailsHtml}</div>
-    ${teacherLine}
-    <div style="margin-top:8px;"><strong>Eventos de seguridad detectados:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>
+    <div style="margin-top:8px"><strong>Eventos de seguridad detectados:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>
   `;
 
   // guardar resultado (incluye cheatLogs)
@@ -628,20 +629,6 @@ function finishExam(cheatingForced = false) {
   }
 }
 
-// ---------- sacar contacto docente ----------
-function findTeacherContactForTest(testCode) {
-  if (!teachers || !Array.isArray(teachers.teachers)) return null;
-  for (const t of teachers.teachers) {
-    if (Array.isArray(t.tests) && t.tests.includes(testCode)) {
-      const contact = { name: t.name || '', user: t.user || '' };
-      if (t.email) contact.email = t.email;
-      else contact.derivedEmail = `${(t.user || 'docente').toLowerCase()}@gmail.com`;
-      return contact;
-    }
-  }
-  return null;
-}
-
 // ---------- descargar JSON ----------
 // Incluye cheatLogs del intento
 function downloadResults() {
@@ -659,7 +646,7 @@ function downloadResults() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'result.json';
+  a.download = "resultado.json";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -681,16 +668,19 @@ function downloadResultsPdf() {
     lastStored = null;
   }
 
-  const docData = lastStored || {
-    student: $('studentName').value.trim(),
-    grade: $('gradeSelect').selectedOptions[0].textContent,
-    test: currentTest.name,
-    testCode: currentTest.code,
-    timestamp: new Date().toISOString(),
-    score: $('resultSummary').textContent || '',
-    details: [],
-    cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
-  };
+  // si no hay detalles en lastStored, tomamos los que se están mostrando en memoria
+  const docData = lastStored && lastStored.details?.length
+    ? lastStored
+    : {
+        student: $('studentName').value.trim(),
+        grade: $('gradeSelect').selectedOptions[0].textContent,
+        test: currentTest.name,
+        testCode: currentTest.code,
+        timestamp: new Date().toISOString(),
+        score: $('resultSummary').textContent || '',
+        details: (typeof details !== 'undefined') ? details : [],
+        cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
+      };
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'pt', 'letter');
@@ -702,7 +692,7 @@ function downloadResultsPdf() {
 
   doc.setFontSize(11);
   doc.setTextColor(80, 80, 80);
-  let y = 70;
+  let y = 90;
   doc.text(`Estudiante: ${docData.student}`, 40, y); y += 15;
   doc.text(`Curso: ${docData.grade}`, 40, y); y += 15;
   doc.text(`Código de prueba: ${docData.testCode}`, 40, y); y += 15;
@@ -726,12 +716,16 @@ function downloadResultsPdf() {
       styles: {
         fontSize: 9,
         halign: 'center',
-        valign: 'middle'
+        valign: 'middle',
+        lineWidth: 0.2,
+        lineColor: [200, 200, 200]
       },
       headStyles: {
         fillColor: [41, 128, 185], // azul bonito
         textColor: 255,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
+        lineWidth: 0.4,
+        lineColor: [180, 180, 180]
       },
       alternateRowStyles: {
         fillColor: [245, 245, 245]
