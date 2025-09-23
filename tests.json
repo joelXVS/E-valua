@@ -663,6 +663,298 @@
           "answer": 0
         }
       ]
+    },
+    {},
+    {
+      "code": "CG-2025-001",
+      "name": "Prueba de Cultura General",
+      "time": 60,
+      "points": { "ok": 1, "bad": 0 },
+      "from": "08:00",
+      "to": "24:00",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4", "Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
+      "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Cuál es la capital de Francia?",
+          "options": ["París", "Madrid", "Roma", "Berlín"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El sol es una estrella.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué país tiene la mayor población del mundo?",
+          "options": ["India", "Estados Unidos", "China", "Rusia"],
+          "answer": 2
+        },
+        {
+          "type": "mcq",
+          "title": "El río Amazonas atraviesa principalmente:",
+          "options": ["Brasil", "Argentina", "Chile", "Perú"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La Gran Muralla China se puede ver desde la luna.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Quién pintó la Mona Lisa?",
+          "options": ["Leonardo da Vinci", "Pablo Picasso", "Vincent van Gogh", "Miguel Ángel"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿En qué continente se encuentra Egipto?",
+          "options": ["África", "Asia", "Europa", "Oceanía"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El agua hierve a 100°C a nivel del mar.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué planeta es conocido como el Planeta Rojo?",
+          "options": ["Marte", "Júpiter", "Saturno", "Venus"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La capital de Japón es:",
+          "options": ["Tokio", "Beijing", "Seúl", "Bangkok"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La fotosíntesis ocurre en las hojas de las plantas.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Quién escribió 'Cien años de soledad'?",
+          "options": ["Gabriel García Márquez", "Mario Vargas Llosa", "Jorge Luis Borges", "Pablo Neruda"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El Everest se encuentra en la frontera entre Nepal y:",
+          "options": ["China", "India", "Bután", "Tíbet"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La capital de Australia es Sydney.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El instrumento musical de viento más grande es:",
+          "options": ["Órgano", "Trompeta", "Flauta", "Saxofón"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el océano más grande del mundo?",
+          "options": ["Pacífico", "Atlántico", "Índico", "Ártico"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El polo norte es más frío que el polo sur.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el gas más abundante en la atmósfera terrestre?",
+          "options": ["Nitrógeno", "Oxígeno", "Carbono", "Hidrógeno"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El símbolo químico del oro es:",
+          "options": ["Au", "Ag", "Fe", "O"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Venus es el planeta más cercano al Sol.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El pintor español conocido por el cubismo es:",
+          "options": ["Pablo Picasso", "Salvador Dalí", "Francisco Goya", "Diego Velázquez"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el país más grande del mundo por superficie?",
+          "options": ["Rusia", "Canadá", "China", "Estados Unidos"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El ajedrez se originó en China.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La capital de Canadá es:",
+          "options": ["Ottawa", "Toronto", "Montreal", "Vancouver"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es la lengua oficial de Brasil?",
+          "options": ["Portugués", "Español", "Inglés", "Francés"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La península de Yucatán pertenece a México.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué animal es conocido como el rey de la selva?",
+          "options": ["León", "Tigre", "Elefante", "Pantera"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El pintor de 'La noche estrellada' es:",
+          "options": ["Vincent van Gogh", "Claude Monet", "Leonardo da Vinci", "Salvador Dalí"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El diamante está compuesto principalmente por carbono.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La capital de Italia es:",
+          "options": ["Roma", "Milán", "Venecia", "Florencia"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué inventó Alexander Graham Bell?",
+          "options": ["Teléfono", "Telégrafo", "Radio", "Bombilla"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El desierto del Sahara es el más grande del mundo.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el país con más medallas en los Juegos Olímpicos de verano?",
+          "options": ["Estados Unidos", "China", "Rusia", "Alemania"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La capital de Alemania es:",
+          "options": ["Berlín", "Múnich", "Frankfurt", "Hamburgo"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Shakespeare escribió 'Romeo y Julieta'.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "El continente más poblado del mundo es:",
+          "options": ["Asia", "África", "Europa", "América"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué planeta tiene más lunas conocidas?",
+          "options": ["Júpiter", "Saturno", "Urano", "Neptuno"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La penicilina fue descubierta por Alexander Fleming.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La primera mujer en recibir un Premio Nobel fue:",
+          "options": ["Marie Curie", "Rosalind Franklin", "Ada Lovelace", "Dorothy Hodgkin"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál es la moneda oficial de Japón?",
+          "options": ["Yen", "Dólar", "Won", "Euro"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El Monte Kilimanjaro se encuentra en Kenia.",
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El gas que respiramos principalmente es:",
+          "options": ["Nitrógeno", "Oxígeno", "Dióxido de carbono", "Argón"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Quién escribió 'Don Quijote de la Mancha'?",
+          "options": ["Miguel de Cervantes", "Lope de Vega", "Gabriel García Márquez", "Jorge Luis Borges"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "La capital de España es Madrid.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué país es conocido como la tierra de los canguros?",
+          "options": ["Australia", "Sudáfrica", "Canadá", "Nueva Zelanda"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "El inventor de la bombilla eléctrica es:",
+          "options": ["Thomas Edison", "Nikola Tesla", "Benjamin Franklin", "Alexander Graham Bell"],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El río Nilo es el más largo del mundo.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué deporte se juega con un disco y palos sobre hielo?",
+          "options": ["Hockey sobre hielo", "Lacrosse", "Curling", "Patinaje artístico"],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "La capital de Argentina es:",
+          "options": ["Buenos Aires", "Córdoba", "Rosario", "Mendoza"],
+          "answer": 0
+        }
+      ]
     }
   ]
 }
