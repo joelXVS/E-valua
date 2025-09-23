@@ -11,7 +11,7 @@
 <body style="margin: 0; height: 100vh; display: grid; place-items: center;">
   <div class="container">
     <header class="header card">
-      <h1>📝 E-valua — Estudiantes</h1>
+      <h1 style="text-align: center;">E-valua — Estudiantes</h1>
       <p class="sub">Ingresa tu nombre, curso y código para iniciar la prueba. La prueba se auto-enviará si cambias de pestaña.</p>
     </header>
 
@@ -22,7 +22,7 @@
 
         <label class="field">
           <span>Nombre completo</span>
-          <input id="studentName" type="text" placeholder="Ej: Juan Pérez" autocomplete="name" />
+          <input id="studentName" type="text" placeholder="Ej: Juan Manuel Pérez Lopez" autocomplete="name" />
         </label>
 
         <label class="field">
@@ -34,13 +34,13 @@
 
         <label class="field">
           <span>Código de aplicación</span>
-          <input id="applyCode" type="text" placeholder="Ej: C-0801" autocomplete="off" />
+          <input id="applyCode" type="text" placeholder="Ej: ASIG-XXXXAXXX" autocomplete="off" />
         </label>
 
         <div class="row">
           <button id="btnContinue" class="btn primary" disabled>Continuar</button>
         </div>
-        <div id="startMsg" class="small" style="margin-top:8px;"></div>
+        <div id="startMsg" class="small" style="margin-top:8px; text-align: center;"></div>
       </section>
 
       <!-- PANTALLA DE EXAMEN -->
@@ -59,19 +59,19 @@
 
         <div id="questionContainer" class="question-card" aria-live="polite"></div>
 
-        <div class="row nav-buttons" style="margin-top:12px;">
+        <div class="row nav-buttons" style="margin-top:12px">
           <button id="prevBtn" class="btn" disabled aria-label="Pregunta anterior">← Anterior</button>
           <button id="nextBtn" class="btn" disabled aria-label="Siguiente pregunta">Siguiente →</button>
         </div>
 
-        <div class="row end-buttons" style="margin-top:12px;">
+        <div class="row end-buttons" style="margin-top:12px; display: flex; justify-content: center;">
           <button id="finishBtn" class="btn danger" aria-label="Terminar prueba" disabled>Terminar prueba</button>
         </div>
       </section>
 
       <!-- PANTALLA DE RESULTADO -->
       <section id="result" class="card hidden" aria-hidden="true">
-        <h2>Resultados</h2>
+        <h2 style="text-align: center;">Resultados</h2>
         <div id="resultSummary" class="result-summary"></div>
         <div id="detailedAnswers" class="detailed-answers"></div>
         <div class="row" style="margin-top:12px;">
@@ -84,6 +84,7 @@
 
     <footer class="footer card">
       <p class="small">E-valua — creado por Joel Valencia</p>
+      <p class="small" style="font-size: 0.75rem;">Versión actual: <strong>1.13.25</strong></p>
     </footer>
   </div>
 
