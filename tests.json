@@ -278,604 +278,15 @@
       ]
     },
     {
-      "code": "GEO-0701P026",
-      "name": "Prueba de Conocimiento 7° - Geografía Física del Mundo - GEOG",
-      "time": 22.5,
-      "points": { "ok": 0.2777777778, "bad": 0 },
-      "from": "07:00",
-      "to": "12:40",
-      "showResults": true,
-      "showCorrect": false,
-      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4"],
-      "questions": [
-        {
-          "type": "mcq",
-          "title": "Desde la perspectiva de la geografía física, ¿cuál de los siguientes factores influye directamente en la formación de un desierto frío?",
-          "options": [
-            "Proximidad a corrientes oceánicas frías",
-            "Elevada humedad atmosférica",    
-            "Alta radiación solar constante",
-            "Cercanía al ecuador"
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "En el contexto histórico, ¿qué aportó Alexander von Humboldt al desarrollo de la geografía física moderna?",
-          "options": [
-            "Cartografía simbólica",
-            "Estudios cuantitativos y observacionales del relieve y clima",
-            "Introducción del concepto de monzones",
-            "Teoría de la deriva continental"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué continente posee la mayor proporción de relieve formado por mesetas elevadas?",
-          "options": [
-            "África",
-            "Europa",
-            "Oceanía",
-            "América"
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "El lago Baikal, considerado el más profundo del mundo, se localiza en:",
-          "options": [
-            "Japón",
-            "Mongolia",
-            "Rusia",
-            "China"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál de los siguientes elementos no es un componente de estudio de la geografía física?",
-          "options": [
-            "Clima",
-            "Vegetación",
-            "Sistemas políticos",
-            "Hidrografía"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "En términos de dinámica climática, la presencia de corrientes cálidas como la del Golfo en Europa contribuye principalmente a:",
-          "options": [
-            "Incrementar la aridez de las costas atlánticas",
-            "Suavizar las temperaturas invernales",
-            "Reducir las precipitaciones en zonas interiores",
-            "Prolongar la temporada de monzones"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "El relieve montañoso de los Himalayas afecta la distribución poblacional asiática debido a:",
-          "options": [
-            "Suelos fértiles y alta densidad demográfica",
-            "Barreras naturales que limitan asentamientos",
-            "Alta conectividad entre regiones",
-            "Climas templados que atraen migraciones"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "En el continente americano, la cuenca hidrográfica con mayor biodiversidad es la del:",
-          "options": [
-            "Misisipi",
-            "Orinoco",
-            "Amazonas",
-            "Paraná"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "El clima polar de la Antártida se explica principalmente por:",
-          "options": [
-            "Su altitud promedio",
-            "Su elevada latitud",
-            "Su proximidad a corrientes cálidas",
-            "Su relieve volcánico"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "La presencia de suelos volcánicos fértiles en ciertas islas de Oceanía está vinculada a:",
-          "options": [
-            "Actividad tectónica reciente",
-            "Aportes de sedimentos fluviales",
-            "Clima monzónico",
-            "Formación coralina"
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál de los siguientes continentes alberga la mayor cantidad de desiertos cálidos?",
-          "options": [
-            "Asia",
-            "Oceanía",
-            "África",
-            "América"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "En geografía física, la vegetación de tundra está principalmente determinada por:",
-          "options": [
-            "Elevada radiación solar",
-            "Permafrost y bajas temperaturas",
-            "Suelos volcánicos",
-            "Lluvias monzónicas"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "El río más caudaloso del mundo es el:",
-          "options": [
-            "Congo",
-            "Nilo",
-            "Amazonas",
-            "Yangtsé"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "La ubicación geográfica de Europa favorece su diversidad climática debido a:",
-          "options": [
-            "Su forma compacta",
-            "La interacción de masas de aire oceánicas y continentales",
-            "Su altitud promedio baja",
-            "Su latitud ecuatorial"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "En la geografía física del mundo, ¿qué continente se caracteriza por su aislamiento biogeográfico, generando especies únicas como canguros y koalas?",
-          "options": [
-            "Asia",
-            "África",
-            "Oceanía",
-            "América"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "La erosión fluvial intensa en regiones de clima tropical húmedo se debe principalmente a:",
-          "options": [
-            "Baja pendiente del relieve",
-            "Altas precipitaciones constantes",
-            "Vientos secos",
-            "Escasa vegetación"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "La cordillera de los Andes se considera:",
-          "options": [
-            "El sistema montañoso más alto del mundo",
-            "El sistema montañoso más extenso de América",
-            "Una cadena montañosa de origen volcánico exclusivo",
-            "El límite natural entre América del Norte y Central"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "El derretimiento de glaciares en la Antártida podría provocar:",
-          "options": [
-            "Expansión de áreas desérticas",
-            "Aumento del nivel del mar a escala global",
-            "Incremento de la actividad sísmica",
-            "Formación de nuevos océanos cerrados"
-          ],
-          "answer": 1
-        }
-      ]
-    },
-    {
-      "code": "HIST-0701C028",
-      "name": "Prueba de Conocimiento 7° - Civilizaciones Antiguas - HIST",
+      "code": "CONS-0802M030",
+      "name": "Prueba de Conocimiento 8° - Los Derechos - COPODP / CDPYD",
       "time": 15,
       "points": { "ok": 0.4166666667, "bad": 0 },
       "from": "07:00",
       "to": "12:40",
       "showResults": true,
       "showCorrect": false,
-      "groups": ["Séptimo 2", "Séptimo 3", "Séptimo 4"],
-      "questions": [
-        {
-          "type": "mcq",
-          "title": "¿Qué elemento fue clave para que las civilizaciones antiguas pasaran de ser nómadas a sedentarias?",
-          "options": [
-            "Desarrollo de armas de hierro",
-            "Producción agrícola sistemática",
-            "Invención de la brújula",
-            "Construcción de acueductos"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál de las siguientes NO es una civilización antigua mencionada en la guía?",
-          "options": [
-            "Grecia",
-            "Roma",
-            "Babilonia",
-            "Cartago"
-          ],
-          "answer": 3
-        },
-        {
-          "type": "mcq",
-          "title": "En Mesopotamia, el Código de Hammurabi se basaba principalmente en:",
-          "options": [
-            "Ley del talión",
-            "Principios democráticos",
-            "La Biblia hebrea",
-            "Costumbres griegas"
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "La escritura cuneiforme fue desarrollada por:",
-          "options": [     
-            "Babilonios",
-            "Egipcios",
-            "Sumerios",
-            "Asirios"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué relación tenían la religión y el gobierno en Mesopotamia?",
-          "options": [
-            "Eran totalmente independientes",
-            "El poder político dependía de la Iglesia",
-            "Los reyes eran vistos como representantes de los dioses",
-            "Los sacerdotes no influían en la política"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "En Egipto, la creencia en la vida después de la muerte influyó directamente en:",
-          "options": [
-            "La escritura jeroglífica",
-            "La momificación y construcción de pirámides",
-            "El comercio de especias",
-            "La creación de monedas"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "Una diferencia clave entre la India y China antiguas es que:",
-          "options": [
-            "China desarrolló la brújula y la pólvora",
-            "India inventó el papel y la imprenta",
-            "China practicó el hinduismo",
-            "India no tuvo planificación urbana"
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál de estos inventos NO es de China?",
-          "options": [
-            "Pólvora",
-            "Brújula",
-            "Telar mecánico",
-            "Papel"
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué ciudad griega fue cuna de la democracia directa?",
-          "options": [
-            "Esparta",
-            "Atenas",
-            "Corinto",
-            "Mileto"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "El Derecho Romano fue fundamental porque:",
-          "options": [
-            "Se basaba en tradiciones orales",
-            "Sirvió de base a sistemas jurídicos modernos",
-            "Solo aplicaba en Roma",
-            "Prohibía la ciudadanía"
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "Los incas se diferenciaban de mayas y aztecas porque:",
-          "options": [
-            "No tenían escritura alfabética",
-            "No desarrollaron sistemas agrícolas",
-            "No construyeron caminos",
-            "No tenían religión organizada"
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué civilización era conocida como la 'cultura madre' de Mesoamérica?",
-          "options": [
-            "Zapoteca",
-            "Olmeca",
-            "Maya",
-            "Inca"
-          ],
-          "answer": 1
-        }
-      ]
-    },
-    {
-      "code": "CONS-0701M030",
-      "name": "Prueba de Conocimiento 7° - La Familia - COPODP / CDPYD",
-      "time": 25,
-      "points": { "ok": 0.25, "bad": 0 },
-      "from": "07:00",
-      "to": "12:40",
-      "showResults": true,
-      "showCorrect": false,
-      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4"],
-      "questions": [
-        {
-          "type": "mcq",
-          "title": "¿Cuál de las siguientes situaciones refleja mejor un entorno familiar empático?",
-          "options": [
-            "La familia corrige los errores con burlas para “fortalecer” al joven.",
-            "La familia evita hablar de emociones para no generar conflictos.",
-            "La familia escucha activamente y valida los sentimientos de cada miembro.",
-            "La familia prioriza la obediencia por encima del diálogo."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué efecto puede generar la ausencia constante de expresiones de cariño en el hogar?",
-          "options": [
-            "Incremento de la empatía y confianza.",
-            "Inseguridad emocional y dificultad para establecer vínculos profundos.",
-            "Capacidad elevada para resolver conflictos.",
-            "Mayor tolerancia a las emociones ajenas."
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "Un adolescente que responde con sarcasmo a un gesto de afecto probablemente…",
-          "options": [
-            "Busca fortalecer la relación mediante el humor.",
-            "Tiene un alto nivel de autoestima.",
-            "Ha desarrollado un mecanismo de defensa frente a la incomodidad emocional.",
-            "Está practicando la empatía."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "Según la guía, ¿qué papel cumple la pregunta “¿Cómo te sientes?” en la formación de la empatía?",
-          "options": [
-            "Transmite que las emociones del otro son importantes y dignas de atención.",
-            "Permite que las personas eviten conflictos emocionales.",
-            "Genera incomodidad y rechazo hacia el afecto.",
-           "Sirve únicamente para resolver problemas escolares."
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál es una característica típica de un entorno escolar indiferente?",
-          "options": [
-            "Promueve la ayuda mutua y el respeto.",
-            "Reconoce las emociones de los estudiantes.",
-            "Favorece la comunicación afectiva.",
-            "Minimiza o ignora las necesidades emocionales de los alumnos."
-          ],
-          "answer": 3
-        },
-        {
-          "type": "mcq",
-          "title": "La validación emocional implica…",
-          "options": [
-            "Aprobar todas las conductas de un hijo.",
-            "Reconocer los sentimientos como legítimos y ofrecer apoyo para gestionarlos.",
-            "Evitar hablar de emociones para prevenir conflictos.",
-            "Obligar a los miembros de la familia a compartir todo lo que sienten."
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "Un entorno familiar hostil puede provocar…",
-          "options": [
-            "Empatía elevada hacia extraños.",
-            "Habilidad natural para perdonar.",
-            "Baja tolerancia a la frustración y desconfianza hacia los demás.",
-            "Desarrollo equilibrado de la autoestima."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué consecuencia social puede generar crecer en un hogar sin validación emocional?",
-          "options": [
-            "Capacidad para reconocer y gestionar emociones ajenas.",
-            "Minimizar los problemas de otros y mostrar poca empatía.",
-            "Desarrollo de vínculos afectivos profundos.",
-            "Tendencia a evitar relaciones superficiales."
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál de los siguientes ejemplos representa una demostración afectiva no verbal?",
-          "options": [
-            "Decir “te quiero” de forma directa.",
-            "Escribir una carta de amor.",
-            "Escuchar con atención y ofrecer ayuda en silencio.",
-            "Explicar verbalmente cómo se siente uno."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "Según el texto, ¿qué puede ocurrir si un joven crece sin modelos visibles de afecto?",   
-          "options": [
-            "Aprenderá a expresar cariño de forma abierta.",
-            "Desarrollará empatía sin dificultad.",
-            "Sentirá incomodidad al demostrar afecto, incluso con personas cercanas.",
-            "Buscará relaciones emocionales saludables."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "Un hogar que fomenta la comunicación afectiva logra…",
-          "options": [
-            "Que los miembros desarrollen seguridad y confianza para expresarse.",
-            "Reducir la autoestima de sus integrantes.",
-            "Limitar la expresión emocional para evitar conflictos.",
-            "Reemplazar la empatía por la obediencia."
-          ],
-          "answer": 0
-        },
-        {
-          "type": "mcq",
-          "title": "¿Cuál de las siguientes NO es una consecuencia directa de la burla hacia las muestras de cariño?",
-          "options": [
-            "Creación de un ambiente poco empático.",
-            "Fortalecimiento del vínculo emocional.",
-            "Fomento de la distancia afectiva.",
-            "Incomodidad al recibir afecto."
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "La “armadura emocional” mencionada en la guía se refiere a…",
-          "options": [
-            "La capacidad de resistir enfermedades.",
-            "Un mecanismo para superar problemas escolares.",
-            "Una barrera que impide conectar emocionalmente con otros.",
-            "Un método para fortalecer la empatía."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué emoción es más probable que florezca en un entorno familiar sano y respetuoso?",
-          "options": [
-            "Miedo.",
-            "Inseguridad.",
-            "Gratitud.",
-            "Ira contenida."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "Según la guía, ¿qué característica define a un hogar empático?",
-          "options": [
-            "Fomenta la competencia constante entre miembros.",
-            "Promueve la comprensión, la ayuda mutua y el respeto.",
-            "Evita el contacto físico para prevenir conflictos.",
-            "Minimiza los problemas emocionales."
-          ],
-          "answer": 1
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué afirma la guía sobre la relación entre trato familiar y relaciones de pareja futuras?",
-          "options": [
-            "No existe relación significativa.",
-            "Depende exclusivamente del contexto social.",
-            "El trato familiar influye en la forma en que se expresan y reciben emociones en la pareja.",
-            "Solo afecta a las relaciones de amistad."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué acción ayudaría más a mejorar la comunicación emocional en una familia?",
-          "options": [
-            "Evitar preguntar sobre los sentimientos para prevenir conflictos.",
-            "Imponer reglas estrictas sin explicación.",
-            "Hablar solo de temas prácticos como estudios o finanzas.",
-            "Crear espacios para expresar y escuchar emociones sin juicios."
-          ],
-          "answer": 3
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué implica “escucha activa” según la guía?",
-          "options": [
-            "Esperar en silencio mientras el otro habla.",
-            "Interrumpir para dar consejos rápidos.",
-            "Prestar atención genuina, mostrando interés y respeto por lo que se dice.",
-            "Evitar responder para no generar discusiones."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "Un joven que busca afecto en entornos superficiales probablemente…",
-          "options": [
-            "Ha recibido validación emocional constante en su hogar.",
-            "Tiene vínculos familiares sólidos.",
-            "Carece de respaldo afectivo genuino en su familia.",
-            "Prefiere relaciones profundas y duraderas."
-          ],
-          "answer": 2
-        },
-        {
-          "type": "mcq",
-          "title": "¿Qué afirma la guía sobre el aprendizaje de la empatía?",
-          "options": [
-            "Surge de manera natural sin influencia externa.",
-            "Depende únicamente de la personalidad individual.",
-            "Se aprende y entrena a través de ejemplos y experiencias.",
-            "No puede desarrollarse fuera del hogar."
-          ],
-          "answer": 2
-        }
-      ]
-    },
-    {
-      "code": "CONS-0001M030",
-      "name": "Prueba de Conocimiento 7° y 8° - Los Derechos - COPODP / CDPYD",
-      "time": 15,
-      "points": { "ok": 0.4166666667, "bad": 0 },
-      "from": "07:00",
-      "to": "12:40",
-      "showResults": true,
-      "showCorrect": false,
-      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4", "Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
+      "groups": ["Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
       "questions": [
         {
           "type": "mcq",
@@ -1008,6 +419,213 @@
             "Sustituye la necesidad de leyes escritas"
           ],
           "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿En qué fecha se conmemora la Independencia de Colombia?",
+          "options": [
+            "7 de agosto de 1819", 
+            "20 de julio de 1810", 
+            "12 de octubre de 1810", 
+            "25 de diciembre de 1819"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La Batalla de Boyacá se considera decisiva porque:",
+          "options": [
+            "Marcó la independencia definitiva de Colombia",
+            "Fue la primera batalla contra los españoles",
+            "Ocurrió en la capital Bogotá",
+            "No tuvo gran impacto militar"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El 7 de agosto se celebra en Colombia la Batalla de Boyacá.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Quién fue el principal líder militar en la Batalla de Boyacá?",
+          "options": [
+            "Antonio Nariño", 
+            "Simón Bolívar", 
+            "Francisco de Paula Santander", 
+            "Camilo Torres"
+          ],
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de los siguientes NO es un símbolo patrio de Colombia?",
+          "options": [
+            "El himno nacional", 
+            "La bandera", 
+            "El escudo",
+            "El cóndor andino como mascota oficial"
+          ],
+          "answer": 3
+        },
+        {
+          "type": "open",
+          "title": "Menciona los colores de la bandera de Colombia y su significado.",
+          "keywords": [
+            { "word": "amarillo", "weight": 1 },
+            { "word": "oro", "weight": 1 },
+            { "word": "riqueza", "weight": 1 },
+            { "word": "soberanía", "weight": 1 },
+            
+            { "word": "azul", "weight": 1 },
+            { "word": "mares", "weight": 1 },
+            { "word": "ríos", "weight": 1 },
+            { "word": "cielo", "weight": 1 },
+            { "word": "libertad", "weight": 1 },
+            
+            { "word": "rojo", "weight": 1 },
+            { "word": "sangre", "weight": 1 },
+            { "word": "sacrificio", "weight": 1 },
+            { "word": "lucha", "weight": 1 },
+            { "word": "independencia", "weight": 1 }
+          ]
+        },
+        {
+          "type": "mcq",
+          "title": "El escudo de Colombia incluye:",
+          "options": [
+            "Un cóndor con las alas abiertas",
+            "Una antorcha y un libro",
+            "Una balanza de justicia",
+            "Un sol naciente"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El himno nacional de Colombia fue escrito por Rafael Núñez.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "La Inquisición de Derechos se refiere a:",
+          "options": [
+            "El análisis crítico sobre la aplicación de los derechos humanos",
+            "Un tribunal religioso de la Edad Media",
+            "Una ley que prohíbe la defensa de derechos",
+            "La abolición de la Constitución"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "open",
+          "title": "Explica en tus palabras qué significa 'Inquisición de Derechos'.",
+          "keywords": [
+            { "word": "análisis", "weight": 1 },
+            { "word": "crítica", "weight": 1 },
+            { "word": "derechos", "weight": 1 },
+            { "word": "revisión", "weight": 1 },
+            { "word": "evaluación", "weight": 1 },
+            { "word": "protección", "weight": 1 },
+            { "word": "cumplimiento", "weight": 1 },
+            { "word": "responsabilidad", "weight": 1 },
+            { "word": "justicia", "weight": 1 },
+            { "word": "aplicación", "weight": 1 }
+          ]
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál fue uno de los principales resultados de la Batalla de Boyacá?",
+          "options": [
+            "La rendición de las tropas realistas",
+            "La captura de Simón Bolívar",
+            "La independencia inmediata de todo el continente",
+            "El inicio de la guerra civil"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "El 20 de julio de 1810 es recordado como el día de la firma del Acta de Independencia en Bogotá.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué significa la franja amarilla en la bandera de Colombia?",
+          "options": [
+            "La riqueza del suelo colombiano",
+            "El océano Atlántico",
+            "La sangre derramada en batalla",
+            "La libertad conquistada"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "open",
+          "title": "Enumera al menos tres próceres de la independencia de Colombia.",
+          "keywords": [
+            { "word": "Bolívar", "weight": 1 },
+            { "word": "Santander", "weight": 1 },
+            { "word": "Nariño", "weight": 1 },
+            { "word": "Torres", "weight": 1 }
+          ]
+        },
+        {
+          "type": "mcq",
+          "title": "El himno nacional de Colombia fue compuesto por:",
+          "options": [
+            "José Joaquín de Olmedo",
+            "Francisco de Paula Santander",
+            "Oreste Sindici",
+            "Pedro Nel Gómez"
+          ],
+          "answer": 2
+        },
+        {
+          "type": "tf",
+          "title": "Los derechos humanos pueden ser analizados críticamente en el marco de la 'inquisición de derechos'.",
+          "answer": 1
+        },
+        {
+          "type": "mcq",
+          "title": "¿Qué hecho histórico se relaciona directamente con el 20 de julio de 1810?",
+          "options": [
+            "El grito de independencia",
+            "La firma de la Constitución de 1991",
+            "La batalla de Ayacucho",
+            "La abolición de la esclavitud"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "mcq",
+          "title": "¿Cuál de los siguientes personajes fue conocido como 'El Hombre de las Leyes'?",
+          "options": [
+            "Francisco de Paula Santander",
+            "Simón Bolívar",
+            "José María Córdova",
+            "Camilo Torres"
+          ],
+          "answer": 0
+        },
+        {
+          "type": "open",
+          "title": "Describe brevemente la importancia de la Batalla de Boyacá en la independencia de Colombia.",
+          "keywords": [
+            { "word": "independencia", "weight": 1 },
+            { "word": "decisiva", "weight": 1 },
+            { "word": "victoria", "weight": 1 },
+            { "word": "estrategia", "weight": 1 },
+            { "word": "libertad", "weight": 1 },
+            { "word": "liberación", "weight": 1 },
+            { "word": "ejército patriota", "weight": 1 },
+            { "word": "unión", "weight": 1 },
+            { "word": "Bolívar", "weight": 1 },
+            { "word": "Santander", "weight": 1 },
+            { "word": "territorio", "weight": 1 },
+            { "word": "triunfo", "weight": 1 }
+          ]
         }
       ]
     }
