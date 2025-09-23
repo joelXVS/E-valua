@@ -594,6 +594,9 @@ function finishExam(cheatingForced = false) {
 
   if (examTerminatedForCheating) {
     alert('La prueba terminó por comportamiento no permitido. Tu intento fue registrado y tu acceso bloqueado.');
+  } else {
+    // limpiar progreso guardado para empezar de nuevo en el próximo intento
+    localStorage.removeItem('examProgress');
   }
 }
 
@@ -633,6 +636,12 @@ function downloadResults() {
   URL.revokeObjectURL(url);
 }
 
+// ---------- truncar texto PDF ---------- //
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;             
+}
+
 // ---------- exportar PDF ----------
 function downloadResultsPdf() {
   if (!currentTest) return;
@@ -661,7 +670,7 @@ function downloadResultsPdf() {
   // Cabecera
   doc.setFontSize(16);
   doc.setTextColor(40, 40, 40);
-  doc.text(`Resultados — ${docData.test}`, 40, 40);
+  doc.text(truncateText(`Resultados — ${docData.test}`, 80), 40, 40, { maxWidth: 500 });
 
   doc.setFontSize(11);
   doc.setTextColor(80, 80, 80);
@@ -673,11 +682,11 @@ function downloadResultsPdf() {
   doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y); 
   y += 30;
 
-  // ✅ Tabla de resultados bonitos con colores
+  // Tabla de resultados bonitos con colores
   if (docData.details && docData.details.length) {
     const rows = docData.details.map(d => [
       d.index || '',
-      String(d.title || '').substring(0, 60),
+      truncateText(String(d.title || ''), 60),
       String(d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : d.studentAnswer || ''),
       d.points || ''
     ]);
@@ -705,7 +714,7 @@ function downloadResultsPdf() {
     y = doc.lastAutoTable.finalY + 20;
   }
 
-  // ✅ Eventos de seguridad (plagio, trampas, etc.)
+  // Eventos de seguridad (plagio, trampas, etc.)
   if ((docData.cheatLogs || []).length) {
     doc.setFontSize(12);
     doc.setTextColor(200, 0, 0);
