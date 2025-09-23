@@ -279,7 +279,7 @@
     },
     {
       "code": "CONS-0802M030",
-      "name": "Prueba de Conocimiento 8° - Los Derechos - COPODP / CDPYD",
+      "name": "Prueba de Conocimiento 8° - Colombia y Los Derechos - COPODP / CDPYD",
       "time": 15,
       "points": { "ok": 0.15625, "bad": 0 },
       "from": "07:00",
