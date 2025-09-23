@@ -562,8 +562,9 @@ function finishExam(cheatingForced = false) {
   const min = String(Math.floor(elapsedSec / 60));
   const sec = String(elapsedSec % 60).padStart(2, '0');
 
-  $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)}<br>Tiempo tomado: ${min}:${sec}`;
-
+  $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)}/nTiempo tomado: ${min}:${sec}`;
+  $('resultSummary').style.whiteSpace = "pre-line";
+  
   const showCorrect = !!currentTest.showCorrect;
   const teacherContact = findTeacherContactForTest(currentTest.code);
 
