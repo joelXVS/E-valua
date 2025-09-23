@@ -401,7 +401,13 @@ function saveExamProgress() {
     const progress = {
       currentTestCode: currentTest?.code || '',
       currentQuestionIndex,
-      answers,
+      // 🔧 Guardamos respuestas asociadas al índice original
+      answers: Object.fromEntries(
+        Object.entries(answers).map(([title, val]) => {
+          const q = (currentTest.questions || []).find(qq => qq.title === title);
+          return [q?._originalIndex ?? title, val];
+        })
+      ),
       timestamp: new Date().toISOString()
     };
     localStorage.setItem('examProgress', JSON.stringify(progress));
@@ -415,7 +421,11 @@ function loadExamProgress() {
     const saved = JSON.parse(localStorage.getItem('examProgress') || '{}');
     if (saved && saved.currentTestCode === currentTest?.code) {
       currentQuestionIndex = saved.currentQuestionIndex || 0;
-      answers = saved.answers || {};
+      answers = {};
+      (currentTest.questions || []).forEach(q => {
+        const val = saved.answers?.[q._originalIndex];
+        if (val !== undefined) answers[q.title] = val;
+      });
     }
   } catch (e) {
     console.error('Error cargando progreso:', e);
