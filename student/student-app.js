@@ -148,6 +148,7 @@ let examCheatCount = 0;
 let examTerminatedForCheating = false;
 let currentSessionId = ''; // id único para el intento actual
 let currentCheatEvents = []; // en memoria hasta finalizar
+let examStartTime = null;
 
 // ---------- iniciar examen ----------
 async function startExam() {
@@ -185,10 +186,10 @@ async function startExam() {
   // sessionId único para esta ejecución (usado para cheat logs)
   currentSessionId = `${studentName}::${code}::${new Date().toISOString()}`;
 
-  // 👉 Guardamos el orden original de las preguntas
+  // Guardamos el orden original de las preguntas
   currentTest.questions.forEach((q, idx) => q._originalIndex = idx);
 
-  // 👉 Mezclamos para mostrar en orden aleatorio (sin perder el original)
+  // Mezclamos para mostrar en orden aleatorio (sin perder el original)
   currentTest.questions = mezclarArray([...currentTest.questions]);
 
   // intentar fullscreen
@@ -199,6 +200,7 @@ async function startExam() {
 
   loadExamProgress();
   renderQuestion();
+  examStartTime = Date.now();
   startTimer((currentTest.time || 0) * 60);
   showSection('exam');
 }
@@ -401,13 +403,14 @@ function saveExamProgress() {
     const progress = {
       currentTestCode: currentTest?.code || '',
       currentQuestionIndex,
-      // 🔧 Guardamos respuestas asociadas al índice original
+      // Guardamos respuestas asociadas al índice original
       answers: Object.fromEntries(
         Object.entries(answers).map(([title, val]) => {
           const q = (currentTest.questions || []).find(qq => qq.title === title);
           return [q?._originalIndex ?? title, val];
         })
       ),
+      remainingTime: $('timer').textContent, // ⏱ guardamos lo que queda (ej: "12:34")
       timestamp: new Date().toISOString()
     };
     localStorage.setItem('examProgress', JSON.stringify(progress));
@@ -426,6 +429,15 @@ function loadExamProgress() {
         const val = saved.answers?.[q._originalIndex];
         if (val !== undefined) answers[q.title] = val;
       });
+
+      // restaurar tiempo
+      if (saved.remainingTime) {
+        const [min, sec] = saved.remainingTime.split(':').map(Number);
+        const seconds = (min * 60) + sec;
+        startTimer(seconds);
+      } else {
+        startTimer((currentTest.time || 0) * 60);
+      }
     }
   } catch (e) {
     console.error('Error cargando progreso:', e);
@@ -544,7 +556,14 @@ function finishExam(cheatingForced = false) {
 
   // mostrar sección de resultados
   showSection('result');
-  $('resultSummary').textContent = `Puntaje: ${totalScore}`;
+  $('resultSummary').textContent = `Puntaje: ${totalScore} / ≈ / ${totalScore.toFixed(1)}`;
+
+  const elapsedMs = Date.now() - examStartTime;
+  const elapsedSec = Math.floor(elapsedMs / 1000);
+  const min = String(Math.floor(elapsedSec / 60));
+  const sec = String(elapsedSec % 60).padStart(2, '0');
+
+  $('resultSummary').textContent = `Tiempo tomado: ${min}:${sec}`;
 
   const showCorrect = !!currentTest.showCorrect;
   const teacherContact = findTeacherContactForTest(currentTest.code);
