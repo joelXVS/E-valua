@@ -17,7 +17,7 @@ async function loadInitialData() {
   try {
     const [gResp, tResp, teResp] = await Promise.all([
       fetch('../grades.json'),
-      fetch('../tests.json'),
+      fetch('../tests_prueba.json'),
       fetch('../teachers.json')
     ]);
     grades = gResp.ok ? await gResp.json() : { grades: [] };
