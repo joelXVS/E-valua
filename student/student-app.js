@@ -68,7 +68,22 @@ function isStudentBlocked(name, code) {
   const deviceId = getDeviceId();
 
   // Bloqueo válido solo si coincide code + deviceId
-  return blocked.some(b => b.code === code && b.deviceId === deviceId);
+  return blocked.some(b => 
+    b.code === code &&
+    b.deviceId === deviceId &&
+    b.name && name.toLowerCase().includes(b.name.toLowerCase())
+  );
+}
+
+function blockStudent(name, code, reason) {
+  try {
+    const blocked = getBlockedStudents();
+    const deviceId = getDeviceId();
+    blocked.push({ name, code, deviceId, reason, when: new Date().toISOString() });
+    localStorage.setItem('blockedStudents', JSON.stringify(blocked));
+  } catch (e) {
+    console.error('Error bloqueando estudiante:', e);
+  }
 }
 
 // cheat logs: por intento (se guarda también en localStorage bajo 'cheatLogs' por sesión)
@@ -170,6 +185,12 @@ async function startExam() {
   // sessionId único para esta ejecución (usado para cheat logs)
   currentSessionId = `${studentName}::${code}::${new Date().toISOString()}`;
 
+  // 👉 Guardamos el orden original de las preguntas
+  currentTest.questions.forEach((q, idx) => q._originalIndex = idx);
+
+  // 👉 Mezclamos para mostrar en orden aleatorio (sin perder el original)
+  currentTest.questions = mezclarArray([...currentTest.questions]);
+
   // intentar fullscreen
   enterFullScreen();
 
@@ -222,57 +243,39 @@ function attachAntiCheatListeners() {
   let blurLock = false; // 🔑 evita spam de prompts
 
   function handleVisibilityChange() {
-    if (document.hidden  && !visibilityLock) {
-      visibilityLock = true; // se bloquea para no repetir
-      
-      // Antes de sumar, pedimos el código
-      const codeInput = prompt('Se detectó un intento de plagio: Cambio de pestaña. Pide a tu docente que ingresa el código asignado para anularlo:');
-      
-      if (codeInput === '@ANT1PL4G1O') {
-        alert('Intento de plagio anulado. Continúa con tu examen.');
-      } else {
-        tabSwitchCount++;
-        if (tabSwitchCount === 1) {
-          alert('Atención: No se le avisará si comete otro intento de plagio, tenga cuidado o perdera el derecho a realizar la prueba.');
-        } else if (tabSwitchCount >= 3) {
-          alert('Se detectaron 3 intentos de plagio. La prueba ha terminado.');
-          examTerminatedForCheating = true;
-          const name = $('studentName').value.trim();
-          const code = $('applyCode').value.trim();
-          blockStudent(name, code, 'visibility-violation');
-          finishExam(true);
-        }
+    if (document.hidden && !visibilityLock) {
+      visibilityLock = true;
+      tabSwitchCount++;
+      if (tabSwitchCount === 1) {
+        alert('Atención: Cambio de pestaña detectado. Tienes 2 advertencias más antes de terminar la prueba.');
+      } else if (tabSwitchCount >= 3) {
+        alert('Se detectaron 3 cambios de pestaña. La prueba ha terminado.');
+        examTerminatedForCheating = true;
+        const name = $('studentName').value.trim();
+        const code = $('applyCode').value.trim();
+        blockStudent(name, code, 'visibility-violation');
+        finishExam(true);
       }
-
-    // liberar el lock después de 1s
-    setTimeout(() => visibilityLock = false, 1000);
-  
+      
+      setTimeout(() => visibilityLock = false, 1000);
     }
   }
 
   function handleWindowBlur() {
     if (!blurLock) {
       blurLock = true;
-      const codeInput = prompt('Se detectó un intento de plagio: Pestaña en segundo plano. Pide a tu docente que ingresa el código asignado para anularlo:');
-      
-      if (codeInput === '@ANT1PL4G1O') {
-        alert('Intento de plagio anulado. Continúa con tu examen.');
-        return; // no cuenta el intento
-      } else {
-        blurCount++;
-        if (blurCount === 1) {
-          alert('Atención: No se le avisará si comete otro intento de plagio, tenga cuidado o perdera el derecho a realizar la prueba.');
-        } else if (blurCount >= 3) {
-          alert('Se detectaron 3 intentos de plagio. La prueba ha terminado.');
-          examTerminatedForCheating = true;
-          const name = $('studentName').value.trim();
-          const code = $('applyCode').value.trim();
-          blockStudent(name, code, 'blur-violation');
-          finishExam(true);
-        }
+      blurCount++;
+      if (blurCount === 1) {
+        alert('Atención: Se detectó que la pestaña quedó en segundo plano. Tienes 2 advertencias más.');
+      } else if (blurCount >= 3) {
+        alert('Se detectaron 3 cambios a segundo plano. La prueba ha terminado.');
+        examTerminatedForCheating = true;
+        const name = $('studentName').value.trim();
+        const code = $('applyCode').value.trim();
+        blockStudent(name, code, 'blur-violation');
+        finishExam(true);
       }
-    
-      // liberar el lock después de 1s
+      
       setTimeout(() => blurLock = false, 1000);
     }
   }
@@ -510,7 +513,7 @@ function finishExam(cheatingForced = false) {
     totalScore += qPoints;
     const answered = (studentAns !== undefined && studentAns !== null && String(studentAns).trim() !== '');
     const detail = {
-      index: idx + 1,
+      index: (q._originalIndex !== undefined ? q._originalIndex + 1 : idx + 1),
       title: q.title,
       type: q.type,
       answered,
@@ -537,9 +540,16 @@ function finishExam(cheatingForced = false) {
   const teacherContact = findTeacherContactForTest(currentTest.code);
 
   const detailsHtml = details.map(d => {
+    const tipoLiteral = d.type === 'mcq'
+      ? 'Selección múltiple'
+      : d.type === 'tf'
+        ? 'Verdadero/Falso'
+        : d.type === 'open'
+          ? 'Respuesta abierta'
+          : 'Otro';
     return `<div style="margin-bottom:8px;">
       <strong>${d.index}. ${escapeHtml(d.title)}</strong><br/>
-      Tipo: ${escapeHtml(d.type)}<br/>
+      Tipo: ${tipoLiteral}<br/>
       ${d.answered 
         ? `<strong>Tu respuesta:</strong> ${
             d.studentAnswer === '1' 
