@@ -197,6 +197,27 @@ async function startExam() {
   // Mezclamos para mostrar en orden aleatorio (sin perder el original)
   currentTest.questions = mezclarArray([...currentTest.questions]);
 
+  // Mezclar opciones de las preguntas MCQ
+  currentTest.questions.forEach(q => {
+    if (q.type === 'mcq' && Array.isArray(q.options)) {
+      // Guardar el índice correcto original
+      const originalAnswerIndex = q.answer;
+  
+      // Convertimos todas las opciones a objetos {text, image, _originalIndex}
+      q.options = q.options.map((opt, i) =>
+        (typeof opt === 'string')
+          ? { text: opt, _originalIndex: i }
+          : { ...opt, _originalIndex: i }
+      );
+  
+      // Mezclamos las opciones
+      q.options = mezclarArray([...q.options]);
+  
+      // Buscar la nueva posición de la opción correcta
+      q.answer = q.options.findIndex(opt => opt._originalIndex === originalAnswerIndex);
+    }
+  });
+
   // intentar fullscreen
   enterFullScreen();
 
@@ -339,15 +360,14 @@ function renderQuestion() {
 
   if (q.type === 'mcq') {
     inner += `<div class="options">${(q.options || []).map((opt, i) => {
-    // si la opción es string, lo convertimos en objeto {text: opt}
-    const o = (typeof opt === 'string') ? { text: opt } : opt;
-    return `
-      <label style="display:block; margin:6px 0;">
-        <input type="radio" name="q${currentQuestionIndex}" value="${i}" ${answers[q.title] == i ? 'checked' : ''}>
-        ${escapeHtml(o.text || '')}
-        ${o.image ? `<div><img src="${o.image}" alt="Opción ${i+1}" style="max-width:100px; margin-top:4px;" /></div>` : ''}
-      </label>
-    `}).join('')}</div>`;
+      return `
+        <label style="display:block; margin:6px 0;">
+          <input type="radio" name="q${currentQuestionIndex}" value="${i}" ${answers[q.title] == i ? 'checked' : ''}>
+          ${escapeHtml(opt.text || '')}
+          ${opt.image ? `<div><img src="${opt.image}" alt="Opción ${i+1}" style="max-width:100px; margin-top:4px;" /></div>` : ''}
+        </label>
+      `;
+    }).join('')}</div>`;
   } else if (q.type === 'tf') {
     inner += `<div class="options">
       <label style="display:block; margin:6px 0;">
@@ -597,9 +617,9 @@ function finishExam(cheatingForced = false) {
     </div><hr/>`;
   }).join('');
   
-  $('detailedAnswers').innerHTML = `<div style=""text-align: center;><strong>Resumen de la prueba:</strong></div>
+  $('detailedAnswers').innerHTML = `<div style="text-align: center;"><strong>Resumen de la prueba:</strong></div>
     <div style="margin-top:8px">${detailsHtml}</div>
-    <div style="margin-top:8px, text-align: center;"><strong>Eventos de seguridad detectados:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>
+    <div style="margin-top:8px; text-align: center;"><strong>Eventos de seguridad detectados:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>
   `;
 
   // guardar resultado (incluye cheatLogs)
