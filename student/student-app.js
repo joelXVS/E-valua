@@ -631,7 +631,7 @@ function finishExam(cheatingForced = false) {
     </div><hr/>`;
   }).join('');
   
-  $('detailedAnswers').innerHTML = `<div style="text-align: center;"><strong>Resumen de la prueba:</strong></div>
+  $('detailedAnswers').innerHTML = `<div style="text-size: 1.05rem; text-align: center;"><strong>Resumen de la prueba:</strong></div>
     <div style="margin-top:8px">${detailsHtml}</div>
     <div style="margin-top:8px; text-align: center;"><strong>Eventos de seguridad detectados:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>
   `;
