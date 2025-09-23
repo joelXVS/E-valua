@@ -82,6 +82,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  margin: 0 auto;
 }
 .btn.primary {
   background: #ff9800; /* naranja */
@@ -130,8 +131,7 @@ body {
 
 /* Examen (Estudiantes) */
 .exam-header {
-  display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   align-items: center;
   margin-bottom: 16px;
@@ -141,9 +141,10 @@ body {
 .test-title {
   color: #e65100;
   font-size: 1.4rem;
+  text-align: center;
 }
 .meta {
-  text-align: right;
+  text-align: center;
   font-size: 0.85rem;
   background: #fff3e0;
   padding: 6px 10px;
@@ -165,6 +166,8 @@ body {
   font-weight: 600;
   color: #d32f2f;
   margin-bottom: 8px;
+  text-align: center;
+  white-space: pre-line;
 }
 .detailed-answers {
   font-size: 0.9rem;
@@ -188,6 +191,9 @@ body {
 .small {
   font-size: 0.8rem;
   color: #555;
+  display: flex;
+  justify-content: center;
+  margin: 8px;
 }
 .sr-only {
   position: absolute;
