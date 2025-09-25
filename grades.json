@@ -10,6 +10,7 @@
     { "id": "8-4", "name": "Octavo 4" },
     { "id": "11-1", "name": "Undécimo 1" },
     { "id": "11-2", "name": "Undécimo 2" },
-    { "id": "11-3", "name": "Undécimo 3" }
+    { "id": "11-3", "name": "Undécimo 3" },
+    { "id": "nobody", "name": "Invitado" }
   ]
 }
