@@ -661,6 +661,186 @@
           ]
         }
       ]        
+    },
+    {
+      "code": "VGAMES-001",
+      "name": "Prueba de conocimientos mixtos de Videojuegos",
+      "time": 30,
+      "freeAnswerLength": 80,
+      "points": { "ok": 1, "bad": 0 },
+      "startDateTime": "2025-09-25T17:30:00",
+      "endDateTime": "2025-09-25T19:00:00",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Invitado"],
+      "questions": [
+        {
+          "type": "open",
+          "title": "¿En qué consiste el videojuego Minecraft?",
+          "keywords": [
+            { "word": "mundo abierto", "weight": 2 },
+            { "word": "construcción", "weight": 2 },
+            { "word": "supervivencia", "weight": 1 },
+            { "word": "bloques", "weight": 1 },
+            { "word": "creatividad", "weight": 1 },
+            { "word": "recursos", "weight": 1 },
+            { "word": "exploración", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Describe el gameplay de Grand Theft Auto V.",
+          "keywords": [
+            { "word": "mundo abierto", "weight": 2 },
+            { "word": "acción", "weight": 1 },
+            { "word": "aventura", "weight": 1 },
+            { "word": "crimen", "weight": 1 },
+            { "word": "historia", "weight": 1 },
+            { "word": "personajes", "weight": 1 },
+            { "word": "misión", "weight": 1 },
+            { "word": "conducción", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Explica la mecánica principal de Among Us.",
+          "keywords": [
+            { "word": "multijugador", "weight": 1 },
+            { "word": "trabajo en equipo", "weight": 1 },
+            { "word": "sabotaje", "weight": 2 },
+            { "word": "engaño", "weight": 1 },
+            { "word": "tripulación", "weight": 1 },
+            { "word": "impostor", "weight": 2 },
+            { "word": "discusión", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "¿Qué tipo de juego es League of Legends y cómo se juega?",
+          "keywords": [
+            { "word": "MOBA", "weight": 2 },
+            { "word": "multijugador", "weight": 1 },
+            { "word": "equipos", "weight": 1 },
+            { "word": "campeones", "weight": 2 },
+            { "word": "estrategia", "weight": 1 },
+            { "word": "nexo", "weight": 1 },
+            { "word": "torres", "weight": 1 }
+          ]
+        },
+        {
+          "type": "open",
+          "title": "Describe la experiencia de juego de The Legend of Zelda: Breath of the Wild.",
+          "keywords": [
+            { "word": "aventura", "weight": 1 },
+            { "word": "mundo abierto", "weight": 2 },
+            { "word": "exploración", "weight": 1 },
+            { "word": "puzles", "weight": 1 },
+            { "word": "supervivencia", "weight": 1 },
+            { "word": "libertad", "weight": 1 },
+            { "word": "shrines", "weight": 1 }
+          ]
+        },
+        {
+          "type": "tf",
+          "title": "Minecraft está disponible en la Play Store.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Fortnite es un juego de deportes realistas.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Call of Duty: Warzone es un battle royale gratuito.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Roblox permite crear tus propios juegos.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Pokémon GO no usa realidad aumentada.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Genshin Impact es un juego pago sin opciones gratuitas.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "FIFA es la saga de fútbol más vendida de EA Sports.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "The Witcher 3: Wild Hunt tiene un mundo lineal sin exploración libre.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Overwatch 2 reemplazó completamente al primer Overwatch.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Valorant es un juego de disparos táctico desarrollado por Riot Games.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Cyberpunk 2077 fue lanzado sin bugs en su lanzamiento inicial.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Stray es un juego donde controlas a un gato en una ciudad cyberpunk.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "God of War Ragnarök es exclusivo de Xbox.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Hollow Knight es un metroidvania en 2D.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "Portal 2 no tiene modo cooperativo.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "Según estadísticas, Free Fire es el juego móvil más jugado en India.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "En Japón, el juego más popular es Monster Hunter Rise.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "En Corea del Sur, League of Legends es el juego más jugado en PC.",
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "En Brasil, los juegos de fútbol son los menos populares.",
+          "answer": 0
+        },
+        {
+          "type": "tf",
+          "title": "En Estados Unidos, Call of Duty siempre ha sido el juego más vendido cada año.",
+          "answer": 0
+        }
+      ]
     }
   ]
 }
