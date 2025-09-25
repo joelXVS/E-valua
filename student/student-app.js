@@ -169,19 +169,9 @@ function isTestOpen(test) {
     if (start && end) {
       return now >= start && now <= end;
     }
-    // si falta uno de los dos, sigue comprobando otras opciones
   }
 
-  // Fallback: si sólo tienes `from` y `to` (horas tipo "07:00" - hoy)
-  if (test.from && test.to) {
-    const start = parseIsoOrTimeString(test.from);
-    const end = parseIsoOrTimeString(test.to);
-    if (start && end) {
-      return now >= start && now <= end;
-    }
-  }
-
-  // Si no hay info de horario, permitimos (o puedes devolver false si prefieres)
+  // Si no hay info de horario, permitimos
   return true;
 }
 
@@ -312,10 +302,10 @@ function attachAntiCheatListeners() {
   }
 
   let tabSwitchCount = 0; // contador de cambios de pestaña
-  let visibilityLock = false; // 🔑 evita bucles
+  let visibilityLock = false; // evita bucles
   
   let blurCount = 0; // contador de cambios a segundo plano
-  let blurLock = false; // 🔑 evita spam de prompts
+  let blurLock = false; // evita spam de prompts
 
   function handleVisibilityChange() {
     if (document.hidden && !visibilityLock) {
