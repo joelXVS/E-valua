@@ -626,6 +626,37 @@
             { "word": "territorio", "weight": 1 },
             { "word": "triunfo", "weight": 1 }
           ]
+        },
+        {
+          "type": "open",
+          "title": "¿Cómo se puede evitar que se vulneren los derechos de los estudiantes?",
+          "keywords": [
+            { "word": "respeto", "weight": 1 },
+            { "word": "igualdad", "weight": 1 },
+            { "word": "justicia", "weight": 1 },
+            { "word": "protección", "weight": 1 },
+            { "word": "participación", "weight": 1 },
+            { "word": "escuchar", "weight": 1 },
+            { "word": "denunciar", "weight": 1 },
+            { "word": "dialogar", "weight": 1 },
+            { "word": "prevenir", "weight": 1 },
+            { "word": "garantizar", "weight": 1 },
+            { "word": "defender", "weight": 1 },
+            { "word": "cumplir", "weight": 1 },
+            { "word": "apoyar", "weight": 1 },
+            { "word": "incluir", "weight": 1 },
+            { "word": "seguridad", "weight": 1 },
+            { "word": "convivencia", "weight": 1 },
+            { "word": "solidaridad", "weight": 1 },
+            { "word": "derechos", "weight": 1 },
+            { "word": "estudiantes", "weight": 1 },
+            { "word": "educación", "weight": 1 },
+            { "word": "respaldar", "weight": 1 },
+            { "word": "cuidar", "weight": 1 },
+            { "word": "vigilar", "weight": 1 },
+            { "word": "respetar", "weight": 1 },
+            { "word": "dialogo", "weight": 1 }
+          ]
         }
       ]        
     }
