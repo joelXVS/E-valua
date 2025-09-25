@@ -144,6 +144,47 @@ function canStartExam() {
   return true;
 }
 
+// ----------------- Validación ventana de inicio/fin (fecha + hora) -----------------
+function parseIsoOrTimeString(s) {
+  // acepta "YYYY-MM-DDTHH:mm:ss" (ISO) o "HH:MM" (hora del día)
+  if (!s) return null;
+  if (s.includes('T')) return new Date(s);
+  // formato HH:MM -> interpretarlo como hoy a esa hora
+  const parts = s.split(':').map(Number);
+  if (parts.length >= 2) {
+    const d = new Date();
+    d.setHours(parts[0], parts[1], 0, 0);
+    return d;
+  }
+  return null;
+}
+
+function isTestOpen(test) {
+  // Prioridad: startDateTime/endDateTime (ISO) si existen.
+  const now = new Date();
+
+  if (test.startDateTime || test.endDateTime) {
+    const start = parseIsoOrTimeString(test.startDateTime);
+    const end = parseIsoOrTimeString(test.endDateTime);
+    if (start && end) {
+      return now >= start && now <= end;
+    }
+    // si falta uno de los dos, sigue comprobando otras opciones
+  }
+
+  // Fallback: si sólo tienes `from` y `to` (horas tipo "07:00" - hoy)
+  if (test.from && test.to) {
+    const start = parseIsoOrTimeString(test.from);
+    const end = parseIsoOrTimeString(test.to);
+    if (start && end) {
+      return now >= start && now <= end;
+    }
+  }
+
+  // Si no hay info de horario, permitimos (o puedes devolver false si prefieres)
+  return true;
+}
+
 // ---------- variables examen ----------
 let currentTest = null;
 let currentQuestionIndex = 0;
@@ -172,6 +213,12 @@ async function startExam() {
   const allowedGroups = currentTest.groups || [];
   if (Array.isArray(allowedGroups) && allowedGroups.length > 0 && !allowedGroups.includes(selectedGradeText)) {
     alert('La prueba no está disponible para el grupo/curso seleccionado.');
+    return;
+  }
+
+  // validar ventana de la prueba (fecha + hora)
+  if (!isTestOpen(currentTest)) {
+    alert('La prueba no está disponible en este momento. Verifica la fecha y hora de apertura.');
     return;
   }
 
@@ -274,6 +321,10 @@ function attachAntiCheatListeners() {
     if (document.hidden && !visibilityLock) {
       visibilityLock = true;
       tabSwitchCount++;
+
+      // registrar evento en logs
+      const ev = recordEvent('visibility-change');
+
       if (tabSwitchCount === 1) {
         alert('Atención: Cambio de pestaña detectado. Tienes 2 advertencias más antes de terminar la prueba.');
       } else if (tabSwitchCount >= 3) {
@@ -281,18 +332,21 @@ function attachAntiCheatListeners() {
         examTerminatedForCheating = true;
         const name = $('studentName').value.trim();
         const code = $('applyCode').value.trim();
+        recordEvent('visibility-violation');
         blockStudent(name, code, 'visibility-violation');
         finishExam(true);
       }
-      
+
       setTimeout(() => visibilityLock = false, 1000);
     }
   }
-
+  
   function handleWindowBlur() {
     if (!blurLock) {
       blurLock = true;
       blurCount++;
+      recordEvent('window-blur');
+
       if (blurCount === 1) {
         alert('Atención: Se detectó que la pestaña quedó en segundo plano. Tienes 2 advertencias más.');
       } else if (blurCount >= 3) {
@@ -300,10 +354,11 @@ function attachAntiCheatListeners() {
         examTerminatedForCheating = true;
         const name = $('studentName').value.trim();
         const code = $('applyCode').value.trim();
+        recordEvent('blur-violation');
         blockStudent(name, code, 'blur-violation');
         finishExam(true);
       }
-      
+
       setTimeout(() => blurLock = false, 1000);
     }
   }
@@ -493,27 +548,75 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Evaluación de respuesta abierta: cada ocurrencia suma weight; normalizamos para que no supere 1.
-function evaluateOpenAnswerByOccurrences(answerText, keywords) {
-  if (!answerText) return { scoreRatio: 0, found: [] };
-  const text = answerText.toLowerCase();
+// Evaluación de respuesta abierta con keywords + longitud + antitramposos
+function evaluateOpenAnswer(answerText, q, test) {
+  const text = String(answerText || '').trim();
+  const lower = text.toLowerCase();
+
+  // Palabras clave (si existen)
+  const kw = q.keywords || [];
   let totalWeight = 0;
+  kw.forEach(k => totalWeight += Number(k.weight) || 0);
+
+  // freeAnswerLength desde pregunta o test
+  const qLen = (typeof q.freeAnswerLength === 'number') ? q.freeAnswerLength : undefined;
+  const tLen = (typeof test.freeAnswerLength === 'number') ? test.freeAnswerLength : 0;
+  const threshold = (qLen !== undefined) ? qLen : tLen;
+
+  // --- 1) Evaluación por keywords ---
   let foundWeightSum = 0;
   const found = [];
-  (keywords || []).forEach(k => {
-    const w = Number(k.weight) || 0;
-    totalWeight += w;
-    const re = new RegExp(`\\b${escapeRegExp(String(k.word).toLowerCase())}\\b`, 'g');
-    const matches = text.match(re);
-    const count = matches ? matches.length : 0;
-    if (count > 0) {
-      foundWeightSum += w * count; // cada ocurrencia suma weight
-      found.push({ word: k.word, count, weight: w });
+  if (kw.length > 0 && totalWeight > 0) {
+    kw.forEach(k => {
+      const w = Number(k.weight) || 0;
+      const re = new RegExp(`\\b${escapeRegExp(String(k.word).toLowerCase())}\\b`, 'g');
+      const matches = lower.match(re);
+      const count = matches ? matches.length : 0;
+      if (count > 0) {
+        foundWeightSum += w * count;
+        found.push({ word: k.word, count, weight: w });
+      }
+    });
+  }
+  const keywordRatio = totalWeight > 0 ? Math.min(foundWeightSum / totalWeight, 1) : 0;
+
+  // --- 2) Evaluación por longitud ---
+  let lengthRatio = 0;
+  if (threshold > 0) {
+    const cleaned = lower.replace(/[^a-záéíóúüñ\s]/gi, " "); // quitar rarezas
+    const words = cleaned.split(/\s+/).filter(w => w.length > 1);
+    const uniqueWords = [...new Set(words)];
+
+    // condición antitramposos: si 70%+ de las palabras son repeticiones, cuenta como 0
+    const repetitionRatio = uniqueWords.length / (words.length || 1);
+    if (repetitionRatio < 0.3) {
+      lengthRatio = 0; // mucha repetición → trampa
+    } else {
+      lengthRatio = text.length >= threshold ? 1 : 0;
     }
-  });
-  // normalizamos: ratio = min(foundWeightSum / totalWeight, 1)
-  const ratio = totalWeight > 0 ? Math.min(foundWeightSum / totalWeight, 1) : 0;
-  return { scoreRatio: Math.max(0, Math.min(1, ratio)), found };
+  }
+
+  // --- 3) Combinar ---
+  // Si hay keywords → mezcla keywordRatio y lengthRatio
+  // Si no → sólo longitud
+  let finalRatio = 0;
+  if (kw.length > 0) {
+    // promedio simple (puedes cambiarlo a ponderado)
+    finalRatio = (keywordRatio + lengthRatio) / 2;
+  } else {
+    finalRatio = lengthRatio;
+  }
+
+  return {
+    scoreRatio: Math.max(0, Math.min(1, finalRatio)),
+    found,
+    usedMode: (kw.length > 0 ? 'keywords+length' : 'length')
+  };
+}
+
+// Helper para escapar palabras clave en regex
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // ---------- terminar examen ----------
@@ -552,7 +655,7 @@ function finishExam(cheatingForced = false) {
         qPoints = 0;
       }
     } else if (q.type === 'open') {
-      const evalData = evaluateOpenAnswerByOccurrences(String(studentAns || ''), q.keywords || []);
+      const evalData = evaluateOpenAnswer(String(studentAns || ''), q, currentTest);
       qPoints = Math.round((possiblePoints * evalData.scoreRatio) * 1000) / 1000;
     } else {
       qPoints = 0;
@@ -583,7 +686,7 @@ function finishExam(cheatingForced = false) {
       points: qPoints
     };
     if (q.type === 'open') {
-      detail.openEval = evaluateOpenAnswerByOccurrences(String(studentAns || ''), q.keywords || []);
+      detail.openEval = evaluateOpenAnswer(String(studentAns || ''), q, currentTest);
     }
     details.push(detail);
   });
