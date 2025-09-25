@@ -559,7 +559,7 @@ function evaluateOpenAnswer(answerText, q, test) {
   if (kw.length > 0 && totalWeight > 0) {
     kw.forEach(k => {
       const w = Number(k.weight) || 0;
-      const re = new RegExp(`\\b${escapeRegExp(String(k.word).toLowerCase())}\\b`, 'g');
+      const re = new RegExp('\\b' + escapeRegExpSafe(String(k.word).toLowerCase()) + '\\b', 'g');
       const matches = lower.match(re);
       const count = matches ? matches.length : 0;
       if (count > 0) {
