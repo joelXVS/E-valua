@@ -662,5 +662,83 @@
         }
       ]        
     }
+    {
+      "name": "Prueba completa de tipos",
+      "code": "TIPOS001",
+      "showCorrect": true,
+      "points": { "ok": 1, "bad": 0 },
+      "time": 5,
+      "freeAnswerLength": 100,
+      "startDateTime": "2025-09-29T07:00:00",
+      "endDateTime": "2025-09-29T23:59:59",
+      "showResults": true,
+      "groups": ["Invitado"],
+      "questions": [
+        {
+          "type": "mcq",
+          "title": "¿Cuál es el planeta más cercano al Sol?",
+          "options": ["Venus","Mercurio","Tierra","Marte"],
+          "answer": 1
+        },
+        {
+          "type": "tf",
+          "title": "El agua hierve a 100°C al nivel del mar.",
+          "answer": 1
+        },
+        {
+          "type": "open",
+          "title": "Explica con tus palabras qué es la fotosíntesis.",
+          "answer": "Proceso biológico en el que las plantas convierten la luz solar en energía química."
+        },
+        {
+          "type": "short",
+          "title": "¿Cuál es la capital de Colombia?",
+          "answer": "Bogotá"
+        },
+        {
+          "type": "multi",
+          "title": "Selecciona los colores de la bandera de Colombia",
+          "options": ["Rojo","Azul","Verde","Amarillo"],
+          "answer": [0,1,3]
+        },
+        {
+          "type": "likert",
+          "title": "Me siento motivado al aprender con tecnología en clase",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "numeric",
+          "title": "¿Cuánto es 3.14 x 2?",
+          "answer": 6.28
+        },
+        {
+          "type": "match",
+          "title": "Relaciona país con su capital",
+          "pairs": [
+            { "left":"Colombia","right":["Bogotá","Lima"],"correct":"Bogotá" },
+            { "left":"Perú","right":["Caracas","Lima"],"correct":"Lima" }
+          ]
+        },
+        {
+          "type": "gaptext",
+          "title": "Completa la frase: La capital de [[0]] es [[1]].",
+          "text": "La capital de [[0]] es [[1]].",
+          "options": ["Colombia","Bogotá","Perú","Lima"],
+          "answers": { "0": "Colombia", "1": "Bogotá" }
+        },
+        {
+          "type": "hotspot",
+          "title": "Haz clic en la ubicación aproximada de Bogotá en el mapa de Colombia",
+          "image": "mapa-colombia.png",
+          "correctArea": { "x1": 0.45, "y1": 0.55, "x2": 0.55, "y2": 0.65 }
+        },
+        {
+          "type": "ordering",
+          "title": "Ordena los eventos históricos de Colombia",
+          "items": ["Batalla de Boyacá","Constitución de 1991","Grito de Independencia"],
+          "correct": ["Grito de Independencia","Batalla de Boyacá","Constitución de 1991"]
+        }
+      ]
+    }
   ]
 }
