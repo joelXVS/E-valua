@@ -399,60 +399,218 @@ function renderQuestion() {
   const q = currentTest.questions[currentQuestionIndex];
   const container = $('questionContainer');
   let inner = `<h3>${currentQuestionIndex + 1}. ${escapeHtml(q.title)}</h3>`;
+
+  // Mostrar imagen si existe
   if (q.image) {
     inner += `<div><img src="${q.image}" alt="Imagen de la pregunta" style="max-width:100%; margin:8px 0;" /></div>`;
   }
 
+  // ---------- TIPOS DE PREGUNTAS ----------
   if (q.type === 'mcq') {
-    inner += `<div class="options">${(q.options || []).map((opt, i) => {
-      return `
-        <label style="display:block; margin:6px 0;">
-          <input type="radio" name="q${currentQuestionIndex}" value="${i}" ${answers[q.title] == i ? 'checked' : ''}>
-          ${escapeHtml(opt.text || '')}
-          ${opt.image ? `<div><img src="${opt.image}" alt="Opción ${i+1}" style="max-width:100px; margin-top:4px;" /></div>` : ''}
-        </label>
-      `;
-    }).join('')}</div>`;
+    // Opción múltiple (una sola respuesta)
+    inner += `<div class="options">${(q.options || []).map((opt, i) => `
+      <label style="display:block; margin:6px 0;">
+        <input type="radio" name="q${currentQuestionIndex}" value="${i}" 
+          ${answers[q.title] == i ? 'checked' : ''}>
+        ${escapeHtml(opt.text || opt)}
+        ${opt.image ? `<div><img src="${opt.image}" alt="Opción ${i+1}" style="max-width:100px; margin-top:4px;" /></div>` : ''}
+      </label>`).join('')}</div>`;
+
   } else if (q.type === 'tf') {
+    // Verdadero / Falso
     inner += `<div class="options">
-      <label style="display:block; margin:6px 0;">
-        <input type="radio" name="q${currentQuestionIndex}" value="1" ${answers[q.title] == 1 ? 'checked' : ''}>
-        Verdadero
-      </label>
-      <label style="display:block; margin:6px 0;">
-        <input type="radio" name="q${currentQuestionIndex}" value="0" ${answers[q.title] == 0 ? 'checked' : ''}>
-        Falso
-      </label>
+      <label><input type="radio" name="q${currentQuestionIndex}" value="1" ${answers[q.title]==1?'checked':''}> Verdadero</label>
+      <label><input type="radio" name="q${currentQuestionIndex}" value="0" ${answers[q.title]==0?'checked':''}> Falso</label>
     </div>`;
+
   } else if (q.type === 'open') {
-    inner += `<div>
-      <textarea id="open_${currentQuestionIndex}" rows="5" style="width:100%" placeholder="Escribe tu respuesta aquí...">${answers[q.title] || ''}</textarea>
+    // Respuesta abierta
+    inner += `<textarea id="open_${currentQuestionIndex}" rows="5" style="width:100%" 
+      placeholder="Escribe tu respuesta aquí...">${answers[q.title] || ''}</textarea>
+      <p class="small">Responde en pocas líneas.</p>`;
+
+  } else if (q.type === 'short') {
+    // Respuesta corta
+    inner += `<input type="text" id="short_${currentQuestionIndex}" style="width:100%; padding:8px;" 
+      placeholder="Escribe tu respuesta breve..." value="${answers[q.title] || ''}" />`;
+
+  } else if (q.type === 'multi') {
+    // Respuesta múltiple (varias correctas)
+    inner += `<div class="options">${(q.options || []).map((opt, i) => `
+      <label style="display:block; margin:6px 0;">
+        <input type="checkbox" name="q${currentQuestionIndex}" value="${i}" 
+          ${Array.isArray(answers[q.title]) && answers[q.title].includes(i) ? 'checked' : ''}>
+        ${escapeHtml(opt.text || opt)}
+      </label>`).join('')}</div>`;
+
+  } else if (q.type === 'likert') {
+    // Escala de opinión
+    inner += `<div class="options likert">` +
+      (q.scale || ["Totalmente en desacuerdo","En desacuerdo","Neutral","De acuerdo","Totalmente de acuerdo"])
+        .map((s, i) => `
+          <label>
+            <input type="radio" name="q${currentQuestionIndex}" value="${i}" 
+              ${answers[q.title] == i ? 'checked' : ''}> ${escapeHtml(s)}
+          </label>`).join('') +
+      `</div>`;
+
+  } else if (q.type === 'numeric') {
+    // Numérica
+    inner += `<input type="number" id="num_${currentQuestionIndex}" style="width:150px;" 
+      value="${answers[q.title] || ''}" />`;
+
+  } else if (q.type === 'match') {
+    // Relacionar columnas (select)
+    inner += `<div class="match-container">`;
+    (q.pairs || []).forEach((p, i) => {
+      const ans = answers[q.title]?.[i] || "";
+      inner += `<div class="match-row">
+        <span>${escapeHtml(p.left)}</span>
+        <select id="match_${currentQuestionIndex}_${i}">
+          <option value="">-- Selecciona --</option>
+          ${p.right.map(r => `<option value="${escapeHtml(r)}" ${ans===r?'selected':''}>${escapeHtml(r)}</option>`).join('')}
+        </select>
+      </div>`;
+    });
+    inner += `</div>`;
+
+  } else if (q.type === 'gaptext') {
+    // Rellenar espacios arrastrando
+    inner += `<p>${(q.text || "").replace(/\[\[(\d+)\]\]/g, (m, idx) => {
+      const current = answers[q.title]?.[idx] || "";
+      return `<span class="gap" data-gap="${idx}">${escapeHtml(current) || "______"}</span>`;
+    })}</p>
+    <div class="gap-options">
+      ${(q.options || []).map(o => `<span class="gap-opt" draggable="true">${escapeHtml(o)}</span>`).join('')}
     </div>`;
-    inner += `<p class="small">Responde en pocas líneas. Se otorgarán puntos parciales si identificamos palabras clave y sus ocurrencias.</p>`;
+
+  } else if (q.type === 'hotspot') {
+    // Imagen interactiva (clic en zonas)
+    inner += `<div class="hotspot-container">
+      <img src="${q.image}" alt="Imagen interactiva" class="hotspot-img" />
+    </div>
+    <p class="small">Haz clic en la zona correspondiente.</p>`;
+
+  } else if (q.type === 'ordering') {
+    // Ordenar secuencia (drag & drop)
+    inner += `<ul class="ordering" id="order_${currentQuestionIndex}">
+      ${(answers[q.title] || q.items || []).map((item, i) => `
+        <li class="order-item" draggable="true" data-idx="${i}">${escapeHtml(item)}</li>
+      `).join('')}
+    </ul>
+    <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>`;
+
   } else {
     inner += `<div class="small">Tipo de pregunta desconocido.</div>`;
   }
 
   container.innerHTML = inner;
 
-  // listeners para respuestas
+  // ---------- LISTENERS PARA RESPUESTAS ----------
+  // Radios (mcq, tf, likert)
   container.querySelectorAll('input[type=radio]').forEach(inp => {
     inp.addEventListener('change', () => {
-      const val = inp.value;
-      answers[q.title] = q.type === 'mcq' ? parseInt(val) : parseInt(val);
-      updateNavButtonsAndFinishButton(); 
+      answers[q.title] = q.type === 'mcq' || q.type === 'tf' || q.type === 'likert'
+        ? parseInt(inp.value) : inp.value;
+      updateNavButtonsAndFinishButton();
     });
   });
+
+  // Abierta
   const ta = container.querySelector(`#open_${currentQuestionIndex}`);
-  if (ta) {
-    ta.addEventListener('input', () => {
-      answers[q.title] = ta.value;
+  if (ta) ta.addEventListener('input', () => {
+    answers[q.title] = ta.value;
+    updateNavButtonsAndFinishButton();
+  });
+
+  // Corta
+  const shortInput = container.querySelector(`#short_${currentQuestionIndex}`);
+  if (shortInput) shortInput.addEventListener('input', () => {
+    answers[q.title] = shortInput.value.trim();
+    updateNavButtonsAndFinishButton();
+  });
+
+  // Numérica
+  const numInput = container.querySelector(`#num_${currentQuestionIndex}`);
+  if (numInput) numInput.addEventListener('input', () => {
+    answers[q.title] = numInput.value;
+    updateNavButtonsAndFinishButton();
+  });
+
+  // Múltiple
+  container.querySelectorAll(`input[type=checkbox][name=q${currentQuestionIndex}]`).forEach(chk => {
+    chk.addEventListener('change', () => {
+      answers[q.title] = Array.from(container.querySelectorAll(`input[name=q${currentQuestionIndex}]:checked`))
+        .map(c => parseInt(c.value));
+      updateNavButtonsAndFinishButton();
+    });
+  });
+
+  // Match
+  (q.pairs || []).forEach((p,i) => {
+    const sel = container.querySelector(`#match_${currentQuestionIndex}_${i}`);
+    if (sel) sel.addEventListener('change', () => {
+      if (!answers[q.title]) answers[q.title] = {};
+      answers[q.title][i] = sel.value;
+      updateNavButtonsAndFinishButton();
+    });
+  });
+
+  // GapText (drag & drop)
+  container.querySelectorAll('.gap-opt').forEach(opt => {
+    opt.addEventListener('dragstart', e => e.dataTransfer.setData("text/plain", opt.textContent));
+  });
+  container.querySelectorAll('.gap').forEach(span => {
+    span.addEventListener('dragover', e => e.preventDefault());
+    span.addEventListener('drop', e => {
+      e.preventDefault();
+      const text = e.dataTransfer.getData("text/plain");
+      span.textContent = text;
+      if (!answers[q.title]) answers[q.title] = {};
+      answers[q.title][span.dataset.gap] = text;
+      // eliminar opción usada
+      const optEl = [...container.querySelectorAll('.gap-opt')].find(o=>o.textContent===text);
+      if(optEl) optEl.remove();
+      updateNavButtonsAndFinishButton();
+    });
+  });
+
+  // Ordering (drag & drop)
+  const list = container.querySelector(`#order_${currentQuestionIndex}`);
+  if (list) {
+    let dragged;
+    list.querySelectorAll('.order-item').forEach(item => {
+      item.addEventListener('dragstart', e => {
+        dragged = item;
+        e.dataTransfer.effectAllowed = "move";
+      });
+      item.addEventListener('dragover', e => e.preventDefault());
+      item.addEventListener('drop', e => {
+        e.preventDefault();
+        if (dragged && dragged !== item) {
+          list.insertBefore(dragged, item.nextSibling);
+          answers[q.title] = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
+          updateNavButtonsAndFinishButton();
+        }
+      });
+    });
+  }
+
+  // Hotspot (clic en imagen)
+  if (q.type === 'hotspot') {
+    const img = container.querySelector('.hotspot-img');
+    img.addEventListener('click', e => {
+      const rect = e.target.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width).toFixed(2);
+      const y = ((e.clientY - rect.top) / rect.height).toFixed(2);
+      answers[q.title] = { x, y };
+      alert(`Seleccionaste la posición (${x}, ${y})`);
       updateNavButtonsAndFinishButton();
     });
   }
 
+  // ---------- NAV ----------
   saveExamProgress();
-
   $('prevBtn').disabled = currentQuestionIndex === 0;
   $('nextBtn').disabled = currentQuestionIndex === currentTest.questions.length - 1;
   updateNavButtonsAndFinishButton();
@@ -615,120 +773,147 @@ function finishExam(cheatingForced = false) {
 
   let totalScore = 0;
   const details = [];
+
   (currentTest.questions || []).forEach((q, idx) => {
     const studentAns = answers[q.title];
     let qPoints = 0;
     const possiblePoints = (currentTest.points && currentTest.points.ok) ? Number(currentTest.points.ok) : 1;
+
+    // ---------------- TIPOS DE PREGUNTAS ----------------
     if (q.type === 'mcq') {
-      if (studentAns !== undefined && studentAns !== null && String(studentAns).trim() !== '') {
-        if (parseInt(studentAns) === parseInt(q.answer)) {
-          qPoints = possiblePoints;
-        } else {
-          qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
-        }
-      } else {
-        qPoints = 0;
+      if (studentAns !== undefined && parseInt(studentAns) === parseInt(q.answer)) {
+        qPoints = possiblePoints;
+      } else if (studentAns !== undefined) {
+        qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
       }
+
     } else if (q.type === 'tf') {
-      if (studentAns !== undefined && studentAns !== null && String(studentAns).trim() !== '') {
-        if (parseInt(studentAns) === parseInt(q.answer)) {
-          qPoints = possiblePoints;
-        } else {
-          qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
-        }
-      } else {
-        qPoints = 0;
+      if (studentAns !== undefined && parseInt(studentAns) === parseInt(q.answer)) {
+        qPoints = possiblePoints;
+      } else if (studentAns !== undefined) {
+        qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
       }
-    } else if (q.type === 'open') {
+
+    } else if (q.type === 'open' || q.type === 'short') {
       const evalData = evaluateOpenAnswer(String(studentAns || ''), q, currentTest);
       qPoints = Math.round((possiblePoints * evalData.scoreRatio) * 1000) / 1000;
-    } else {
-      qPoints = 0;
+
+    } else if (q.type === 'multi') {
+      const correct = Array.isArray(q.answer) ? q.answer.sort().join(',') : '';
+      const given = Array.isArray(studentAns) ? studentAns.sort().join(',') : '';
+      qPoints = (correct === given) ? possiblePoints : 0;
+
+    } else if (q.type === 'likert') {
+      qPoints = possiblePoints; // no hay correcto/incorrecto
+
+    } else if (q.type === 'numeric') {
+      qPoints = (parseFloat(studentAns) === parseFloat(q.answer)) ? possiblePoints : 0;
+
+    } else if (q.type === 'match') {
+      let matches = 0;
+      (q.pairs || []).forEach((p,i) => {
+        if (studentAns && studentAns[i] === p.correct) matches++;
+      });
+      qPoints = (matches / (q.pairs?.length || 1)) * possiblePoints;
+
+    } else if (q.type === 'gaptext') {
+      let matches = 0;
+      const total = Object.keys(q.answers || {}).length;
+      if (total > 0) {
+        Object.entries(q.answers).forEach(([i, val]) => {
+          if (studentAns && studentAns[i] === val) matches++;
+        });
+        qPoints = (matches / total) * possiblePoints;
+      }
+
+    } else if (q.type === 'hotspot') {
+      if (studentAns && q.correctArea) {
+        const { x, y } = studentAns;
+        const { x1, y1, x2, y2 } = q.correctArea; // área rectangular
+        if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
+          qPoints = possiblePoints;
+        }
+      }
+
+    } else if (q.type === 'ordering') {
+      const correct = (q.correct || []).join(',');
+      const given = (studentAns || []).join(',');
+      qPoints = (correct === given) ? possiblePoints : 0;
     }
+
     totalScore += qPoints;
-    const answered = (studentAns !== undefined && studentAns !== null && String(studentAns).trim() !== '');
+
+    // ---------------- DETALLES ----------------
+    const answered = studentAns !== undefined && studentAns !== null && String(studentAns).trim() !== '';
+
     const detail = {
       index: (q._originalIndex !== undefined ? q._originalIndex + 1 : idx + 1),
       title: q.title,
       type: q.type,
       answered,
-      studentAnswer: (q.type === 'mcq' || q.type === 'tf') 
-        ? (answered 
-            ? (q.options && q.options[studentAns] 
-                ? (q.options[studentAns].text || '') 
-                : String(studentAns)) 
-            : 'Sin responder') 
-        : (answered ? String(studentAns) : 'Sin responder'),
-      
-      correctAnswer: (q.type === 'mcq' || q.type === 'tf') 
-        ? ((q.options && q.options[q.answer]) 
-            ? (q.options[q.answer].text || '') 
-            : String(q.answer)) 
-        : (q.type === 'open' 
-            ? '(Respuesta abierta - evaluada por palabras clave)' 
-            : ''),
-      
+      studentAnswer: answered ? JSON.stringify(studentAns) : "Sin responder",
+      correctAnswer: q.answer || q.correct || "(sin clave)",
       points: qPoints
     };
-    if (q.type === 'open') {
+
+    if (q.type === 'open' || q.type === 'short') {
       detail.openEval = evaluateOpenAnswer(String(studentAns || ''), q, currentTest);
     }
+
     details.push(detail);
   });
 
   totalScore = Math.round(totalScore * 1000) / 1000;
 
-  // cheat logs para esta sesión (se guardaron en localStorage por sessionId)
+  // cheat logs
   const cheatLogs = getCheatLogsForSession(currentSessionId) || currentCheatEvents || [];
 
   // mostrar sección de resultados
   showSection('result');
-  
   const elapsedMs = Date.now() - examStartTime;
   const elapsedSec = Math.floor(elapsedMs / 1000);
   const min = String(Math.floor(elapsedSec / 60));
   const sec = String(elapsedSec % 60).padStart(2, '0');
-
   $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)} \n Tiempo: ${min}:${sec}`;
-  
+
   const showCorrect = !!currentTest.showCorrect;
 
   const detailsHtml = details.map(d => {
-    const tipoLiteral = d.type === 'mcq'
-      ? 'Selección múltiple'
-      : d.type === 'tf'
-        ? 'Verdadero/Falso'
-        : d.type === 'open'
-          ? 'Respuesta abierta'
-          : 'Otro';
+    let tipoLiteral = {
+      mcq: "Selección múltiple",
+      tf: "Verdadero/Falso",
+      open: "Respuesta abierta",
+      short: "Respuesta corta",
+      multi: "Respuesta múltiple",
+      likert: "Escala Likert",
+      numeric: "Numérica",
+      match: "Correspondencia",
+      gaptext: "Completar espacios",
+      hotspot: "Imagen interactiva",
+      ordering: "Ordenar secuencia"
+    }[d.type] || "Otro";
+
     return `<div style="margin-bottom:8px;">
       <strong>${d.index}. ${escapeHtml(d.title)}</strong><br/>
       Tipo: ${tipoLiteral}<br/>
       ${d.answered 
-        ? `<strong>Tu respuesta:</strong> ${
-            d.studentAnswer === '1' 
-              ? 'VERDADERO' 
-              : d.studentAnswer === '0' 
-                ? 'FALSO' 
-                : escapeHtml(String(d.studentAnswer))
-          }`
+        ? `<strong>Tu respuesta:</strong> ${escapeHtml(String(d.studentAnswer))}`
         : `<strong>Tu respuesta:</strong> <em>Sin responder</em>`}<br/>
       ${showCorrect ? `<strong>Respuesta correcta:</strong> ${escapeHtml(String(d.correctAnswer))}<br/>` : ''}
       <strong>Puntos obtenidos:</strong> ${d.points}<br/>
-      ${d.type === 'open' ? `<div class="small">Evaluación palabras clave: ${d.openEval.found.length > 0 ? d.openEval.found.map(f=>escapeHtml(f.word)+' (x'+f.count+')').join(', ') : 'No se encontraron'}</div>` : ''}
+      ${d.type === 'open' || d.type === 'short' ? `<div class="small">Palabras clave detectadas: ${d.openEval?.found?.map(f=>escapeHtml(f.word)+' (x'+f.count+')').join(', ') || 'Ninguna'}</div>` : ''}
     </div><hr/>`;
   }).join('');
-  
-  $('detailedAnswers').innerHTML = `<div style="text-size: 1.05rem; text-align: center;"><strong>Resumen de la prueba:</strong></div>
-    <div style="margin-top:8px">${detailsHtml}</div>
-    <div style="margin-top:8px; text-align: center;"><strong>Eventos de seguridad detectados:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>
-  `;
 
-  // guardar resultado (incluye cheatLogs)
+  $('detailedAnswers').innerHTML = `<div style="text-align:center;"><strong>Resumen de la prueba:</strong></div>
+    <div style="margin-top:8px">${detailsHtml}</div>
+    <div style="margin-top:8px; text-align: center;"><strong>Eventos de seguridad:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>`;
+
+  // guardar resultado
   try {
     const stored = JSON.parse(localStorage.getItem('results') || '[]');
-    const resultRecord = {
-      student: $('studentName').value.trim(),
+    stored.push({
+      student: studentName,
       grade: $('gradeSelect').selectedOptions[0].textContent,
       test: currentTest.name,
       testCode: currentTest.code,
@@ -736,17 +921,25 @@ function finishExam(cheatingForced = false) {
       score: totalScore,
       details,
       cheatLogs
-    };
-    stored.push(resultRecord);
+    });
     localStorage.setItem('results', JSON.stringify(stored));
-  } catch (e) {
-    console.error('Error guardando resultado:', e);
-  }
+  } catch (e) { console.error('Error guardando resultado:', e); }
+
+  // mensaje al docente
+  const teacher = (teachers.teachers || [])[0] || {}; 
+  let msg = "Envia estos resultados en PDF al docente ";
+  if (teacher.name) msg += teacher.name;
+  if (teacher.email) msg += " al correo " + teacher.email;
+  if (teacher.phone) msg += " o número de teléfono " + teacher.phone;
+  const msgEl = document.createElement("p");
+  msgEl.className = "small";
+  msgEl.style.marginTop = "12px";
+  msgEl.textContent = msg;
+  $('result').appendChild(msgEl);
 
   if (examTerminatedForCheating) {
     alert('La prueba terminó por comportamiento no permitido. Tu intento fue registrado y tu acceso bloqueado.');
   } else {
-    // limpiar progreso guardado para empezar de nuevo en el próximo intento
     localStorage.removeItem('examProgress');
   }
 }
@@ -900,6 +1093,94 @@ function downloadResultsPdf() {
   doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
 }
 
+// ---------- descargar Certificado aparte ----------
+function downloadCertificate() {
+  if (!currentTest) return;
+
+  let lastStored = null;
+  try {
+    const stored = JSON.parse(localStorage.getItem('results') || '[]');
+    lastStored = stored.length ? stored[stored.length - 1] : null;
+  } catch (e) {
+    lastStored = null;
+  }
+
+  const docData = lastStored || {
+    student: $('studentName').value.trim(),
+    grade: $('gradeSelect').selectedOptions[0]?.textContent || '',
+    test: currentTest.name,
+    testCode: currentTest.code,
+    timestamp: new Date().toISOString(),
+    score: $('resultSummary').textContent || '',
+    cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
+  };
+
+  const teacher = (teachers.teachers || []).find(t => (t.tests || []).includes(currentTest.code));
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('landscape', 'pt', 'a4');
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  // Bordes dobles
+  doc.setDrawColor(41, 128, 185);
+  doc.setLineWidth(6);
+  doc.rect(20, 20, pageWidth - 40, pageHeight - 40);
+  doc.setDrawColor(150, 150, 150);
+  doc.setLineWidth(2);
+  doc.rect(35, 35, pageWidth - 70, pageHeight - 70);
+
+  // Fuente académica
+  doc.setFont("times", "normal");
+
+  // Logo (si existe)
+  try {
+    const img = new Image();
+    img.src = "../utils/logo.png";
+    doc.addImage(img, "PNG", pageWidth/2 - 40, 50, 80, 80);
+  } catch (_) {}
+
+  // Encabezado
+  doc.setFontSize(26);
+  doc.setTextColor(0, 70, 140);
+  doc.text("CERTIFICADO DE APLICACIÓN", pageWidth/2, 160, { align: "center" });
+
+  doc.setFontSize(14);
+  doc.setTextColor(80, 80, 80);
+  doc.text("Esta prueba fue presentada por:", pageWidth/2, 200, { align: "center" });
+
+  // Nombre del estudiante
+  doc.setFontSize(24);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont("times", "bold");
+  doc.text(docData.student, pageWidth/2, 240, { align: "center" });
+  doc.setFont("times", "normal");
+
+  // Información de la prueba
+  doc.setFontSize(14);
+  doc.text("Realizada el ${new Date().toLocaleString('es-CO',{dateStyle:'full', timeStyle:'short'})}", pageWidth/2, 280, { align: "center" });
+  
+  let y = 304;
+  const info = [
+    `Del curso: ${docData.grade}`,
+    `Prueba aplicada: ${docData.test}`,
+    `Código de aplicación: ${docData.testCode}`,
+    `Docente: ${teacher ? teacher.name : '-'}`,
+    `Puntaje obtenido: ${docData.score}`,
+    `Intentos de trampa detectados: ${(docData.cheatLogs || []).length}`,
+  ];
+  info.forEach(line => { doc.text(line, pageWidth/2, y, { align: "center" }); y += 24; });
+
+  // Pie - firma del docente (colocada al final seguro)
+  const firmaY = pageHeight - 100;
+  doc.setFontSize(12);
+  doc.text("_____________________________", pageWidth/2, firmaY, { align: "center" });
+  doc.text("Firma docente autorizado", pageWidth/2, firmaY + 20, { align: "center" });
+
+  // Guardar
+  doc.save(`certificado-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
+}
+
 // ---------- eventos DOM ----------
 window.addEventListener('DOMContentLoaded', async () => {
   await loadInitialData();
@@ -913,6 +1194,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   $('finishBtn').addEventListener('click', () => finishExam(false));
   $('downloadBtn').addEventListener('click', downloadResults);
   $('downloadPdfBtn').addEventListener('click', downloadResultsPdf);
+  $('downloadCertBtn').addEventListener('click', downloadCertificate);
   $('backBtn').addEventListener('click', () => location.reload());
 });
 
