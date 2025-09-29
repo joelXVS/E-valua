@@ -762,6 +762,120 @@ function evaluateOpenAnswer(answerText, q, test) {
   };
 }
 
+// ---------- formatear respuestas usuario ----------
+function formatAnswer(q, ans) {
+  if (ans === undefined || ans === null || ans === "" || (typeof ans === "object" && Object.keys(ans).length === 0)) {
+    return "Sin responder";
+  }
+
+  switch (q.type) {
+    case "mcq":
+      // opción múltiple (una sola)
+      return q.options && q.options[ans] 
+        ? (q.options[ans].text || q.options[ans]) 
+        : String(ans);
+
+    case "tf":
+      // verdadero/falso
+      return ans == 1 ? "Verdadero" : "Falso";
+
+    case "open":
+    case "short":
+      // respuesta libre
+      return String(ans);
+
+    case "multi":
+      // selección múltiple (varias correctas)
+      return Array.isArray(ans) && q.options 
+        ? ans.map(i => q.options[i].text || q.options[i]).join(", ") 
+        : String(ans);
+
+    case "likert":
+      // escala de opinión
+      return q.scale && q.scale[ans] ? q.scale[ans] : String(ans);
+
+    case "numeric":
+      // numérica
+      return String(ans);
+
+    case "match":
+      // correspondencia
+      return Object.entries(ans)
+        .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
+        .join("; ");
+
+    case "gaptext":
+      // completar espacios
+      return Object.entries(ans)
+        .map(([i, v]) => `${i}: ${v}`)
+        .join(", ");
+
+    case "ordering":
+      // ordenar secuencia
+      return Array.isArray(ans) ? ans.join(" → ") : String(ans);
+
+    case "hotspot":
+      // clic en zona de imagen
+      return ans.x && ans.y 
+        ? `Coordenadas: (${ans.x}, ${ans.y})` 
+        : String(ans);
+
+    default:
+      return String(ans);
+  }
+}
+
+// ---------- formatear respuestas correctas ----------
+function formatCorrectAnswer(q) {
+  if (q.type === "mcq") {
+    return q.options && q.options[q.answer]
+      ? (q.options[q.answer].text || q.options[q.answer])
+      : String(q.answer);
+
+  } else if (q.type === "tf") {
+    return q.answer == 1 ? "Verdadero" : "Falso";
+
+  } else if (q.type === "open" || q.type === "short") {
+    return q.answer ? String(q.answer) : "(respuesta abierta)";
+
+  } else if (q.type === "multi") {
+    return Array.isArray(q.answer) && q.options
+      ? q.answer.map(i => q.options[i].text || q.options[i]).join(", ")
+      : String(q.answer);
+
+  } else if (q.type === "likert") {
+    return q.scale && q.answer !== undefined
+      ? q.scale[q.answer]
+      : "(no aplica)";
+
+  } else if (q.type === "numeric") {
+    return String(q.answer);
+
+  } else if (q.type === "match") {
+    return (q.pairs || [])
+      .map(p => `${p.left} → ${p.correct}`)
+      .join("; ");
+
+  } else if (q.type === "gaptext") {
+    return q.answers
+      ? Object.entries(q.answers)
+          .map(([i,v]) => `${i}: ${v}`)
+          .join(", ")
+      : "(sin clave)";
+
+  } else if (q.type === "ordering") {
+    return q.correct ? q.correct.join(" → ") : "(sin clave)";
+
+  } else if (q.type === "hotspot") {
+    return q.correctArea
+      ? `Área válida: (${q.correctArea.x1}, ${q.correctArea.y1}) a (${q.correctArea.x2}, ${q.correctArea.y2})`
+      : "(sin clave)";
+
+  } else {
+    return "(sin clave)";
+  }
+}
+
 // ---------- terminar examen ----------
 function finishExam(cheatingForced = false) {
   clearInterval(timerInterval);
@@ -851,8 +965,8 @@ function finishExam(cheatingForced = false) {
       title: q.title,
       type: q.type,
       answered,
-      studentAnswer: answered ? JSON.stringify(studentAns) : "Sin responder",
-      correctAnswer: q.answer || q.correct || "(sin clave)",
+      studentAnswer: formatAnswer(q, studentAns),
+      correctAnswer: formatCorrectAnswer(q),
       points: qPoints
     };
 
@@ -1158,7 +1272,7 @@ function downloadCertificate() {
 
   // Información de la prueba
   doc.setFontSize(14);
-  doc.text("Realizada el ${new Date().toLocaleString('es-CO',{dateStyle:'full', timeStyle:'short'})}", pageWidth/2, 280, { align: "center" });
+  doc.text(`Realizada el ${new Date().toLocaleString('es-CO',{dateStyle:'full', timeStyle:'short'})}`, pageWidth/2, 280, { align: "center" });
   
   let y = 304;
   const info = [
