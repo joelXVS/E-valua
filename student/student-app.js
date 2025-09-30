@@ -1377,18 +1377,30 @@ function downloadResultsPdf() {
 
   // Tabla de resultados bonitos con colores
   if (docData.details && docData.details.length) {
-    const rows = docData.details.map(d => [
-      d.index || '',
-      truncateText(String(d.title || ''), 60),
-      String(
-        d.type === 'mcq'
-          ? (d.studentAnswer?.text || d.studentAnswer || '')
-          : d.type === 'tf'
-            ? (d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : d.studentAnswer || '')
-            : d.studentAnswer || ''
-      ),
-      d.points || ''
-    ]);
+    const rows = docData.details.map(d => {
+      let ansText = '';
+      if (d.type === 'mcq') {
+        ansText = d.studentAnswer?.text || d.studentAnswer || '';
+      } else if (d.type === 'tf') {
+        ansText = d.studentAnswer === '1'
+          ? 'VERDADERO'
+          : d.studentAnswer === '0'
+            ? 'FALSO'
+            : d.studentAnswer || '';
+      } else if (d.type === 'ordering' || d.type === 'match') {
+        // prevenir que se rompa → truncamos
+        ansText = truncateText(String(d.studentAnswer || ''), 50);
+      } else {
+        ansText = String(d.studentAnswer || '');
+      }
+    
+      return [
+        d.index || '',
+        truncateText(String(d.title || ''), 60),
+        ansText,
+        d.points || ''
+      ];
+    });
     
     doc.autoTable({
       startY: y,
