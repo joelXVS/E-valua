@@ -887,6 +887,49 @@ function formatCorrectAnswer(q) {
   }
 }
 
+// ---------- enviar correo al docente ----------
+async function enviarResultadosAlDocente(studentName, grade, test, results, pdfBlob = null) {
+  const teacher = (teachers.teachers || []).find(t =>
+    (t.tests || []).includes(test.code)
+  );
+
+  if (!teacher) {
+    console.warn("No se encontró docente para esta prueba:", test.code);
+    return;
+  }
+
+  let pdfBase64 = null;
+  if (pdfBlob) {
+    pdfBase64 = await blobToBase64(pdfBlob);
+  }
+
+  const payload = {
+    student: studentName,
+    grade: grade,
+    results: results,
+    teacherEmail: teacher.email,
+    pdfBase64: pdfBase64
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbxe-6bGhHoQiXEqc26MR_FulVV0wWhIvg23UzJh8mqigrXSJyPfjdbMkeAugiNv_FCCmg/exec", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.text())
+  .then(txt => console.log("Correo enviado:", txt))
+  .catch(err => console.error("Error enviando correo:", err));
+}
+
+// ---------- blob a base64 ----------
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 // ---------- terminar examen ----------
 function finishExam(cheatingForced = false) {
   clearInterval(timerInterval);
@@ -1067,6 +1110,14 @@ function finishExam(cheatingForced = false) {
   } else {
     localStorage.removeItem('examProgress');
   }
+
+  const grade = document.getElementById("gradeSelect").value;
+
+  // esto depende de cómo calculas resultados en tu app:
+  const results = detail; // o el objeto de respuestas finales
+  const pdfBlob = generarResults(true);
+
+  enviarResultadosAlDocente(studentName, grade, currentTest, results, pdfBlob);
 }
 
 // ---------- descargar JSON ----------
@@ -1098,7 +1149,7 @@ function truncateText(text, maxLength) {
 }
 
 // ---------- exportar PDF ----------
-function downloadResultsPdf() {
+function downloadResultsPdf(isBlob = false) {
   if (!currentTest) return;
   let lastStored = null;
   try {
@@ -1215,7 +1266,11 @@ function downloadResultsPdf() {
   }
 
   // Guardar archivo
-  doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
+  if isBlob {
+    doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
+  } else {
+    return doc.output("blob");
+  }
 }
 
 // ---------- descargar Certificado aparte ----------
