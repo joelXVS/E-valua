@@ -494,7 +494,10 @@ function renderQuestion() {
     inner += `<div class="gap-sentence">${sentence}</div>
               <div class="gap-options" id="gapOpts_${currentQuestionIndex}">
                 ${(q.options || []).map(opt => `<div class="gap-opt" draggable="true">${opt}</div>`).join("")}
-              </div>`;
+              </div>
+              <button id="resetGapBtn_${currentQuestionIndex}" class="btn" style="margin-top:12px;">
+                Reiniciar espacios
+              </button>`;
   
     setTimeout(() => {
       const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
@@ -552,6 +555,40 @@ function renderQuestion() {
         dragged.remove();
       });
     }, 50);
+
+    // Botón para reiniciar los espacios
+    setTimeout(() => {
+      const resetBtn = document.getElementById(`resetGapBtn_${currentQuestionIndex}`);
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
+          const gaps = document.querySelectorAll(".gap");
+          
+          // Devolver todas las palabras a la lista de opciones
+          gaps.forEach(gap => {
+            if (gap.textContent.trim() !== "") {
+              const opt = document.createElement("div");
+              opt.className = "gap-opt";
+              opt.textContent = gap.textContent;
+              opt.setAttribute("draggable", "true");
+              gapOptions.appendChild(opt);
+              addDragEvents(opt);
+              
+              // Limpiar el gap
+              gap.textContent = "";
+            }
+          });
+          
+          // Limpiar las respuestas guardadas
+          delete answers[q.title];
+          saveExamProgress();
+          updateNavButtonsAndFinishButton();
+          
+          // Mensaje de confirmación opcional
+          alert("Los espacios han sido reiniciados. Puedes volver a arrastrar las palabras.");
+        });
+      }
+    }, 100);
   } else if (q.type === 'hotspot') {
     // Imagen interactiva (clic en zonas)
     inner += `<div class="hotspot-container">
@@ -758,6 +795,15 @@ function renderQuestion() {
   // Hotspot (clic en imagen)
   if (q.type === 'hotspot') {
     const img = container.querySelector('.hotspot-img');
+    
+    // Mostrar coordenadas previas si existen
+    if (answers[q.title]?.x && answers[q.title]?.y) {
+      const smallTxt = container.querySelector(".hotspot-note");
+      if (smallTxt) {
+        smallTxt.textContent = `Coordenadas seleccionadas: (${answers[q.title].x}, ${answers[q.title].y})`;
+      }
+    }
+    
     img.addEventListener('click', e => {
       const rect = e.target.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width).toFixed(2);
@@ -867,6 +913,14 @@ function renderQuestion() {
     if (subType === 'hotspot') {
       const img = container.querySelector('.hotspot-img');
       if (img) {
+        // Mostrar coordenadas previas si existen
+        if (answers[q.title]?.hotspot?.x && answers[q.title]?.hotspot?.y) {
+          const smallTxt = container.querySelector(".hotspot-note");
+          if (smallTxt) {
+            smallTxt.textContent = `Coordenadas seleccionadas: (${answers[q.title].hotspot.x}, ${answers[q.title].hotspot.y})`;
+          }
+        }
+        
         img.addEventListener('click', e => {
           const rect = e.target.getBoundingClientRect();
           const x = ((e.clientX - rect.left) / rect.width).toFixed(2);
