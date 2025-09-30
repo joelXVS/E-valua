@@ -827,7 +827,9 @@ function renderQuestion() {
     if (subType === 'open') {
       const ta = container.querySelector(`#multi_open_${currentQuestionIndex}`);
       if (ta) ta.addEventListener('input', () => {
-        answers[q.title] = answers[q.title] || {};
+        if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+          answers[q.title] = {}; 
+        }
         answers[q.title].open = ta.value;
         updateNavButtonsAndFinishButton();
       });
@@ -836,7 +838,9 @@ function renderQuestion() {
     if (subType === 'short') {
       const si = container.querySelector(`#multi_short_${currentQuestionIndex}`);
       if (si) si.addEventListener('input', () => {
-        answers[q.title] = answers[q.title] || {};
+        if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+          answers[q.title] = {}; 
+        }
         answers[q.title].short = si.value.trim();
         updateNavButtonsAndFinishButton();
       });
@@ -845,7 +849,9 @@ function renderQuestion() {
     if (subType === 'mcq') {
       container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]`).forEach(inp => {
         inp.addEventListener('change', () => {
-          answers[q.title] = answers[q.title] || {};
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+            answers[q.title] = {}; 
+          }
           answers[q.title].mcq = parseInt(inp.value);
           updateNavButtonsAndFinishButton();
         });
@@ -855,7 +861,9 @@ function renderQuestion() {
     if (subType === 'multi') {
       container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]`).forEach(chk => {
         chk.addEventListener('change', () => {
-          answers[q.title] = answers[q.title] || {};
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+            answers[q.title] = {}; 
+          }
           answers[q.title].multi = Array.from(container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]:checked`))
             .map(c => parseInt(c.value));
           updateNavButtonsAndFinishButton();
@@ -866,7 +874,9 @@ function renderQuestion() {
     if (subType === 'tf') {
       container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]`).forEach(inp => {
         inp.addEventListener('change', () => {
-          answers[q.title] = answers[q.title] || {};
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+            answers[q.title] = {}; 
+          }
           answers[q.title].tf = parseInt(inp.value);
           updateNavButtonsAndFinishButton();
         });
@@ -877,7 +887,9 @@ function renderQuestion() {
       (subQ.pairs || []).forEach((p,i) => {
         const sel = container.querySelector(`#multi_match_${currentQuestionIndex}_${i}`);
         if (sel) sel.addEventListener('change', () => {
-          answers[q.title] = answers[q.title] || {};
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+            answers[q.title] = {}; 
+          }
           answers[q.title].match = answers[q.title].match || {};
           answers[q.title].match[i] = sel.value;
           updateNavButtonsAndFinishButton();
@@ -901,7 +913,9 @@ function renderQuestion() {
               const rect = item.getBoundingClientRect();
               const isAfter = (e.clientY - rect.top) > rect.height / 2;
               list.insertBefore(dragged, isAfter ? item.nextSibling : item);
-              answers[q.title] = answers[q.title] || {};
+              if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+                answers[q.title] = {}; 
+              }
               answers[q.title].ordering = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
               updateNavButtonsAndFinishButton();
             }
@@ -925,7 +939,9 @@ function renderQuestion() {
           const rect = e.target.getBoundingClientRect();
           const x = ((e.clientX - rect.left) / rect.width).toFixed(2);
           const y = ((e.clientY - rect.top) / rect.height).toFixed(2);
-          answers[q.title] = answers[q.title] || {};
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
+            answers[q.title] = {}; 
+          }
           answers[q.title].hotspot = { x, y };
           
           const smallTxt = container.querySelector(".hotspot-note");
