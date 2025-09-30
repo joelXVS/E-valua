@@ -976,7 +976,7 @@ function enviarResultadosAlDocente(test, studentName, grade, score, details) {
     details
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbysyiyKbGNlgWmmdMHnyJSQWg8blFikEd2Vp9KxBUKjWz4gg-UgC4Paa5I7xUFc5X-EUQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbywKsvHZ3t7CUfmo1hPMDXwbYwfuTPdHkjI_Rsqzv5z8ag32_5DK8rMpP23oLlsKV-c/exec", {
     method: "POST",
     body: JSON.stringify(payload)
   })
