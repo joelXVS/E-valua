@@ -887,10 +887,15 @@ function renderQuestion() {
       (subQ.pairs || []).forEach((p,i) => {
         const sel = container.querySelector(`#multi_match_${currentQuestionIndex}_${i}`);
         if (sel) sel.addEventListener('change', () => {
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-            answers[q.title] = {}; 
+          // Asegurar que siempre sea objeto
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
+            answers[q.title] = {};
           }
-          answers[q.title].match = answers[q.title].match || {};
+      
+          if (!answers[q.title].match) {
+            answers[q.title].match = {};
+          }
+      
           answers[q.title].match[i] = sel.value;
           updateNavButtonsAndFinishButton();
         });
@@ -966,7 +971,14 @@ function updateNavButtonsAndFinishButton() {
   let answeredCount = 0;
   currentTest.questions.forEach(q => {
     const a = answers[q.title];
-    if (a !== undefined && a !== null && String(a).trim() !== '') answeredCount++;
+    if (
+      (typeof a === "string" && a.trim() !== "") ||
+      (typeof a === "number") ||
+      (Array.isArray(a) && a.length > 0) ||
+      (typeof a === "object" && a !== null && Object.keys(a).length > 0)
+    ) {
+      answeredCount++;
+    }
   });
   $('finishBtn').disabled = answeredCount < currentTest.questions.length;
 }
