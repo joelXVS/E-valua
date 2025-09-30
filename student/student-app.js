@@ -1081,6 +1081,7 @@ function formatCorrectAnswer(q) {
         : "(sin clave)";
     } else {
       return formatCorrectAnswer({ ...subC, type: subtypeC });
+    }
   } else {
     return "(sin clave)";
   }
