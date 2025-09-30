@@ -588,7 +588,9 @@ function renderQuestion() {
       item.addEventListener('drop', e => {
         e.preventDefault();
         if (dragged && dragged !== item) {
-          list.insertBefore(dragged, item.nextSibling);
+          const rect = item.getBoundingClientRect();
+          const isAfter = (e.clientY - rect.top) > rect.height / 2;
+          list.insertBefore(dragged, isAfter ? item.nextSibling : item);
           answers[q.title] = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
           updateNavButtonsAndFinishButton();
         }
@@ -696,10 +698,19 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// Normalizar respuestas abiertas
+function normalizeText(txt) {
+  return txt
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // elimina tildes
+    .trim()
+    .replace(/\s+/g, " "); // quita espacios dobles
+}
+
 // Evaluación de respuesta abierta con keywords + longitud + antitramposos
 function evaluateOpenAnswer(answerText, q, test) {
   const text = String(answerText || '').trim();
-  const lower = text.toLowerCase();
+  const lower = normalizeText(text);
 
   // Palabras clave (si existen)
   const kw = q.keywords || [];
