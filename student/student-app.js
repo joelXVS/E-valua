@@ -428,7 +428,7 @@ function renderQuestion() {
 
   } else if (q.type === 'tf') {
     // Verdadero / Falso
-    inner += `<div class="options">
+    inner += `<div class="options options-tf">
       <label><input type="radio" name="q${currentQuestionIndex}" value="1" ${answers[q.title]==1?'checked':''}> Verdadero</label>
       <label><input type="radio" name="q${currentQuestionIndex}" value="0" ${answers[q.title]==0?'checked':''}> Falso</label>
     </div>`;
@@ -486,7 +486,7 @@ function renderQuestion() {
 
   } else if (q.type === "gaptext") {
     // Construir texto con gaps
-    let sentence = q.sentence;
+    let sentence = q.sentence || q.title || "";
     (q.gaps || []).forEach((gap, idx) => {
       sentence = sentence.replace("___", `<span class="gap" data-gap="${idx}"></span>`);
     });
@@ -558,7 +558,7 @@ function renderQuestion() {
     inner += `<div class="hotspot-container">
       <img src="${q.image}" alt="Imagen interactiva" class="hotspot-img" />
     </div>
-    <p class="small">Haz clic en la zona correspondiente.</p>`;
+    <p class="small hotspot-note">Haz clic en la zona correspondiente.</p>`;
 
   } else if (q.type === 'ordering') {
     // Ordenar secuencia (drag & drop)
@@ -569,6 +569,95 @@ function renderQuestion() {
     </ul>
     <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>`;
 
+  } else if (q.type === 'multimedia') {
+    // Contenedor del recurso multimedia
+    inner += `<div class="multimedia-container">`;
+  
+    if (q.mediaType === "video") {
+      inner += `<video controls style="max-width:100%; border-radius:10px;">
+                  <source src="${q.src}" type="video/mp4">
+                  Tu navegador no soporta video.
+                </video>`;
+    } else if (q.mediaType === "audio") {
+      inner += `<audio controls>
+                  <source src="${q.src}" type="audio/mpeg">
+                  Tu navegador no soporta audio.
+                </audio>`;
+    } else if (q.mediaType === "image") {
+      inner += `<img src="${q.src}" alt="Multimedia" class="multimedia-img" />`;
+    }
+  
+    inner += `</div>`;
+  
+    // Render de la subpregunta anidada (usa q.subtype y q.subquestion)
+    const subQ = q.subquestion || {};
+    const subType = q.subtype;
+  
+    inner += `<div class="subquestion">`;
+    inner += `<h4 style="margin-top:8px;">${escapeHtml(subQ.title || "Pregunta")}</h4>`;
+  
+    if (subType === 'open') {
+      inner += `<textarea id="multi_open_${currentQuestionIndex}" rows="5" style="width:100%" 
+        placeholder="Escribe tu respuesta aquí...">${answers[q.title] || ''}</textarea>`;
+  
+    } else if (subType === 'short') {
+      inner += `<input type="text" id="multi_short_${currentQuestionIndex}" 
+        style="width:100%; padding:8px;" 
+        placeholder="Respuesta breve..." value="${answers[q.title] || ''}" />`;
+  
+    } else if (subType === 'mcq') {
+      inner += `<div class="options">${(subQ.options || []).map((opt, i) => `
+        <label style="display:block; margin:6px 0;">
+          <input type="radio" name="multi_q${currentQuestionIndex}" value="${i}" 
+            ${answers[q.title] == i ? 'checked' : ''}>
+          ${escapeHtml(opt.text || opt)}
+        </label>`).join('')}</div>`;
+  
+    } else if (subType === 'multi') {
+      inner += `<div class="options">${(subQ.options || []).map((opt, i) => `
+        <label style="display:block; margin:6px 0;">
+          <input type="checkbox" name="multi_q${currentQuestionIndex}" value="${i}" 
+            ${Array.isArray(answers[q.title]) && answers[q.title].includes(i) ? 'checked' : ''}>
+          ${escapeHtml(opt.text || opt)}
+        </label>`).join('')}</div>`;
+  
+    } else if (subType === 'tf') {
+      inner += `<div class="options options-tf">
+        <label><input type="radio" name="multi_q${currentQuestionIndex}" value="1" ${answers[q.title]==1?'checked':''}> Verdadero</label>
+        <label><input type="radio" name="multi_q${currentQuestionIndex}" value="0" ${answers[q.title]==0?'checked':''}> Falso</label>
+      </div>`;
+  
+    } else if (subType === 'match') {
+      inner += `<div class="match-container">`;
+      (subQ.pairs || []).forEach((p, i) => {
+        const ans = answers[q.title]?.[i] || "";
+        inner += `<div class="match-row">
+          <span>${escapeHtml(p.left)}</span>
+          <select id="multi_match_${currentQuestionIndex}_${i}">
+            <option value="">-- Selecciona --</option>
+            ${p.right.map(r => `<option value="${escapeHtml(r)}" ${ans===r?'selected':''}>${escapeHtml(r)}</option>`).join('')}
+          </select>
+        </div>`;
+      });
+      inner += `</div>`;
+  
+    } else if (subType === 'ordering') {
+      const items = answers[q.title] || subQ.items || [];
+      inner += `<ul class="ordering" id="multi_order_${currentQuestionIndex}">
+        ${items.map((item, i) => `
+          <li class="order-item" draggable="true" data-idx="${i}">${escapeHtml(item)}</li>
+        `).join('')}
+      </ul>`;
+  
+    } else if (subType === 'hotspot') {
+      inner += `<div class="hotspot-container">
+        <img src="${subQ.image}" alt="Hotspot multimedia" class="hotspot-img" />
+      </div>
+      <p class="small hotspot-note">Haz clic en la zona correspondiente.</p>`;
+    }
+  
+    inner += `</div>`; // cierre subquestion
+  
   } else {
     inner += `<div class="small">Tipo de pregunta desconocido.</div>`;
   }
@@ -675,7 +764,13 @@ function renderQuestion() {
       const x = ((e.clientX - rect.left) / rect.width).toFixed(2);
       const y = ((e.clientY - rect.top) / rect.height).toFixed(2);
       answers[q.title] = { x, y };
-      alert(`Seleccionaste la posición (${x}, ${y})`);
+    
+      // mostrar coords en el texto pequeño
+      const smallTxt = container.querySelector(".hotspot-note");
+      if (smallTxt) {
+        smallTxt.textContent = `Coordenadas seleccionadas: (${x}, ${y})`;
+      }
+    
       updateNavButtonsAndFinishButton();
     });
   }
@@ -900,6 +995,25 @@ function formatAnswer(q, ans) {
         ? `Coordenadas: (${ans.x}, ${ans.y})` 
         : String(ans);
 
+      case "multimedia":
+        const sub = q.subquestion || {};
+        const subtype = q.subtype;
+        const ansVal = ans;
+      
+        if (subtype === "ordering") {
+          return Array.isArray(ansVal) ? ansVal.join(" → ") : String(ansVal);
+        } else if (subtype === "match") {
+          return Object.entries(ansVal || {})
+            .map(([i, v]) => `${sub.pairs[i].left} → ${v}`)
+            .join("; ");
+        } else if (subtype === "hotspot") {
+          return ansVal?.x && ansVal?.y 
+            ? `Coordenadas: (${ansVal.x}, ${ansVal.y})` 
+            : "Sin respuesta";
+        } else {
+          return formatAnswer({ ...sub, type: subtype }, ansVal);
+        };
+
     default:
       return String(ans);
   }
@@ -951,6 +1065,22 @@ function formatCorrectAnswer(q) {
       ? `Área válida: (${q.correctArea.x1}, ${q.correctArea.y1}) a (${q.correctArea.x2}, ${q.correctArea.y2})`
       : "(sin clave)";
 
+  } else if (q.type === "multimedia") {
+    const subC = q.subquestion || {};
+    const subtypeC = q.subtype;
+  
+    if (subtypeC === "ordering") {
+      return subC.correct ? subC.correct.join(" → ") : "(sin clave)";
+    } else if (subtypeC === "match") {
+      return (subC.pairs || [])
+        .map(p => `${p.left} → ${p.correct}`)
+        .join("; ");
+    } else if (subtypeC === "hotspot") {
+      return subC.correctArea
+        ? `Área válida: (${subC.correctArea.x1}, ${subC.correctArea.y1}) a (${subC.correctArea.x2}, ${subC.correctArea.y2})`
+        : "(sin clave)";
+    } else {
+      return formatCorrectAnswer({ ...subC, type: subtypeC });
   } else {
     return "(sin clave)";
   }
