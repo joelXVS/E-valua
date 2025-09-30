@@ -394,6 +394,16 @@ function mezclarArray(array) {
   return array;
 }
 
+// ---------- utilidad - eventos de drag ----------
+function addDragEvents(el) {
+  el.addEventListener("dragstart", () => {
+    el.classList.add("dragging");
+  });
+  el.addEventListener("dragend", () => {
+    el.classList.remove("dragging");
+  });
+}
+
 // ---------- render pregunta ----------
 function renderQuestion() {
   const q = currentTest.questions[currentQuestionIndex];
@@ -474,16 +484,75 @@ function renderQuestion() {
     });
     inner += `</div>`;
 
-  } else if (q.type === 'gaptext') {
-    // Rellenar espacios arrastrando
-    inner += `<p>${(q.text || "").replace(/\[\[(\d+)\]\]/g, (m, idx) => {
-      const current = answers[q.title]?.[idx] || "";
-      return `<span class="gap" data-gap="${idx}">${escapeHtml(current) || "______"}</span>`;
-    })}</p>
-    <div class="gap-options">
-      ${(q.options || []).map(o => `<span class="gap-opt" draggable="true">${escapeHtml(o)}</span>`).join('')}
-    </div>`;
-
+  } else if (q.type === "gaptext") {
+    // Construir texto con gaps
+    let sentence = q.sentence;
+    (q.gaps || []).forEach((gap, idx) => {
+      sentence = sentence.replace("___", `<span class="gap" data-gap="${idx}"></span>`);
+    });
+  
+    inner += `<div class="gap-sentence">${sentence}</div>
+              <div class="gap-options" id="gapOpts_${currentQuestionIndex}">
+                ${(q.options || []).map(opt => `<div class="gap-opt" draggable="true">${opt}</div>`).join("")}
+              </div>`;
+  
+    setTimeout(() => {
+      const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
+      const gaps = document.querySelectorAll(".gap");
+      const opts = gapOptions.querySelectorAll(".gap-opt");
+  
+      // activar drag en opciones iniciales
+      opts.forEach(addDragEvents);
+  
+      // permitir soltar en gaps
+      gaps.forEach(gap => {
+        gap.addEventListener("dragover", e => e.preventDefault());
+        gap.addEventListener("drop", e => {
+          e.preventDefault();
+          const dragged = document.querySelector(".dragging");
+          if (!dragged) return;
+  
+          // si ya había algo en este gap -> devolverlo a la lista
+          if (gap.textContent.trim() !== "") {
+            const oldWord = document.createElement("div");
+            oldWord.className = "gap-opt";
+            oldWord.textContent = gap.textContent;
+            oldWord.setAttribute("draggable", "true");
+            gapOptions.appendChild(oldWord);
+            addDragEvents(oldWord);
+          }
+  
+          // poner el nuevo texto
+          gap.textContent = dragged.textContent;
+  
+          // eliminar el arrastrado de donde estaba
+          dragged.remove();
+        });
+      });
+  
+      // permitir soltar en la lista de opciones
+      gapOptions.addEventListener("dragover", e => e.preventDefault());
+      gapOptions.addEventListener("drop", e => {
+        e.preventDefault();
+        const dragged = document.querySelector(".dragging");
+        if (!dragged) return;
+  
+        // devolver palabra a la lista
+        const opt = document.createElement("div");
+        opt.className = "gap-opt";
+        opt.textContent = dragged.textContent;
+        opt.setAttribute("draggable", "true");
+        gapOptions.appendChild(opt);
+        addDragEvents(opt);
+  
+        // limpiar si provenía de un gap
+        if (dragged.parentElement.classList.contains("gap")) {
+          dragged.parentElement.textContent = "";
+        } else {
+          dragged.remove();
+        }
+      });
+    }, 50);
   } else if (q.type === 'hotspot') {
     // Imagen interactiva (clic en zonas)
     inner += `<div class="hotspot-container">
@@ -1169,7 +1238,12 @@ function downloadResultsPdf() {
   doc.text(`Código de prueba: ${docData.testCode}`, 40, y); y += 15;
   doc.text(`Fecha: ${docData.timestamp}`, 40, y); y += 15;
   doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y); 
-  y += 30;
+  y += 40;
+  
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 200);
+  doc.text('Detalles de prueba:', 40, y);
+  y += 10;
 
   // Tabla de resultados bonitos con colores
   if (docData.details && docData.details.length) {
@@ -1212,6 +1286,8 @@ function downloadResultsPdf() {
 
     y = doc.lastAutoTable.finalY + 20;
   }
+  
+  y += 10;
 
   // Eventos de seguridad (plagio, trampas, etc.)
   if ((docData.cheatLogs || []).length) {
