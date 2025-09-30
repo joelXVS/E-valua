@@ -888,46 +888,32 @@ function formatCorrectAnswer(q) {
 }
 
 // ---------- enviar correo al docente ----------
-async function enviarResultadosAlDocente(studentName, grade, test, results, pdfBlob = null) {
-  const teacher = (teachers.teachers || []).find(t =>
-    (t.tests || []).includes(test.code)
-  );
+function enviarResultadosAlDocente(test, studentName, grade, score, details) {
+  // Buscar docente en teachers.json que tenga asignado este test
+  const teacher = (teachers.teachers || []).find(t => (t.tests || []).includes(test.code));
+  const teacherEmail = teacher ? teacher.email : null;
 
-  if (!teacher) {
-    console.warn("No se encontró docente para esta prueba:", test.code);
+  if (!teacherEmail) {
+    console.warn("No se encontró correo de docente para este test:", test.code);
     return;
   }
 
-  let pdfBase64 = null;
-  if (pdfBlob) {
-    pdfBase64 = await blobToBase64(pdfBlob);
-  }
-
   const payload = {
-    student: studentName,
-    grade: grade,
-    results: results,
-    teacherEmail: teacher.email,
-    pdfBase64: pdfBase64
+    teacherEmail,
+    studentName,
+    grade,
+    testName: test.name,
+    score,
+    details
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbxe-6bGhHoQiXEqc26MR_FulVV0wWhIvg23UzJh8mqigrXSJyPfjdbMkeAugiNv_FCCmg/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbysyiyKbGNlgWmmdMHnyJSQWg8blFikEd2Vp9KxBUKjWz4gg-UgC4Paa5I7xUFc5X-EUQ/exec", {
     method: "POST",
     body: JSON.stringify(payload)
   })
   .then(r => r.text())
-  .then(txt => console.log("Correo enviado:", txt))
+  .then(res => console.log("Correo enviado:", res))
   .catch(err => console.error("Error enviando correo:", err));
-}
-
-// ---------- blob a base64 ----------
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
 }
 
 // ---------- terminar examen ----------
@@ -1105,19 +1091,13 @@ function finishExam(cheatingForced = false) {
   msgEl.textContent = msg;
   $('result').appendChild(msgEl);
 
+  enviarResultadosAlDocente(currentTest, studentName, $('metaGrade').textContent, totalScore, JSON.stringify(details, null, 2));
+
   if (examTerminatedForCheating) {
     alert('La prueba terminó por comportamiento no permitido. Tu intento fue registrado y tu acceso bloqueado.');
   } else {
     localStorage.removeItem('examProgress');
   }
-
-  const grade = document.getElementById("gradeSelect").value;
-
-  // esto depende de cómo calculas resultados en tu app:
-  const results = detail; // o el objeto de respuestas finales
-  const pdfBlob = generarResults(true);
-
-  enviarResultadosAlDocente(studentName, grade, currentTest, results, pdfBlob);
 }
 
 // ---------- descargar JSON ----------
@@ -1149,7 +1129,7 @@ function truncateText(text, maxLength) {
 }
 
 // ---------- exportar PDF ----------
-function downloadResultsPdf(isBlob = false) {
+function downloadResultsPdf() {
   if (!currentTest) return;
   let lastStored = null;
   try {
@@ -1241,7 +1221,10 @@ function downloadResultsPdf(isBlob = false) {
     y += 10;
 
     const cheatRows = (docData.cheatLogs || []).map(e => [
-      e.when || '',
+      e.when ? new Date(e.when).toLocaleString("es-CO", { 
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      }) : '',
       e.kind || ''
     ]);
 
@@ -1251,12 +1234,16 @@ function downloadResultsPdf(isBlob = false) {
       body: cheatRows,
       styles: {
         fontSize: 9,
-        halign: 'left'
+        halign: 'center',
+        lineWidth: 0.2,
+        lineColor: [200, 200, 200]
       },
       headStyles: {
         fillColor: [192, 57, 43], // rojo
         textColor: 255,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
+        lineWidth: 0.4,
+        lineColor: [180, 180, 180]
       },
       alternateRowStyles: {
         fillColor: [252, 230, 230]
@@ -1266,11 +1253,7 @@ function downloadResultsPdf(isBlob = false) {
   }
 
   // Guardar archivo
-  if isBlob {
-    doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
-  } else {
-    return doc.output("blob");
-  }
+  doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
 }
 
 // ---------- descargar Certificado aparte ----------
