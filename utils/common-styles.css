@@ -199,11 +199,33 @@ input[type="text"]:focus {
 }
 
 /* Espacios en blanco centrados */
-.gap-options {
-  justify-content: center;
-}
 .gap {
+  display: inline-block;
+  min-width: 60px;
+  min-height: 20px;
+  border-bottom: 2px dashed #ff9800;
+  padding: 2px 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  background: #fff8e1;
   text-align: center;
+}
+.gap-options {  
+  justify-content: center;
+  margin-top:10px; 
+  display:flex; 
+  gap:6px; 
+  flex-wrap:wrap; 
+}
+.gap-opt { 
+  padding:4px 8px; 
+  border:1px solid #ffcc80; 
+  border-radius:6px; 
+  background:#fffdf5; 
+  cursor:grab;
+}
+.gap:empty {
+  background: #ffe0b2; /* color diferente si está vacío */
 }
 
 /* Escala Likert responsiva */
@@ -348,30 +370,6 @@ input[type="text"]:focus {
   padding: 6px;
   border: 1px solid #ffcc80;
   border-radius: 6px;
-}
-
-/* GapText */
-.gap { 
-  display:inline-block; 
-  min-width:60px; 
-  border-bottom:2px dashed #ff9800; 
-  padding:2px 4px; 
-  margin:0 2px; 
-  cursor:pointer; 
-  background:#fff8e1;
-}
-.gap-options { 
-  margin-top:10px; 
-  display:flex; 
-  gap:6px; 
-  flex-wrap:wrap; 
-}
-.gap-opt { 
-  padding:4px 8px; 
-  border:1px solid #ffcc80; 
-  border-radius:6px; 
-  background:#fffdf5; 
-  cursor:grab;
 }
 
 /* Ordering */
