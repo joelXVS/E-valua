@@ -160,6 +160,66 @@ body {
   background: #fffdf5;
 }
 
+/* Imágenes responsivas */
+.question-card img,
+.hotspot-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px auto;
+}
+
+/* Inputs y textarea para respuestas */
+textarea,
+input[type="text"] {
+  border: 2px solid #ffcc80;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.3s;
+}
+textarea:focus,
+input[type="text"]:focus {
+  outline: none;
+  border-color: #ff9800;
+  background: #fff8e1;
+}
+
+/* Input numérico */
+.numeric-input {
+  width: 120px;
+  padding: 8px;
+  border: 2px solid #ffcc80;
+  border-radius: 6px;
+  font-size: 1rem;
+  text-align: center;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Espacios en blanco centrados */
+.gap-options {
+  justify-content: center;
+}
+.gap {
+  text-align: center;
+}
+
+/* Escala Likert responsiva */
+.options.likert {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+.options.likert label {
+  text-align: center;
+  border: 1px solid #ffcc80;
+  border-radius: 6px;
+  padding: 6px;
+  background: #fffdf5;
+}
+
 /* Resultados (Estudiantes) */
 .result-summary {
   font-size: 1.1rem;
@@ -268,21 +328,6 @@ body {
 /* Nuevos tipos de preguntas */
 /* ===================== */
 
-/* Escala Likert */
-.options.likert {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-.options.likert label {
-  flex: 1;
-  text-align: center;
-  border: 1px solid #ffcc80;
-  border-radius: 6px;
-  padding: 6px;
-  background: #fffdf5;
-}
-
 /* Matching */
 .match-container {
   display: flex;
@@ -325,33 +370,23 @@ body {
   padding:4px 8px; 
   border:1px solid #ffcc80; 
   border-radius:6px; 
-  background:#fff; 
-  cursor:grab; 
-}
-
-/* Hotspot */
-.hotspot-container { 
-  position:relative; 
-  display:inline-block; 
-}
-.hotspot-img { 
-  max-width:100%; 
-  border:2px solid #ffcc80; 
-  border-radius:8px; 
-  cursor:crosshair; 
+  background:#fffdf5; 
+  cursor:grab;
 }
 
 /* Ordering */
-.ordering { 
-  list-style:none; 
-  padding:0; 
-  margin:10px 0; 
+.ordering {
+  list-style: none;
+  padding: 0;
 }
-.order-item { 
-  padding:8px 12px; 
-  border:1px solid #ffcc80; 
-  border-radius:6px; 
-  background:#fffdf5; 
-  margin-bottom:6px; 
-  cursor:grab; 
+.order-item {
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid #ffcc80;
+  border-radius: 6px;
+  background: #fffdf5;
+  cursor: grab;
+}
+.order-item:active {
+  cursor: grabbing;
 }
