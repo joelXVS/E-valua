@@ -456,8 +456,8 @@ function renderQuestion() {
 
   } else if (q.type === 'numeric') {
     // Numérica
-    inner += `<input type="number" id="num_${currentQuestionIndex}" style="width:150px;" 
-      value="${answers[q.title] || ''}" />`;
+    inner += `<input type="number" id="num_${currentQuestionIndex}" 
+      class="numeric-input" value="${answers[q.title] || ''}" />`;
 
   } else if (q.type === 'match') {
     // Relacionar columnas (select)
