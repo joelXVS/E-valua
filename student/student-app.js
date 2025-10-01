@@ -511,7 +511,7 @@ function renderQuestion() {
               <div class="gap-options" id="gapOpts_${currentQuestionIndex}" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
                 ${optionsHtml}
               </div>
-              <div style="display:flex; justify-content:center; margin-top:12px;">
+              <div style="display:flex; justify-content:center; margin-top:18px;">
                 <button id="resetGapBtn_${currentQuestionIndex}" class="btn">Reiniciar espacios</button>
               </div>`;
   
@@ -652,7 +652,7 @@ function renderQuestion() {
       `).join('')}
     </ul>
     <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-    <p class="small"><strong>NOTA:</strong> Este tipo de pregunta se reordena en cada sesión.</p>`;
+    <p class="small"><strong>NOTA: </strong>Este tipo de pregunta se reordena en cada sesión.</p>`;
 
   } else if (q.type === 'multimedia') {
     // Contenedor del recurso multimedia
@@ -734,7 +734,7 @@ function renderQuestion() {
         `).join('')}
       </ul>
       <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-      <p class="small"><strong>NOTA:</strong> Este tipo de pregunta se reordena en cada sesión.</p>`;
+      <p class="small"><strong>NOTA: </strong>Este tipo de pregunta se reordena en cada sesión.</p>`;
     
       // listeners drag & drop
       setTimeout(() => {
