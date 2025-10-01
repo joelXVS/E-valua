@@ -725,7 +725,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿Cuál es el género principal de 'Clash of Clans'?", "options": ["Estrategia", "RPG", "Carreras", "Deportes"], "answer": 0 },
         { "type": "mcq", "title": "¿Qué company desarrolló 'Candy Crush'?", "options": ["King", "Niantic", "Supercell", "Epic Games"], "answer": 0 },
@@ -763,7 +763,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿De qué país es Shakira?", "options": ["Colombia", "España", "México", "Perú"], "answer": 0 },
         { "type": "mcq", "title": "¿Quién es conocido como 'El Rey del Reguetón' (apodo popular)?", "options": ["Daddy Yankee", "Enrique Iglesias", "J Balvin", "Marc Anthony"], "answer": 0 },
@@ -802,7 +802,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿Cuál es el país con más islas del mundo (según conteos clásicos)?", "options": ["Suecia", "Canadá", "Indonesia", "Filipinas"], "answer": 0 },
         { "type": "tf", "title": "Australia es tanto un país como un continente.", "answer": 1 },
@@ -840,7 +840,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿En qué año fue aprobada la Declaración de Independencia de EEUU?", "options": ["1776","1804","1492","1865"], "answer": 0 },
         { "type": "tf", "title": "El movimiento 'Civil Rights' en EEUU fue central en los años 50-60.", "answer": 1 },
@@ -879,7 +879,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "What is the capital of the United Kingdom?", "options": ["London","Edinburgh","Cardiff","Belfast"], "answer": 0 },
         { "type": "tf", "title": "The Great Wall of China is visible from the Moon (myth).", "answer": 0 },
@@ -917,7 +917,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿Quién es considerado el padre de la computación teórica?", "options": ["Alan Turing","Thomas Edison","Nikola Tesla","Charles Babbage"], "answer": 3 },
         { "type": "tf", "title": "La primera web pública fue creada en los años 90.", "answer": 1 },
@@ -956,7 +956,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿Cuál es la unidad base de la vida?", "options": ["Célula","Átomo","Molécula","Organismo"], "answer": 0 },
         { "type": "tf", "title": "El agua está compuesta por hidrógeno y oxígeno.", "answer": 1 },
@@ -994,7 +994,7 @@
       "endDateTime": "2025-12-01T00:00:00",
       "showResults": true,
       "showCorrect": false,
-      "groups": [],
+      "groups": ["Invitado"],
       "questions": [
         { "type": "mcq", "title": "¿Cuántos jugadores hay en cancha por equipo en fútbol (11 vs 11)?", "options": ["11","10","12","9"], "answer": 0 },
         { "type": "tf", "title": "En baloncesto se puede anotar 3 puntos desde fuera de la línea de triple.", "answer": 1 },
