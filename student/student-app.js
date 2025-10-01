@@ -91,6 +91,37 @@ function blockStudent(_name, code, reason) {
   }
 }
 
+// ----------------- Retake cooldown helpers -----------------
+const RETAKE_COOLDOWN_MINUTES = 45;
+
+function getLastAttemptKey(testCode, deviceId) {
+  return `lastAttempt::${testCode}::${deviceId}`;
+}
+
+function setLastAttemptTime(testCode, deviceId, whenIso) {
+  try {
+    const key = getLastAttemptKey(testCode, deviceId);
+    localStorage.setItem(key, whenIso || new Date().toISOString());
+  } catch (e) {
+    console.error('Error guardando lastAttempt:', e);
+  }
+}
+
+function getLastAttemptTime(testCode, deviceId) {
+  try {
+    const key = getLastAttemptKey(testCode, deviceId);
+    const v = localStorage.getItem(key);
+    return v ? new Date(v) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function minutesSince(date) {
+  if (!date) return Infinity;
+  return (Date.now() - date.getTime()) / 1000 / 60;
+}
+
 // cheat logs: por intento (se guarda también en localStorage bajo 'cheatLogs' por sesión)
 function appendCheatLogForAttempt(sessionId, entry) {
   // sessionId: string (e.g., `${name}::${code}::${timestamp}`)
@@ -116,24 +147,75 @@ function getCheatLogsForSession(sessionId) {
 // ---------- validaciones inicio ----------
 function validateStartForm() {
   const name = $('studentName').value.trim();
+  const rawCode = $('applyCode').value.trim();
+  const override = rawCode.endsWith(':NEW!');
+  const code = override ? rawCode.replace(/:NEW!$/, '') : rawCode;
   const grade = $('gradeSelect').value;
-  const code = $('applyCode').value.trim();
-  $('btnContinue').disabled = !(name && grade && code);
-  const msg = $('startMsg');
-  msg.textContent = '';
-  if (code && isStudentBlocked(name, code)) {
-    msg.textContent = 'Este dispositivo está bloqueado para esta prueba y no se puede iniciar.';
+
+  // Elemento donde mostramos el mensaje de inicio
+  const msgEl = $('startMsg');
+  if (msgEl) {
+    msgEl.textContent = '';
+    msgEl.style.color = ''; // reset color
   }
+
+  // básico: activar/desactivar botón según campos mínimos
+  let canContinue = Boolean(name && grade && code);
+
+  // Validaciones adicionales y mensajes visuales
+  if (code && isStudentBlocked(name, code)) {
+    // dispositivo bloqueado para esta prueba
+    if (msgEl) {
+      msgEl.textContent = 'Este dispositivo está bloqueado para esta prueba y no se puede iniciar.';
+      msgEl.style.color = 'crimson';
+    }
+    canContinue = false;
+  } else if (code) {
+    // revisar cooldown de reintento (si existe lastAttempt)
+    // nota: getLastAttemptTime espera el código limpio (sin :NEW!)
+    const deviceId = getDeviceId();
+    const last = getLastAttemptTime(code, deviceId);
+
+    if (!override && last) {
+      const mins = minutesSince(last);
+      if (mins < RETAKE_COOLDOWN_MINUTES) {
+        const remaining = Math.ceil(RETAKE_COOLDOWN_MINUTES - mins);
+        if (msgEl) {
+          msgEl.textContent = `No puedes volver a presentar esta prueba todavía. Espera ${remaining} minuto(s). Para omitir esto añade ':NEW!' al final del código (ej: ${code}:NEW!).`;
+          msgEl.style.color = '#b45309'; // naranja/advertencia
+        }
+        canContinue = false;
+      } else {
+        // si ya pasó el tiempo, no mostrar nada
+        if (msgEl) {
+          msgEl.textContent = '';
+          msgEl.style.color = '';
+        }
+      }
+    } else if (override) {
+      // mostrar indicador de override (opcional)
+      if (msgEl) {
+        msgEl.textContent = "Código con sufijo ':NEW!' detectado — se omitirá la espera de reintentos.";
+        msgEl.style.color = 'green';
+      }
+    }
+  }
+
+  // Actualizar estado del botón
+  $('btnContinue').disabled = !canContinue;
 }
 
 function canStartExam() {
   const name = $('studentName').value.trim();
-  const code = $('applyCode').value.trim();
-  if (name.length < 16) {
+  const rawCode = $('applyCode').value.trim();
+  const override = rawCode.endsWith(':NEW!');
+  const code = override ? rawCode.replace(/:NEW!$/, '') : rawCode;
+
+  if (name.length <= 16) {
     alert('El nombre completo debe tener al menos 16 caracteres.');
     return false;
   }
-  if (code.length < 8) {
+  if (code.length <= 8) {
     alert('El código de aplicación debe tener al menos 8 caracteres.');
     return false;
   }
@@ -141,6 +223,19 @@ function canStartExam() {
     alert('No puedes iniciar la prueba: se detectó plagio desde este dispositivo. Este código está bloqueado.');
     return false;
   }
+
+  // cooldown check
+  const deviceId = getDeviceId();
+  const last = getLastAttemptTime(code, deviceId);
+  if (!override && last) {
+    const mins = minutesSince(last);
+    if (mins < RETAKE_COOLDOWN_MINUTES) {
+      const remaining = Math.ceil(RETAKE_COOLDOWN_MINUTES - mins);
+      alert(`No puedes volver a presentar esta prueba todavía. Debes esperar ${remaining} minuto(s). Si tienes un código especial, añade ':NEW!' al final del código de aplicación para omitir el tiempo de espera.`);
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -189,11 +284,14 @@ let examStartTime = null;
 // ---------- iniciar examen ----------
 async function startExam() {
   if (!canStartExam()) return;
-
   const studentName = $('studentName').value.trim();
-  const code = $('applyCode').value.trim();
-  // buscar prueba por código
+  const rawCode = $('applyCode').value.trim();
+  const override = rawCode.endsWith(':NEW!');
+  const code = override ? rawCode.replace(/:NEW!$/, '') : rawCode;
+
+  // buscar prueba por código limpio
   currentTest = (tests.tests || []).find(t => t.code === code);
+
   if (!currentTest) {
     alert('Código inválido o prueba no encontrada.');
     return;
@@ -1571,7 +1669,7 @@ function finishExam(cheatingForced = false) {
       gaptext: "Completar espacios",
       hotspot: "Imagen interactiva",
       ordering: "Ordenar secuencia"
-    }[d.type] || "Otro";
+    }[d.type] || "Mixto";
 
     return `<div style="margin-bottom:8px;">
       <strong>${d.index}. ${escapeHtml(d.title)}</strong><br/>
@@ -1616,6 +1714,16 @@ function finishExam(cheatingForced = false) {
   msgEl.style.marginTop = "12px";
   msgEl.textContent = msg;
   $('result').appendChild(msgEl);
+
+  // guardar timestamp del intento para cooldown si NO fue finalizado por trampa
+  if (!cheatingForced) {
+    try {
+      const deviceId = getDeviceId();
+      setLastAttemptTime(currentTest.code, deviceId, new Date().toISOString());
+    } catch (e) {
+      console.warn('No se pudo guardar lastAttempt:', e);
+    }
+  }
 
   enviarResultadosAlDocente(currentTest, studentName, $('metaGrade').textContent, totalScore, JSON.stringify(details, null, 2));
 
