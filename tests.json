@@ -663,57 +663,57 @@
       ]        
     },
     {
-  "code": "ENC-SS-2025",
-  "name": "Encuesta de Satisfacción - Ciencias Sociales (Profe Yolanda Valencia con apoyo de Joel Valencia)",
-  "time": 20,
-  "points": { "ok": 0, "bad": 0 },
-  "groups": ["Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
-  "showResults": false,
-  "showCorrect": false,
-  "questions": [
-    {
-      "type": "likert",
-      "title": "Las clases de Ciencias Sociales con la profesora Yolanda Valencia me resultan interesantes.",
-      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-    },
-    {
-      "type": "likert",
-      "title": "El apoyo de Joel Valencia en las clases ha sido útil para mi aprendizaje.",
-      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-    },
-    {
-      "type": "likert",
-      "title": "Los temas vistos en las clases son claros y comprensibles.",
-      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-    },
-    {
-      "type": "likert",
-      "title": "Me siento motivado/a a participar en las clases de Ciencias Sociales.",
-      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-    },
-    {
-      "type": "likert",
-      "title": "La metodología utilizada por la profesora Yolanda es adecuada para mi aprendizaje.",
-      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-    },
-    {
-      "type": "likert",
-      "title": "En general, estoy satisfecho/a con las clases de Ciencias Sociales.",
-      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-    },
-    {
-      "type": "open",
-      "title": "¿Qué aspectos positivos destacarías de las clases de Ciencias Sociales con la profesora Yolanda y el apoyo de Joel?"
-    },
-    {
-      "type": "open",
-      "title": "¿Qué recomendaciones tienes para mejorar las clases?"
-    },
-    {
-      "type": "open",
-      "title": "Describe cómo te has sentido en estas clases y qué impacto han tenido en tu aprendizaje."
+      "code": "EN-SOC-GEN",
+      "name": "Encuesta de Satisfacción - Ciencias Sociales (Profe Yolanda Valencia con apoyo de Joel Valencia)",
+      "time": 10,
+      "points": { "ok": 0, "bad": 0 },
+      "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4", "Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4", "Undécimo 1", "Undécimo 2", "Undécimo 3"],
+      "showResults": false,
+      "showCorrect": false,
+      "questions": [
+        {
+          "type": "likert",
+          "title": "Las clases de Ciencias Sociales con la profesora Yolanda Valencia me resultan interesantes.",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "likert",
+          "title": "El apoyo de Joel Valencia en las clases ha sido útil para mi aprendizaje.",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "likert",
+          "title": "Los temas vistos en las clases son claros y comprensibles.",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "likert",
+          "title": "Me siento motivado/a a participar en las clases de Ciencias Sociales.",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "likert",
+          "title": "La metodología utilizada por la profesora Yolanda es adecuada para mi aprendizaje.",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "likert",
+          "title": "En general, estoy satisfecho/a con las clases de Ciencias Sociales.",
+          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+        },
+        {
+          "type": "open",
+          "title": "¿Qué aspectos positivos destacarías de las clases de Ciencias Sociales con la profesora Yolanda y el apoyo de Joel?"
+        },
+        {
+          "type": "open",
+          "title": "¿Qué recomendaciones tienes para mejorar las clases?"
+        },
+        {
+          "type": "open",
+          "title": "Describe cómo te has sentido en estas clases y qué impacto han tenido en tu aprendizaje."
+        }
+      ]
     }
-  ]
-}
   ]
 }
