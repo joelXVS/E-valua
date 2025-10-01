@@ -1847,7 +1847,6 @@ function downloadResultsPdf() {
       body: rows,
       styles: {
         fontSize: 9,
-        halign: 'center',
         valign: 'middle',
         overflow: 'linebreak',
         cellWidth: 'wrap', 
@@ -1864,7 +1863,17 @@ function downloadResultsPdf() {
       alternateRowStyles: {
         fillColor: [245, 245, 245]
       },
-      margin: { left: 40, right: 40 }
+      margin: { left: 40, right: 40 },
+
+      columnStyles: {
+        0: { cellWidth: 30, halign: 'center' },   // N°
+        1: { cellWidth: 260, halign: 'left' },    // Pregunta (más ancha)
+        2: { cellWidth: 200, halign: 'left' },    // Respuesta alumno (wrapping)
+        3: { cellWidth: 60, halign: 'center' }    // Puntos
+      },
+    
+      // Si quieres que la tabla ocupe únicamente el ancho necesario:
+      tableWidth: 'auto'
     });
 
     y = doc.lastAutoTable.finalY + 20;
