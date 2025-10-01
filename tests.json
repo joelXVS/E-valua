@@ -663,137 +663,57 @@
       ]        
     },
     {
-      "code": "TEST-ALLTYPES-001",
-      "name": "Prueba Demo — Todos los Tipos",
-      "time": 30,
-      "points": { "ok": 1, "bad": 0 },
-      "groups": ["Séptimo 1", "Octavo 1", "Undécimo 1"],
-      "showCorrect": true,
-      "questions": [
-        {
-          "type": "mcq",
-          "title": "¿Cuál es la capital de Francia?",
-          "options": ["Madrid", "París", "Roma", "Berlín"],
-          "answer": 1
-        },
-        {
-          "type": "multi",
-          "title": "Selecciona los planetas del sistema solar.",
-          "options": ["Marte", "Júpiter", "Plutón", "Girasol"],
-          "answer": [0,1]
-        },
-        {
-          "type": "tf",
-          "title": "El agua hierve a 100°C al nivel del mar.",
-          "answer": 1
-        },
-        {
-          "type": "open",
-          "title": "Explica brevemente la importancia de la fotosíntesis.",
-          "keywords": [
-            { "word": "oxígeno", "weight": 1 },
-            { "word": "energía", "weight": 1 },
-            { "word": "plantas", "weight": 1 }
-          ],
-          "freeAnswerLength": 30
-        },
-        {
-          "type": "short",
-          "title": "¿En qué año llegó Cristóbal Colón a América?",
-          "answer": "1492"
-        },
-        {
-          "type": "likert",
-          "title": "Me gusta aprender ciencias naturales.",
-          "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
-        },
-        {
-          "type": "numeric",
-          "title": "¿Cuánto es 12 × 8?",
-          "answer": 96
-        },
-        {
-          "type": "match",
-          "title": "Relaciona los países con sus capitales.",
-          "pairs": [
-            { "left": "Colombia", "right": ["Bogotá","Lima","Quito"], "correct": "Bogotá" },
-            { "left": "Perú", "right": ["Caracas","Lima","Quito"], "correct": "Lima" }
-          ]
-        },
-        {
-          "type": "gaptext",
-          "title": "Completa el enunciado sobre el sistema solar",
-          "sentence": "La Tierra gira alrededor del ___ y tarda ___ días.",
-          "gaps": ["Sol","365"],
-          "options": ["Luna","Sol","24","365"],
-          "answers": { "0": "Sol", "1": "365" }
-        },
-        {
-          "type": "ordering",
-          "title": "Ordena los pasos de la cadena alimenticia.",
-          "items": ["Productores","Consumidores primarios","Consumidores secundarios","Descomponedores"],
-          "correct": ["Productores","Consumidores primarios","Consumidores secundarios","Descomponedores"]
-        },
-        {
-          "type": "hotspot",
-          "title": "Haz clic en el continente africano.",
-          "image": "https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg",
-          "correctArea": { "x1": 0.55, "y1": 0.55, "x2": 0.68, "y2": 0.75 }
-        },
-        {
-          "type": "multimedia",
-          "title": "Video sobre reciclaje",
-          "mediaType": "video",
-          "src": "https://www.w3schools.com/html/mov_bbb.mp4",
-          "subtype": "mcq",
-          "subquestion": {
-            "title": "¿Cuál fue la idea principal del video?",
-            "options": ["Reducir, reutilizar y reciclar","Viajar en avión","Pescar en el mar","Construir casas"],
-            "answer": 0
-          }
-        },
-        {
-          "type": "multimedia",
-          "title": "Audio sobre un relato histórico",
-          "mediaType": "audio",
-          "src": "https://www.w3schools.com/html/horse.mp3",
-          "subtype": "open",
-          "subquestion": {
-            "title": "Resume en tus palabras lo escuchado.",
-            "keywords": [
-              { "word": "historia", "weight": 1 },
-              { "word": "batalla", "weight": 1 }
-            ],
-            "freeAnswerLength": 25
-          }
-        },
-        {
-          "type": "multimedia",
-          "title": "Imagen de banderas",
-          "mediaType": "image",
-          "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Flag_of_Colombia.svg/320px-Flag_of_Colombia.svg.png",
-          "subtype": "match",
-          "subquestion": {
-            "title": "Relaciona cada color con su significado.",
-            "pairs": [
-              { "left": "Amarillo", "right": ["Oro","Cielo","Sangre"], "correct": "Oro" },
-              { "left": "Azul", "right": ["Riqueza","Cielo","Mar"], "correct": "Cielo" }
-            ]
-          }
-        },
-        {
-          "type": "multimedia",
-          "title": "Actividad interactiva",
-          "mediaType": "image",
-          "src": "https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg",
-          "subtype": "hotspot",
-          "subquestion": {
-            "title": "Haz clic en el continente europeo.",
-            "image": "https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg",
-            "correctArea": { "x1": 0.55, "y1": 0.25, "x2": 0.68, "y2": 0.45 }
-          }
-        }
-      ]
+  "code": "ENC-SS-2025",
+  "name": "Encuesta de Satisfacción - Ciencias Sociales (Profe Yolanda Valencia con apoyo de Joel Valencia)",
+  "time": 20,
+  "points": { "ok": 0, "bad": 0 },
+  "groups": ["Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4"],
+  "showResults": false,
+  "showCorrect": false,
+  "questions": [
+    {
+      "type": "likert",
+      "title": "Las clases de Ciencias Sociales con la profesora Yolanda Valencia me resultan interesantes.",
+      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+    },
+    {
+      "type": "likert",
+      "title": "El apoyo de Joel Valencia en las clases ha sido útil para mi aprendizaje.",
+      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+    },
+    {
+      "type": "likert",
+      "title": "Los temas vistos en las clases son claros y comprensibles.",
+      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+    },
+    {
+      "type": "likert",
+      "title": "Me siento motivado/a a participar en las clases de Ciencias Sociales.",
+      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+    },
+    {
+      "type": "likert",
+      "title": "La metodología utilizada por la profesora Yolanda es adecuada para mi aprendizaje.",
+      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+    },
+    {
+      "type": "likert",
+      "title": "En general, estoy satisfecho/a con las clases de Ciencias Sociales.",
+      "scale": ["Muy en desacuerdo","En desacuerdo","Neutral","De acuerdo","Muy de acuerdo"]
+    },
+    {
+      "type": "open",
+      "title": "¿Qué aspectos positivos destacarías de las clases de Ciencias Sociales con la profesora Yolanda y el apoyo de Joel?"
+    },
+    {
+      "type": "open",
+      "title": "¿Qué recomendaciones tienes para mejorar las clases?"
+    },
+    {
+      "type": "open",
+      "title": "Describe cómo te has sentido en estas clases y qué impacto han tenido en tu aprendizaje."
     }
+  ]
+}
   ]
 }
