@@ -491,102 +491,147 @@ function renderQuestion() {
     inner += `</div>`;
 
   } else if (q.type === "gaptext") {
-    // Construir texto con gaps
+    // Construir texto con gaps — restaurando valores guardados y ocultando opciones usadas
     let sentence = q.sentence || q.title || "";
+  
+    // Al renderizar, mostrar el texto guardado dentro de cada gap (si existe)
     (q.gaps || []).forEach((gap, idx) => {
-      sentence = sentence.replace("___", `<span class="gap" data-gap="${idx}"></span>`);
+      const filled = (answers[q.title] && answers[q.title][idx]) ? escapeHtml(answers[q.title][idx]) : "";
+      sentence = sentence.replace("___", `<span class="gap" data-gap="${idx}">${filled}</span>`);
     });
   
-    inner += `<div class="gap-sentence">${sentence}</div>
-              <div class="gap-options" id="gapOpts_${currentQuestionIndex}">
-                ${(q.options || []).map(opt => `<div class="gap-opt" draggable="true">${opt}</div>`).join("")}
-              </div style="display:flex; justify-content:center; margin-top:12px;">
-              <button id="resetGapBtn_${currentQuestionIndex}" class="btn">
-                Reiniciar espacios
-              </button>`;
+    // Generar lista de opciones excluyendo las ya usadas (si ya hay respuestas guardadas)
+    const used = (answers[q.title] && typeof answers[q.title] === 'object')
+      ? Object.values(answers[q.title]).filter(v => v !== undefined && v !== null)
+      : [];
+    const optionsHtml = (q.options || []).filter(opt => !used.includes(opt))
+      .map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
   
+    inner += `<div class="gap-sentence">${sentence}</div>
+              <div class="gap-options" id="gapOpts_${currentQuestionIndex}" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+                ${optionsHtml}
+              </div>
+              <div style="display:flex; justify-content:center; margin-top:12px;">
+                <button id="resetGapBtn_${currentQuestionIndex}" class="btn">Reiniciar espacios</button>
+              </div>`;
+  
+    // Inicializar drag & drop y listeners (con guardado consistente)
     setTimeout(() => {
       const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
-      const gaps = document.querySelectorAll(".gap");
-      const opts = gapOptions.querySelectorAll(".gap-opt");
+      const gaps = container.querySelectorAll(".gap");
+      if (!gapOptions) return;
   
       // activar drag en opciones iniciales
+      const opts = gapOptions.querySelectorAll(".gap-opt");
       opts.forEach(addDragEvents);
   
       // permitir soltar en gaps
       gaps.forEach(gap => {
-        gap.addEventListener("dragover", e => e.preventDefault());
-        gap.addEventListener("drop", e => {
+        gap.addEventListener('dragover', e => e.preventDefault());
+        gap.addEventListener('drop', e => {
           e.preventDefault();
           const dragged = document.querySelector(".dragging");
           if (!dragged) return;
   
-          // si ya había algo en este gap -> devolverlo a la lista
-          if (gap.textContent.trim() !== "") {
+          // preparar objeto answers si no existe
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
+            answers[q.title] = {};
+          }
+  
+          const gapIdx = String(gap.dataset.gap);
+  
+          // si ya había algo en este gap -> devolverlo a la lista y borrar de answers
+          const oldText = gap.textContent.trim();
+          if (oldText !== "") {
+            // crear opción de retorno
             const oldWord = document.createElement("div");
             oldWord.className = "gap-opt";
-            oldWord.textContent = gap.textContent;
+            oldWord.textContent = oldText;
             oldWord.setAttribute("draggable", "true");
             gapOptions.appendChild(oldWord);
             addDragEvents(oldWord);
+            // quitar del objeto answers
+            if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
+              delete answers[q.title][gapIdx];
+            }
           }
   
-          // poner el nuevo texto
+          // poner el nuevo texto en el gap y guardarlo
           gap.textContent = dragged.textContent;
+          answers[q.title][gapIdx] = dragged.textContent;
   
-          // eliminar el arrastrado de donde estaba
-          dragged.remove();
+          // eliminar el elemento que fue arrastrado (viene de la lista o de otro gap)
+          if (dragged.parentElement) dragged.parentElement.removeChild(dragged);
+  
+          saveExamProgress();
+          updateNavButtonsAndFinishButton();
         });
       });
   
-      // permitir soltar en la lista de opciones
+      // permitir soltar en la lista de opciones (devolver desde gap)
       gapOptions.addEventListener("dragover", e => e.preventDefault());
       gapOptions.addEventListener("drop", e => {
         e.preventDefault();
         const dragged = document.querySelector(".dragging");
         if (!dragged) return;
   
-        // devolver palabra a la lista
+        // crear una nueva opción en la lista con el texto
         const opt = document.createElement("div");
         opt.className = "gap-opt";
         opt.textContent = dragged.textContent;
         opt.setAttribute("draggable", "true");
         gapOptions.appendChild(opt);
         addDragEvents(opt);
-
-        // limpiar si provenía de un gap
-        if (dragged.parentElement.classList.contains("gap")) {
-          dragged.parentElement.innerHTML = "";
+  
+        // si provenía de un gap, limpiar ese gap y borrar la respuesta guardada
+        if (dragged.parentElement && dragged.parentElement.classList.contains("gap")) {
+          const parentGap = dragged.parentElement;
+          const gapIdx = String(parentGap.dataset.gap);
+          parentGap.innerHTML = "";
+          if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
+            delete answers[q.title][gapIdx];
+          }
         }
-        dragged.remove();
+  
+        // eliminar el arrastrado original
+        if (dragged.parentElement) dragged.parentElement.removeChild(dragged);
+  
+        saveExamProgress();
+        updateNavButtonsAndFinishButton();
       });
     }, 50);
-
-    // Botón para reiniciar los espacios
+  
+    // Botón para reiniciar los espacios (centrado y consistente)
     setTimeout(() => {
       const resetBtn = document.getElementById(`resetGapBtn_${currentQuestionIndex}`);
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
           const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
-          const gaps = document.querySelectorAll(".gap");
-          
-          // Devolver todas las palabras a la lista de opciones
+          const gaps = container.querySelectorAll(".gap");
+  
+          // devolver todas las palabras visibles a la lista de opciones
           gaps.forEach(gap => {
             if (gap.textContent.trim() !== "") {
               const opt = document.createElement("div");
               opt.className = "gap-opt";
               opt.textContent = gap.textContent;
               opt.setAttribute("draggable", "true");
-              gapOptions.appendChild(opt);
+              if (gapOptions) gapOptions.appendChild(opt);
               addDragEvents(opt);
-              
-              // Limpiar el gap
               gap.textContent = "";
             }
           });
-          
-          // Limpiar las respuestas guardadas
+  
+          // limpiar las respuestas guardadas para esta pregunta
           delete answers[q.title];
+  
+          // reconstruir la lista completa de opciones (si quieres que vuelva a la lista original)
+          if (gapOptions) {
+            gapOptions.innerHTML = (q.options || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
+            // volver a enlazar eventos
+            gapOptions.querySelectorAll('.gap-opt').forEach(addDragEvents);
+          }
+  
           saveExamProgress();
           updateNavButtonsAndFinishButton();
         });
