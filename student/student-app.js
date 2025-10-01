@@ -494,8 +494,8 @@ function renderQuestion() {
     inner += `<div class="gap-sentence">${sentence}</div>
               <div class="gap-options" id="gapOpts_${currentQuestionIndex}">
                 ${(q.options || []).map(opt => `<div class="gap-opt" draggable="true">${opt}</div>`).join("")}
-              </div>
-              <button id="resetGapBtn_${currentQuestionIndex}" class="btn" style="margin-top:12px;">
+              </div style="display:flex; justify-content:center; margin-top:12px;">
+              <button id="resetGapBtn_${currentQuestionIndex}" class="btn">
                 Reiniciar espacios
               </button>`;
   
@@ -600,7 +600,8 @@ function renderQuestion() {
         <li class="order-item" draggable="true" data-idx="${i}">${escapeHtml(item)}</li>
       `).join('')}
     </ul>
-    <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>`;
+    <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
+    <p class="small"><strong>NOTA:</strong> Este tipo de pregunta se reordena en cada sesión.</p>`;
 
   } else if (q.type === 'multimedia') {
     // Contenedor del recurso multimedia
@@ -680,7 +681,9 @@ function renderQuestion() {
         ${items.map((item, i) => `
           <li class="order-item" draggable="true" data-idx="${i}">${escapeHtml(item)}</li>
         `).join('')}
-      </ul>`;
+      </ul>
+      <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
+      <p class="small"><strong>NOTA:</strong> Este tipo de pregunta se reordena en cada sesión.</p>`;
     
       // listeners drag & drop
       setTimeout(() => {
@@ -772,13 +775,15 @@ function renderQuestion() {
   // Match
   (q.pairs || []).forEach((p,i) => {
     const sel = container.querySelector(`#match_${currentQuestionIndex}_${i}`);
-    if (sel) sel.addEventListener('change', () => {
-      if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
-        answers[q.title] = {};
-      }
-      answers[q.title][i] = sel.value;   // no usar .match
-      updateNavButtonsAndFinishButton();
-    });
+    if (sel) {
+      sel.addEventListener('change', () => {
+        if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
+          answers[q.title] = {};
+        }
+        answers[q.title][i] = sel.value;   // no usar .match
+        updateNavButtonsAndFinishButton();
+      });
+    }
   });
 
   // GapText (drag & drop)
