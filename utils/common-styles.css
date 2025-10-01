@@ -313,6 +313,9 @@ input[type="text"]:focus {
   background: #fff8e1;
   border-radius: 8px;
 }
+.results-buttons {
+  margin-bottom: 20px;
+}
 
 /* Footer */
 .footer {
