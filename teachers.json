@@ -4,7 +4,7 @@
       "name": "Joel Valencia",
       "user": "jvalencia",
       "pass": "@jvalencia",
-      "tests": ["CONS-0801A033", "CONS-0802M030", "EN-SOC-GEN"],
+      "tests": ["CONS-0801A033", "CONS-0802M030", "EN-SOC-GEN", "VM-0001P025", "CL-0002P025", "CP-0003P025", "CA-0004P025", "ENG-0005P025", "HT-0006P025", "CB-0007P025", "DP-0008P025"],
       "email": "justindk456@gmail.com"
     },
     {
