@@ -92,35 +92,20 @@ function blockStudent(_name, code, reason) {
 }
 
 // ----------------- Retake cooldown helpers -----------------
-const RETAKE_COOLDOWN_MINUTES = 45;
+const RETAKE_COOLDOWN_MINUTES = 60;
 
 function getLastAttemptKey(testCode, deviceId) {
   return `lastAttempt::${testCode}::${deviceId}`;
 }
-
 function setLastAttemptTime(testCode, deviceId, whenIso) {
-  try {
-    const key = getLastAttemptKey(testCode, deviceId);
-    localStorage.setItem(key, whenIso || new Date().toISOString());
-  } catch (e) {
-    console.error('Error guardando lastAttempt:', e);
-  }
+  try { localStorage.setItem(getLastAttemptKey(testCode, deviceId), whenIso || new Date().toISOString()); }
+  catch(e){ console.warn(e); }
 }
-
 function getLastAttemptTime(testCode, deviceId) {
-  try {
-    const key = getLastAttemptKey(testCode, deviceId);
-    const v = localStorage.getItem(key);
-    return v ? new Date(v) : null;
-  } catch (e) {
-    return null;
-  }
+  try { const v = localStorage.getItem(getLastAttemptKey(testCode, deviceId)); return v ? new Date(v) : null; }
+  catch(e){ return null; }
 }
-
-function minutesSince(date) {
-  if (!date) return Infinity;
-  return (Date.now() - date.getTime()) / 1000 / 60;
-}
+function minutesSince(date) { if (!date) return Infinity; return (Date.now() - date.getTime())/1000/60; }
 
 // cheat logs: por intento (se guarda también en localStorage bajo 'cheatLogs' por sesión)
 function appendCheatLogForAttempt(sessionId, entry) {
