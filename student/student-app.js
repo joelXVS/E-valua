@@ -166,7 +166,7 @@ function validateStartForm() {
       if (mins < RETAKE_COOLDOWN_MINUTES) {
         const remaining = Math.ceil(RETAKE_COOLDOWN_MINUTES - mins);
         if (msgEl) {
-          msgEl.textContent = `No puedes volver a presentar esta prueba todavía. Espera ${remaining} minuto(s). Para omitir esto añade ':NEW!' al final del código (ej: ${code}:NEW!).`;
+          msgEl.textContent = `No puedes volver a presentar esta prueba todavía. Espera ${remaining} minuto(s).`;
           msgEl.style.color = '#b45309'; // naranja/advertencia
         }
         canContinue = false;
@@ -216,7 +216,7 @@ function canStartExam() {
     const mins = minutesSince(last);
     if (mins < RETAKE_COOLDOWN_MINUTES) {
       const remaining = Math.ceil(RETAKE_COOLDOWN_MINUTES - mins);
-      alert(`No puedes volver a presentar esta prueba todavía. Debes esperar ${remaining} minuto(s). Si tienes un código especial, añade ':NEW!' al final del código de aplicación para omitir el tiempo de espera.`);
+      alert(`No puedes volver a presentar esta prueba todavía. Debes esperar ${remaining} minuto(s).`);
       return false;
     }
   }
