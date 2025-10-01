@@ -685,6 +685,38 @@ function renderQuestion() {
         `).join('')}
       </ul>`;
     
+      // listeners drag & drop
+      setTimeout(() => {
+        const list = document.getElementById(`multi_order_${currentQuestionIndex}`);
+        if (list) {
+          let dragged;
+          list.querySelectorAll('.order-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+              dragged = item;
+              e.dataTransfer.effectAllowed = "move";
+            });
+            item.addEventListener('dragover', e => e.preventDefault());
+            item.addEventListener('drop', e => {
+              e.preventDefault();
+              if (dragged && dragged !== item) {
+                const rect = item.getBoundingClientRect();
+                const isAfter = (e.clientY - rect.top) > rect.height / 2;
+                list.insertBefore(dragged, isAfter ? item.nextSibling : item);
+    
+                // Asegurar que sea objeto antes de guardar
+                if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
+                  answers[q.title] = {};
+                }
+    
+                answers[q.title].ordering = [...list.querySelectorAll('.order-item')]
+                  .map(li => li.textContent);
+    
+                updateNavButtonsAndFinishButton();
+              }
+            });
+          });
+        }
+      }, 50);
     } else if (subType === 'hotspot') {
       inner += `<div class="hotspot-container">
         <img src="${subQ.image}" alt="Hotspot multimedia" class="hotspot-img" />
@@ -744,11 +776,15 @@ function renderQuestion() {
   (q.pairs || []).forEach((p,i) => {
     const sel = container.querySelector(`#match_${currentQuestionIndex}_${i}`);
     if (sel) sel.addEventListener('change', () => {
-      if (!answers[q.title]) answers[q.title] = {};
-      answers[q.title][i] = sel.value;
+      if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
+        answers[q.title] = {};
+      }
+      if (!answers[q.title].match) answers[q.title].match = {};
+      answers[q.title].match[i] = sel.value;
       updateNavButtonsAndFinishButton();
     });
   });
+
 
   // GapText (drag & drop)
   container.querySelectorAll('.gap-opt').forEach(opt => {
@@ -1166,9 +1202,12 @@ function formatAnswer(q, ans) {
 
     case "match":
       // correspondencia
-      return Object.entries(ans)
-        .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
-        .join("; ");
+      if (ans.match) {
+        return Object.entries(ans.match)
+          .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
+          .join("; ");
+      }
+      return "Sin responder";
 
     case "gaptext":
       // completar espacios
