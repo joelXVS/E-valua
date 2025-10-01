@@ -583,9 +583,6 @@ function renderQuestion() {
           delete answers[q.title];
           saveExamProgress();
           updateNavButtonsAndFinishButton();
-          
-          // Mensaje de confirmación opcional
-          alert("Los espacios han sido reiniciados. Puedes volver a arrastrar las palabras.");
         });
       }
     }, 100);
@@ -779,12 +776,10 @@ function renderQuestion() {
       if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
         answers[q.title] = {};
       }
-      if (!answers[q.title].match) answers[q.title].match = {};
-      answers[q.title].match[i] = sel.value;
+      answers[q.title][i] = sel.value;   // no usar .match
       updateNavButtonsAndFinishButton();
     });
   });
-
 
   // GapText (drag & drop)
   container.querySelectorAll('.gap-opt').forEach(opt => {
@@ -858,6 +853,7 @@ function renderQuestion() {
 
   // ----- LISTENERS MULTIMEDIA -----
   if (q.type === 'multimedia') {
+    const subQ = q.subquestion || {}; 
     const subType = q.subtype;
   
     if (subType === 'open') {
@@ -1201,13 +1197,9 @@ function formatAnswer(q, ans) {
       return String(ans);
 
     case "match":
-      // correspondencia
-      if (ans.match) {
-        return Object.entries(ans.match)
-          .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
-          .join("; ");
-      }
-      return "Sin responder";
+      return Object.entries(ans)
+        .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
+        .join("; ");
 
     case "gaptext":
       // completar espacios
@@ -1228,7 +1220,11 @@ function formatAnswer(q, ans) {
     case "multimedia":
       const sub = q.subquestion || {};
       const subtype = q.subtype;
-      const ansVal = ans?.[subtype]; // 👈 ahora leemos según clave
+      let ansVal;
+      if (subtype === "match") ansVal = ans?.match;
+      else if (subtype === "ordering") ansVal = ans?.ordering;
+      else if (subtype === "hotspot") ansVal = ans?.hotspot;
+      else ansVal = ans?.[subtype];
     
       if (subtype === "ordering") {
         return Array.isArray(ansVal) ? ansVal.join(" → ") : String(ansVal);
