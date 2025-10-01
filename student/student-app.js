@@ -473,12 +473,18 @@ function renderQuestion() {
     // Relacionar columnas (select)
     inner += `<div class="match-container">`;
     (q.pairs || []).forEach((p, i) => {
-      const ans = answers[q.title]?.[i] || "";
+      const savedAns = (typeof answers[q.title] === "object" && answers[q.title] !== null)
+        ? answers[q.title][i] 
+        : ""; // si no hay nada guardado
+      
       inner += `<div class="match-row">
         <span>${escapeHtml(p.left)}</span>
         <select id="match_${currentQuestionIndex}_${i}">
           <option value="">-- Selecciona --</option>
-          ${p.right.map(r => `<option value="${escapeHtml(r)}" ${ans===r?'selected':''}>${escapeHtml(r)}</option>`).join('')}
+          ${p.right.map(r => `
+            <option value="${escapeHtml(r)}" ${savedAns===r?'selected':''}>
+              ${escapeHtml(r)}
+            </option>`).join('')}
         </select>
       </div>`;
     });
@@ -780,7 +786,7 @@ function renderQuestion() {
         if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
           answers[q.title] = {};
         }
-        answers[q.title][i] = sel.value;   // no usar .match
+        answers[q.title][i] = sel.value;
         updateNavButtonsAndFinishButton();
       });
     }
@@ -1202,9 +1208,12 @@ function formatAnswer(q, ans) {
       return String(ans);
 
     case "match":
-      return Object.entries(ans)
-        .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
-        .join("; ");
+      if (typeof ans === "object" && ans !== null) {
+        return Object.entries(ans)
+          .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
+          .join("; ");
+      }
+      return "Sin responder";
 
     case "gaptext":
       // completar espacios
