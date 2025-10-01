@@ -1689,7 +1689,7 @@ function downloadResultsPdf() {
 
   doc.setFontSize(11);
   doc.setTextColor(80, 80, 80);
-  let y = 90;
+  let y = 80;
   doc.text(`Estudiante: ${docData.student}`, 40, y); y += 15;
   doc.text(`Curso: ${docData.grade}`, 40, y); y += 15;
   doc.text(`Código de prueba: ${docData.testCode}`, 40, y); y += 15;
@@ -1698,13 +1698,14 @@ function downloadResultsPdf() {
   y += 40;
   
   doc.setFontSize(12);
-  doc.setTextColor(0, 0, 200);
+  doc.setTextColor(41, 128, 185);
   doc.text('Detalles de prueba:', 40, y);
   y += 10;
 
   // Tabla de resultados bonitos con colores
   if (docData.details && docData.details.length) {
     const rows = docData.details.map(d => {
+      // --- Normalizar y truncar la respuesta para el PDF ---
       let ansText = '';
       if (d.type === 'mcq') {
         ansText = d.studentAnswer?.text || d.studentAnswer || '';
@@ -1716,16 +1717,29 @@ function downloadResultsPdf() {
             : d.studentAnswer || '';
       } else if (d.type === 'ordering') {
         ansText = Array.isArray(d.studentAnswer) 
-          ? truncateText(d.studentAnswer.join(" → "), 60) 
-          : truncateText(String(d.studentAnswer || ''), 60);
+          ? d.studentAnswer.join(" → ") 
+          : String(d.studentAnswer || '');
       } else if (d.type === 'match') {
         ansText = typeof d.studentAnswer === 'string'
-          ? truncateText(d.studentAnswer, 60)
-          : truncateText(JSON.stringify(d.studentAnswer || {}), 60);
+          ? d.studentAnswer
+          : (Array.isArray(d.studentAnswer) ? d.studentAnswer.join("; ") : JSON.stringify(d.studentAnswer || {}));
       } else {
         ansText = String(d.studentAnswer || '');
       }
-    
+      
+      // Normalización general:
+      // 1) Forzar espacios alrededor de la flecha
+      // 2) Eliminar tabs y saltos de línea
+      // 3) Reemplazar múltiples espacios por uno
+      ansText = ansText
+        .replace(/\s*→\s*/g, ' → ')     // espacios consistentes con la flecha
+        .replace(/\t/g, ' ')            // quitar tabs
+        .replace(/\r\n|\r|\n/g, ' ')    // quitar saltos de línea
+        .replace(/\s{2,}/g, ' ')        // compactar múltiples espacios
+      
+      // Truncar para que no rompa la tabla (ajusta 120 si quieres más/menos)
+      ansText = truncateText(ansText, 120);
+
       return [
         d.index || '',
         truncateText(String(d.title || ''), 60),
@@ -1742,6 +1756,8 @@ function downloadResultsPdf() {
         fontSize: 9,
         halign: 'center',
         valign: 'middle',
+        overflow: 'linebreak',
+        cellWidth: 'wrap', 
         lineWidth: 0.2,
         lineColor: [200, 200, 200]
       },
