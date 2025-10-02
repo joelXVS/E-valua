@@ -258,8 +258,11 @@ input[type="text"]:focus {
   background:#fffdf5; 
   cursor:grab;
 }
-.gap:empty {
-  background: #ffe0b2; /* color diferente si está vacío */
+.gap-blank {
+  display:inline-block;
+  min-width: 48px;
+  border-bottom: 2px dashed #ddd;
+  vertical-align: middle;
 }
 
 /* Escala Likert responsiva */
