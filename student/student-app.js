@@ -750,7 +750,7 @@ function renderQuestion() {
       `).join('')}
     </ul>
     <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-    <p class="small"><strong>NOTA:</strong><em> Este tipo de pregunta se reordena en cada sesión.</em></p>`;
+    <p class="small"><strong>NOTA: </strong> <em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
 
   } else if (q.type === 'multimedia') {
     // Contenedor del recurso multimedia
@@ -838,7 +838,7 @@ function renderQuestion() {
         `).join('')}
       </ul>
       <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-      <p class="small"><strong>NOTA:</strong><em> Este tipo de pregunta se reordena en cada sesión.</em></p>`;
+      <p class="small"><strong>NOTA: </strong> <em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
     
       // listeners drag & drop
       setTimeout(() => {
