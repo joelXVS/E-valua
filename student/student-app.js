@@ -2335,6 +2335,35 @@ window.addEventListener('DOMContentLoaded', async () => {
   $('downloadPdfBtn').addEventListener('click', downloadResultsPdf);
   $('downloadCertBtn').addEventListener('click', downloadCertificate);
   $('backBtn').addEventListener('click', () => location.reload());
+
+  // boton para ir a "Ver resultados"
+  const btnView = $('btnViewResults');
+  if (btnView) btnView.addEventListener('click', () => showSection('viewResults'));
+
+  // pantalla ver resultados: buscar y volver
+  const btnSearch = $('btnSearchResult');
+  if (btnSearch) btnSearch.addEventListener('click', () => {
+    const code = $('resultCodeInput').value.trim();
+    if (!/^\d{11}$/.test(code)) { alert('Ingresa un código válido de 11 dígitos.'); return; }
+    const found = findResultByCode(code);
+    renderResultInViewArea(found);
+  });
+
+  const btnBackFromView = $('btnBackFromView');
+  if (btnBackFromView) btnBackFromView.addEventListener('click', () => showSection('start'));
+
+  // copiar resultado mostrado (en pantalla de resultados global)
+  const copyResultBtn = $('copyResultBtn');
+  if (copyResultBtn) copyResultBtn.addEventListener('click', () => {
+    // tomamos el último resultado guardado (u objeto actual en memoria si aplica)
+    try {
+      const stored = JSON.parse(localStorage.getItem('results') || '[]');
+      const last = stored.length ? stored[stored.length - 1] : null;
+      if (last) {
+        navigator.clipboard?.writeText(JSON.stringify(last, null, 2)).then(()=>alert('Resultado copiado'));
+      } else alert('No hay resultado para copiar.');
+    } catch (e) { alert('Error copiando.'); }
+  });
 });
 
 // prevenir cierre accidental durante examen
