@@ -13,6 +13,12 @@ function getDeviceId() {
   return id;
 }
 
+// ---------- generar código de resultado (11 dígitos) ----------
+function generateResultCode() {
+  // genera un número aleatorio de 11 dígitos como string, con ceros a la izquierda si hace falta
+  return String(Math.floor(Math.random() * 1e11)).padStart(11, '0');
+}
+
 async function loadInitialData() {
   try {
     const [gResp, tResp, teResp] = await Promise.all([
@@ -1881,10 +1887,12 @@ function finishExam(cheatingForced = false) {
 
   $('detailedAnswers').innerHTML = detailsHtml;
 
-  // guardar resultado
+  // --- generar y almacenar código de resultado ---
+  const resultCode = generateResultCode();
+
   try {
     const stored = JSON.parse(localStorage.getItem('results') || '[]');
-    stored.push({
+    const resultObj = {
       student: studentName,
       grade: $('gradeSelect').selectedOptions[0].textContent,
       test: currentTest.name,
@@ -1892,13 +1900,35 @@ function finishExam(cheatingForced = false) {
       timestamp: new Date().toISOString(),
       score: totalScore,
       details,
-      cheatLogs
-    });
+      cheatLogs,
+      resultCode
+    };
+    stored.push(resultObj);
     localStorage.setItem('results', JSON.stringify(stored));
+
+    // Mostrar código en la pantalla de resultados y añadir botón copiar
+    const codeEl = $('resultCodeDisplay');
+    if (codeEl) {
+      codeEl.innerHTML = `Código de resultado: <strong class="result-code">${resultCode}</strong> 
+        <button id="copyResultCodeBtn" class="btn" style="margin-left:8px;">Copiar código</button>`;
+      const copyBtn = $('copyResultCodeBtn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard?.writeText(resultCode).then(() => {
+            alert('Código copiado al portapapeles');
+          }).catch(() => {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = resultCode; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); alert('Código copiado'); } catch(e){ alert('No se pudo copiar automáticamente. Selecciona y copia manualmente.'); }
+            ta.remove();
+          });
+        });
+      }
+    }
   } catch (e) { console.error('Error guardando resultado:', e); }
 
-  // (resto sin cambios...)
-  // mensaje al docente...
+  // mensaje de docente...
   const teacher = (teachers.teachers || [])[0] || {}; 
   let msg = "Envia estos resultados en PDF al docente ";
   if (teacher.name) msg += teacher.name;
@@ -1928,11 +1958,75 @@ function finishExam(cheatingForced = false) {
   }
 }
 
+// ---------- FUNCIONES PARA VER RESULTADOS INDIVIDUALES ----------
+// ---------- buscar resultado por código ----------
+function findResultByCode(code) {
+  try {
+    const stored = JSON.parse(localStorage.getItem('results') || '[]');
+    return stored.find(r => String(r.resultCode) === String(code)) || null;
+  } catch (e) { return null; }
+}
+
+// ---------- renderizar resultado (usada por la pantalla 'Ver resultados') ----------
+function renderResultInViewArea(result, targetElId = 'viewResultArea') {
+  const container = document.getElementById(targetElId);
+  if (!container) return;
+  if (!result) {
+    container.innerHTML = '<p class="small">No se encontró ningún resultado con ese código.</p>';
+    return;
+  }
+
+  // Resumen simple
+  const summary = `
+    <div class="result-summary" style="text-align:center;">
+      <div><strong>Estudiante:</strong> ${escapeHtml(result.student)}</div>
+      <div><strong>Curso:</strong> ${escapeHtml(result.grade)}</div>
+      <div><strong>Prueba:</strong> ${escapeHtml(result.test)} (${escapeHtml(result.testCode)})</div>
+      <div><strong>Puntaje:</strong> ${escapeHtml(String(result.score))}</div>
+      <div><strong>Fecha:</strong> ${escapeHtml(result.timestamp)}</div>
+      <div style="margin-top:6px;">Código: <strong class="result-code">${escapeHtml(result.resultCode)}</strong></div>
+    </div>
+  `;
+
+  // Detalles (resumidos)
+  const rows = (result.details || []).map(d => `
+    <div style="margin-bottom:8px;">
+      <strong>${escapeHtml(String(d.index || ''))}. ${escapeHtml(d.title || '')}</strong><br>
+      Tipo: ${escapeHtml(d.type || '')}<br>
+      ${d.answered ? `<strong>Tu respuesta:</strong> ${escapeHtml(String(d.studentAnswer || ''))}` : `<strong>Tu respuesta:</strong> <em>Sin responder</em>`}<br>
+      <strong>Puntos:</strong> ${escapeHtml(String(d.points || 0))}
+    </div>
+    <hr/>
+  `).join('');
+
+  // botones de exportACIÓN en esta vista
+  const exportButtons = `
+    <div class="row" style="gap:8px; margin-top:12px;">
+      <button id="viewJsonBtn" class="btn">JSON</button>
+      <button id="viewCsvBtn" class="btn">CSV</button>
+      <button id="viewPdfBtn" class="btn">PDF</button>
+      <button id="viewCopyBtn" class="btn">Copiar todo</button>
+    </div>
+  `;
+
+  container.innerHTML = summary + exportButtons + `<div style="margin-top:12px;">${rows || '<p class="small">Sin detalles</p>'}</div>`;
+
+  // añadir listeners a los nuevos botones (descargas de este resultado)
+  document.getElementById('viewJsonBtn').addEventListener('click', () => downloadResults(result));
+  document.getElementById('viewPdfBtn').addEventListener('click', () => downloadResultsPdf(result));
+  document.getElementById('viewCopyBtn').addEventListener('click', () => {
+    navigator.clipboard?.writeText(JSON.stringify(result, null, 2)).then(()=>alert('Resultado copiado')).catch(()=>alert('No se pudo copiar'));
+  });
+}
+
 // ---------- descargar JSON ----------
-// Incluye cheatLogs del intento
-function downloadResults() {
-  if (!currentTest) return;
-  const data = {
+function downloadResults(resultObj) {
+  // Si no hay test en contexto y tampoco se pasó un objeto, no hacemos nada
+  if (!currentTest && !resultObj) return;
+
+  // Si se pasó un resultObj (desde "Ver resultados"), lo usamos tal cual.
+  // Si no, construimos el objeto como antes (resguarda compatibilidad).
+  const data = resultObj ? resultObj : {
     student: $('studentName').value.trim(),
     grade: $('gradeSelect').selectedOptions[0].textContent,
     test: currentTest.name,
@@ -1941,11 +2035,12 @@ function downloadResults() {
     answers,
     cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
   };
+
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = "resultado.json";
+  a.download = resultObj && resultObj.resultCode ? `resultado-${resultObj.resultCode}.json` : "resultado.json";
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -1957,29 +2052,33 @@ function truncateText(text, maxLength) {
 }
 
 // ---------- exportar PDF ----------
-function downloadResultsPdf() {
-  if (!currentTest) return;
-  let lastStored = null;
-  try {
-    const stored = JSON.parse(localStorage.getItem('results') || '[]');
-    lastStored = stored.length ? stored[stored.length - 1] : null;
-  } catch (e) {
-    lastStored = null;
-  }
+function downloadResultsPdf(docData) {
+  // Si no hay test y tampoco docData, no hacemos nada
+  if (!currentTest && !docData) return;
 
-  // si no hay detalles en lastStored, tomamos los que se están mostrando en memoria
-  const docData = lastStored && lastStored.details?.length
-    ? lastStored
-    : {
-        student: $('studentName').value.trim(),
-        grade: $('gradeSelect').selectedOptions[0].textContent,
-        test: currentTest.name,
-        testCode: currentTest.code,
-        timestamp: new Date().toISOString(),
-        score: $('resultSummary').textContent || '',
-        details: (typeof details !== 'undefined') ? details : [],
-        cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
-      };
+  // Si se pasó docData lo usamos; si no, usamos la lógica previa (último result o construir desde DOM)
+  if (!docData) {
+    let lastStored = null;
+    try {
+      const stored = JSON.parse(localStorage.getItem('results') || '[]');
+      lastStored = stored.length ? stored[stored.length - 1] : null;
+    } catch (e) {
+      lastStored = null;
+    }
+
+    docData = lastStored && lastStored.details?.length
+      ? lastStored
+      : {
+          student: $('studentName').value.trim(),
+          grade: $('gradeSelect').selectedOptions[0].textContent,
+          test: currentTest ? currentTest.name : '',
+          testCode: currentTest ? currentTest.code : '',
+          timestamp: new Date().toISOString(),
+          score: $('resultSummary').textContent || '',
+          details: (typeof details !== 'undefined') ? details : [],
+          cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
+        };
+  }
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'pt', 'letter');
