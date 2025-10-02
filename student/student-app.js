@@ -477,6 +477,11 @@ function mezclarArray(array) {
   return array;
 }
 
+// ---------- utilidad - obtener respuesta ----------
+function getOptionKey(opt) {
+  return typeof opt === "string" ? opt : (opt.text || JSON.stringify(opt));
+}
+
 // ---------- utilidad - eventos de drag ----------
 function addDragEvents(el) {
   el.addEventListener("dragstart", () => {
@@ -503,8 +508,8 @@ function renderQuestion() {
     // Opción múltiple (una sola respuesta)
     inner += `<div class="options">${(q.options || []).map((opt, i) => `
       <label style="display:block; margin:6px 0;">
-        <input type="radio" name="q${currentQuestionIndex}" value="${i}" 
-          ${answers[q.title] == i ? 'checked' : ''}>
+        <input type="radio" name="q${currentQuestionIndex}" value="${getOptionKey(opt)}"
+          ${answers[q.title] === getOptionKey(opt) ? 'checked' : ''}>
         ${escapeHtml(opt.text || opt)}
         ${opt.image ? `<div><img src="${opt.image}" alt="Opción ${i+1}" style="max-width:100px; margin-top:4px;" /></div>` : ''}
       </label>`).join('')}</div>`;
@@ -529,12 +534,15 @@ function renderQuestion() {
 
   } else if (q.type === 'multi') {
     // Respuesta múltiple (varias correctas)
-    inner += `<div class="options">${(q.options || []).map((opt, i) => `
-      <label style="display:block; margin:6px 0;">
-        <input type="checkbox" name="q${currentQuestionIndex}" value="${i}" 
-          ${Array.isArray(answers[q.title]) && answers[q.title].includes(i) ? 'checked' : ''}>
-        ${escapeHtml(opt.text || opt)}
-      </label>`).join('')}</div>`;
+    inner += `<div class="options">${(q.options || []).map(opt => {
+      const key = getOptionKey(opt);
+      const checked = Array.isArray(answers[q.title]) && answers[q.title].includes(key);
+      return `
+        <label style="display:block; margin:6px 0;">
+          <input type="checkbox" name="q${currentQuestionIndex}" value="${key}" ${checked ? 'checked' : ''}>
+          ${escapeHtml(opt.text || opt)}
+        </label>`;
+    }).join('')}</div>`;
 
   } else if (q.type === 'likert') {
     // Escala de opinión
@@ -577,11 +585,18 @@ function renderQuestion() {
     // Construir texto con gaps — restaurando valores guardados y ocultando opciones usadas
     let sentence = q.sentence || q.title || "";
   
-    // Al renderizar, mostrar el texto guardado dentro de cada gap (si existe)
-    (q.gaps || []).forEach((gap, idx) => {
-      const filled = (answers[q.title] && answers[q.title][idx]) ? escapeHtml(answers[q.title][idx]) : "";
-      sentence = sentence.replace("___", `<span class="gap" data-gap="${idx}">${filled}</span>`);
-    });
+    // Reemplazar marcadores de gaps (___ o [[n]])
+    if (q.gaps && q.gaps.length > 0) {
+      q.gaps.forEach((gap, idx) => {
+        const filled = (answers[q.title] && answers[q.title][idx]) 
+          ? escapeHtml(answers[q.title][idx]) 
+          : "";
+    
+        // soportar formato [[0]], [[1]], ... o simplemente ___
+        const regex = new RegExp(`\\[\\[${idx}\\]\\]|___`);
+        sentence = sentence.replace(regex, `<span class="gap" data-gap="${idx}">${filled}</span>`);
+      });
+    }
   
     // Generar lista de opciones excluyendo las ya usadas (si ya hay respuestas guardadas)
     const used = (answers[q.title] && typeof answers[q.title] === 'object')
@@ -774,20 +789,26 @@ function renderQuestion() {
         placeholder="Respuesta breve..." value="${answers[q.title]?.short || ''}" />`;
     
     } else if (subType === 'mcq') {
-      inner += `<div class="options">${(subQ.options || []).map((opt, i) => `
-        <label style="display:block; margin:6px 0;">
-          <input type="radio" name="multi_q${currentQuestionIndex}" value="${i}" 
-            ${answers[q.title]?.mcq == i ? 'checked' : ''}>
-          ${escapeHtml(opt.text || opt)}
-        </label>`).join('')}</div>`;
-    
+      inner += `<div class="options">${(subQ.options || []).map(opt => {
+        const key = getOptionKey(opt);
+        const checked = answers[q.title]?.mcq === key;
+        return `
+          <label style="display:block; margin:6px 0;">
+            <input type="radio" name="multi_q${currentQuestionIndex}" value="${key}" ${checked ? 'checked' : ''}>
+            ${escapeHtml(opt.text || opt)}
+          </label>`;
+      }).join('')}</div>`;
+
     } else if (subType === 'multi') {
-      inner += `<div class="options">${(subQ.options || []).map((opt, i) => `
-        <label style="display:block; margin:6px 0;">
-          <input type="checkbox" name="multi_q${currentQuestionIndex}" value="${i}" 
-            ${Array.isArray(answers[q.title]?.multi) && answers[q.title].multi.includes(i) ? 'checked' : ''}>
-          ${escapeHtml(opt.text || opt)}
-        </label>`).join('')}</div>`;
+      inner += `<div class="options">${(subQ.options || []).map(opt => {
+        const key = getOptionKey(opt);
+        const checked = Array.isArray(answers[q.title]?.multi) && answers[q.title].multi.includes(key);
+        return `
+          <label style="display:block; margin:6px 0;">
+            <input type="checkbox" name="multi_q${currentQuestionIndex}" value="${key}" ${checked ? 'checked' : ''}>
+            ${escapeHtml(opt.text || opt)}
+          </label>`;
+      }).join('')}</div>`;
     
     } else if (subType === 'tf') {
       inner += `<div class="options options-tf">
@@ -870,8 +891,7 @@ function renderQuestion() {
   // Radios (mcq, tf, likert)
   container.querySelectorAll('input[type=radio]').forEach(inp => {
     inp.addEventListener('change', () => {
-      answers[q.title] = q.type === 'mcq' || q.type === 'tf' || q.type === 'likert'
-        ? parseInt(inp.value) : inp.value;
+      answers[q.title] = inp.value;
       updateNavButtonsAndFinishButton();
     });
   });
@@ -901,7 +921,7 @@ function renderQuestion() {
   container.querySelectorAll(`input[type=checkbox][name=q${currentQuestionIndex}]`).forEach(chk => {
     chk.addEventListener('change', () => {
       answers[q.title] = Array.from(container.querySelectorAll(`input[name=q${currentQuestionIndex}]:checked`))
-        .map(c => parseInt(c.value));
+        .map(c => c.value);
       updateNavButtonsAndFinishButton();
     });
   });
@@ -1023,7 +1043,7 @@ function renderQuestion() {
           if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
             answers[q.title] = {}; 
           }
-          answers[q.title].mcq = parseInt(inp.value);
+          answers[q.title].mcq = inp.value;
           updateNavButtonsAndFinishButton();
         });
       });
@@ -1036,7 +1056,7 @@ function renderQuestion() {
             answers[q.title] = {}; 
           }
           answers[q.title].multi = Array.from(container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]:checked`))
-            .map(c => parseInt(c.value));
+            .map(c => c.value);
           updateNavButtonsAndFinishButton();
         });
       });
@@ -1048,7 +1068,7 @@ function renderQuestion() {
           if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
             answers[q.title] = {}; 
           }
-          answers[q.title].tf = parseInt(inp.value);
+          answers[q.title].tf = inp.value;
           updateNavButtonsAndFinishButton();
         });
       });
