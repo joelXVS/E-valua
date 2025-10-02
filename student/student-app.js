@@ -1537,6 +1537,25 @@ function formatAnswer(q, ans) {
     }).join(", "));
   }
 
+  if (q.type === 'match') {
+    // ans puede ser: string, array, u objeto { index: selectedValue }
+    if (ans === undefined || ans === null || ans === '') return escapeHtml('Sin responder');
+  
+    // Si el alumno ya vino como string (p. ej. desde JSON exportado), mostrarlo directo
+    if (typeof ans === 'string') return escapeHtml(ans);
+  
+    // Si es array, concatenar
+    if (Array.isArray(ans)) return escapeHtml(ans.join(' ; '));
+  
+    // Si es objeto (caso normal cuando usamos selects por fila), convertir a "izquierda → seleccion"
+    const pairs = q.pairs || [];
+    const parts = (pairs || []).map((p, i) => {
+      const sel = (ans && (ans[i] !== undefined && ans[i] !== null)) ? String(ans[i]) : '';
+      return `${p.left} → ${sel}`;
+    });
+    return escapeHtml(parts.join(' ; '));
+  }
+
   // tf, open, short, numeric, match, etc. — devolver escapeado
   if (q.type === 'tf') return escapeHtml((parseInt(q.answer)===1) ? 'Verdadero' : 'Falso');
   if (q.type === 'open' || q.type === 'short') return escapeHtml(String(ans || ''));
