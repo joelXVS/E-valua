@@ -2047,33 +2047,36 @@ function truncateText(text, maxLength) {
 }
 
 // ---------- exportar PDF ----------
+// ---------- exportar PDF (versión robusta que acepta docData opcional) ----------
 function downloadResultsPdf(docData) {
-  // Si no hay test y tampoco docData, no hacemos nada
-  if (!currentTest && !docData) return;
-
-  // Si se pasó docData lo usamos; si no, usamos la lógica previa (último result o construir desde DOM)
+  // 1) Si nos pasaron docData ya (por ejemplo desde Ver resultados), lo usamos directamente.
+  // 2) Si no, intentamos tomar el último guardado en localStorage.
+  // 3) Si tampoco hay, construimos un fallback seguro (sin acceder a propiedades inexistentes).
   if (!docData) {
-    let lastStored = null;
     try {
       const stored = JSON.parse(localStorage.getItem('results') || '[]');
-      lastStored = stored.length ? stored[stored.length - 1] : null;
+      docData = stored.length ? stored[stored.length - 1] : null;
     } catch (e) {
-      lastStored = null;
+      docData = null;
     }
-
-    docData = lastStored && lastStored.details?.length
-      ? lastStored
-      : {
-          student: $('studentName').value.trim(),
-          grade: $('gradeSelect').selectedOptions[0].textContent,
-          test: currentTest ? currentTest.name : '',
-          testCode: currentTest ? currentTest.code : '',
-          timestamp: new Date().toISOString(),
-          score: $('resultSummary').textContent || '',
-          details: (typeof details !== 'undefined') ? details : [],
-          cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
-        };
   }
+
+  if (!docData) {
+    // Fallback seguro: usar optional chaining y valores por defecto para evitar 'undefined'
+    docData = {
+      student: $('studentName')?.value?.trim() || '',
+      grade: $('gradeSelect')?.selectedOptions?.[0]?.textContent || '',
+      test: currentTest?.name || '',
+      testCode: currentTest?.code || '',
+      timestamp: new Date().toISOString(),
+      score: $('resultSummary')?.textContent || '',
+      details: (typeof details !== 'undefined') ? details : [],
+      cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
+    };
+  }
+
+  // DEBUG (temporal): descomenta para inspeccionar lo que realmente llega
+  // console.log('downloadResultsPdf -> docData:', docData);
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'pt', 'letter');
@@ -2081,17 +2084,16 @@ function downloadResultsPdf(docData) {
   // Cabecera
   doc.setFontSize(16);
   doc.setTextColor(40, 40, 40);
-  doc.text(truncateText(`Resultados — ${docData.test}`, 80), 40, 40, { maxWidth: 500 });
+  doc.text(truncateText(`Resultados — ${docData.test || ''}`, 120), 40, 40, { maxWidth: 500 });
 
   doc.setFontSize(11);
   doc.setTextColor(80, 80, 80);
   let y = 80;
-  doc.text(`Estudiante: ${docData.student}`, 40, y); y += 15;
-  doc.text(`Curso: ${docData.grade}`, 40, y); y += 15;
-  doc.text(`Código de prueba: ${docData.testCode}`, 40, y); y += 15;
-  doc.text(`Fecha: ${docData.timestamp}`, 40, y); y += 15;
-  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y += 15); 
-  doc.text(`Código de Resultado: ${docData.resultCode !== undefined ? String(docData.resultCode) : ''}`, 40, y); 
+  doc.text(`Estudiante: ${docData.student || ''}`, 40, y); y += 15;
+  doc.text(`Curso: ${docData.grade || ''}`, 40, y); y += 15;
+  doc.text(`Código de prueba: ${docData.testCode || ''}`, 40, y); y += 15;
+  doc.text(`Fecha: ${docData.timestamp || ''}`, 40, y); y += 15;
+  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y); 
   y += 40;
   
   doc.setFontSize(12);
@@ -2099,44 +2101,23 @@ function downloadResultsPdf(docData) {
   doc.text('Detalles de prueba:', 40, y);
   y += 10;
 
-  // Tabla de resultados bonitos con colores
+  // Tabla de resultados si hay detalles
   if (docData.details && docData.details.length) {
     const rows = docData.details.map(d => {
-      // --- Normalizar y truncar la respuesta para el PDF ---
       let ansText = '';
       if (d.type === 'mcq') {
         ansText = d.studentAnswer?.text || d.studentAnswer || '';
       } else if (d.type === 'tf') {
-        ansText = d.studentAnswer === '1'
-          ? 'VERDADERO'
-          : d.studentAnswer === '0'
-            ? 'FALSO'
-            : d.studentAnswer || '';
+        ansText = d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : (d.studentAnswer || '');
       } else if (d.type === 'ordering') {
-        ansText = Array.isArray(d.studentAnswer) 
-          ? d.studentAnswer.join(" → ") 
-          : String(d.studentAnswer || '');
+        ansText = Array.isArray(d.studentAnswer) ? d.studentAnswer.join(' → ') : String(d.studentAnswer || '');
       } else if (d.type === 'match') {
-        ansText = typeof d.studentAnswer === 'string'
-          ? d.studentAnswer
-          : (Array.isArray(d.studentAnswer) ? d.studentAnswer.join("; ") : JSON.stringify(d.studentAnswer || {}));
+        ansText = Array.isArray(d.studentAnswer) ? d.studentAnswer.join('; ') : (typeof d.studentAnswer === 'string' ? d.studentAnswer : JSON.stringify(d.studentAnswer || {}));
       } else {
         ansText = String(d.studentAnswer || '');
       }
-      
-      // Normalización general:
-      // 1) Forzar espacios alrededor de la flecha
-      // 2) Eliminar tabs y saltos de línea
-      // 3) Reemplazar múltiples espacios por uno
-      ansText = ansText
-        .replace(/\s*→\s*/g, ' → ')     // espacios consistentes con la flecha
-        .replace(/\t/g, ' ')            // quitar tabs
-        .replace(/\r\n|\r|\n/g, ' ')    // quitar saltos de línea
-        .replace(/\s{2,}/g, ' ')        // compactar múltiples espacios
-      
-      // Truncar para que no rompa la tabla (ajusta 120 si quieres más/menos)
+      ansText = ansText.replace(/\r\n|\r|\n/g, ' ').replace(/\s{2,}/g, ' ');
       ansText = truncateText(ansText, 120);
-
       return [
         d.index || '',
         truncateText(String(d.title || ''), 60),
@@ -2144,89 +2125,43 @@ function downloadResultsPdf(docData) {
         d.points || ''
       ];
     });
-    
+
     doc.autoTable({
       startY: y,
       head: [['N°', 'Pregunta', 'Respuesta alumno', 'Puntos']],
       body: rows,
-      styles: {
-        fontSize: 9,
-        valign: 'middle',
-        overflow: 'linebreak',
-        cellWidth: 'wrap', 
-        lineWidth: 0.2,
-        lineColor: [200, 200, 200]
-      },
-      headStyles: {
-        fillColor: [41, 128, 185], // azul bonito
-        textColor: 255,
-        fontStyle: 'bold',
-        lineWidth: 0.4,
-        lineColor: [180, 180, 180]
-      },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245]
-      },
+      styles: { fontSize: 9, valign: 'middle', overflow: 'linebreak' },
+      headStyles: { fillColor: [41,128,185], textColor: 255 },
       margin: { left: 40, right: 40 },
-
-      columnStyles: {
-        0: { cellWidth: 30, halign: 'center' },   // N°
-        1: { cellWidth: 260, halign: 'center' },    // Pregunta (más ancha)
-        2: { cellWidth: 200, halign: 'center' },    // Respuesta alumno (wrapping)
-        3: { cellWidth: 60, halign: 'center' }    // Puntos
-      },
-    
-      // Si quieres que la tabla ocupe únicamente el ancho necesario:
+      columnStyles: { 0:{cellWidth:30, halign:'center'}, 1:{cellWidth:260}, 2:{cellWidth:200}, 3:{cellWidth:60, halign:'center'} },
       tableWidth: 'auto'
     });
 
-    y = doc.lastAutoTable.finalY + 20;
+    y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 20 : y + 80;
   }
-  
-  y += 10;
 
-  // Eventos de seguridad (plagio, trampas, etc.)
+  // Eventos de seguridad
   if ((docData.cheatLogs || []).length) {
-    doc.setFontSize(12);
-    doc.setTextColor(200, 0, 0);
-    doc.text('Eventos de seguridad detectados:', 40, y);
-    y += 10;
-
+    doc.setFontSize(12); doc.setTextColor(200,0,0);
+    doc.text('Eventos de seguridad detectados:', 40, y); y += 10;
     const cheatRows = (docData.cheatLogs || []).map(e => [
-      e.when ? new Date(e.when).toLocaleString("es-CO", { 
-        weekday: "long", year: "numeric", month: "long", day: "numeric",
-        hour: "2-digit", minute: "2-digit"
-      }) : '',
+      e.when ? new Date(e.when).toLocaleString('es-CO') : '',
       e.kind || ''
     ]);
-
     doc.autoTable({
       startY: y,
-      head: [['Fecha/Hora', 'Evento']],
+      head: [['Fecha/Hora','Evento']],
       body: cheatRows,
-      styles: {
-        fontSize: 9,
-        halign: 'center',
-        valign: 'middle',
-        lineWidth: 0.2,
-        lineColor: [200, 200, 200]
-      },
-      headStyles: {
-        fillColor: [192, 57, 43], // rojo
-        textColor: 255,
-        fontStyle: 'bold',
-        lineWidth: 0.4,
-        lineColor: [180, 180, 180]
-      },
-      alternateRowStyles: {
-        fillColor: [252, 230, 230]
-      },
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [192,57,43], textColor: 255 },
       margin: { left: 40, right: 40 }
     });
   }
 
-  // Guardar archivo
-  doc.save(`${docData.testCode || 'result'}-${(docData.student||'estudiante').replace(/\s+/g,'_')}.pdf`);
+  // Guardar archivo (nombre seguro)
+  const safeTestCode = (docData.testCode || 'result').toString().replace(/\s+/g,'_');
+  const safeName = (docData.student || 'estudiante').toString().replace(/\s+/g,'_');
+  doc.save(`${safeTestCode}-${safeName}.pdf`);
 }
 
 // ---------- descargar Certificado aparte ----------
