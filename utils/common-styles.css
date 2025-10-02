@@ -312,6 +312,16 @@ input[type="text"]:focus {
   background: #fff8e1;
   border-radius: 8px;
 }
+/* resaltado código de resultado */
+.result-code {
+  font-family: monospace;
+  background: #fff8e1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px dashed #ffcc80;
+  display: inline-block;
+  margin-left:6px;
+}
 
 /* Footer */
 .footer {
