@@ -1978,7 +1978,7 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
 
   // Resumen simple
   const summary = `
-    <div class="result-summary" style="text-align:center;">
+    <div class="result-summary">
       <div><strong>Estudiante:</strong> ${escapeHtml(result.student)}</div>
       <div><strong>Curso:</strong> ${escapeHtml(result.grade)}</div>
       <div><strong>Prueba:</strong> ${escapeHtml(result.test)} (${escapeHtml(result.testCode)})</div>
@@ -2007,7 +2007,7 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
     </div>
   `;
 
-  container.innerHTML = summary + exportButtons + `<div style="margin-top:12px; justify-content:center;">${rows || '<p class="small">Sin detalles</p>'}</div>`;
+  container.innerHTML = summary + exportButtons + `<div style="margin-top:30px; text-align:center;">${rows || '<p class="small">Sin detalles</p>'}</div>`;
 
   // añadir listeners a los nuevos botones (descargas de este resultado)
   document.getElementById('viewJsonBtn').addEventListener('click', () => downloadResults(result));
