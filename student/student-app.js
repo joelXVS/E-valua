@@ -585,23 +585,24 @@ function renderQuestion() {
     // Construir texto con gaps — restaurando valores guardados y ocultando opciones usadas
     let sentence = q.sentence || q.title || "";
   
-    // Reemplazar marcadores de gaps (___ o [[n]])
-    if (q.gaps && q.gaps.length > 0) {
-      q.gaps.forEach((gap, idx) => {
-        const filled = (answers[q.title] && answers[q.title][idx]) 
-          ? escapeHtml(answers[q.title][idx]) 
-          : "";
-    
-        // soportar formato [[0]], [[1]], ... o simplemente ___
-        const regex = new RegExp(`\\[\\[${idx}\\]\\]|___`);
-        sentence = sentence.replace(regex, `<span class="gap" data-gap="${idx}">${filled}</span>`);
-      });
-    }
-  
-    // Generar lista de opciones excluyendo las ya usadas (si ya hay respuestas guardadas)
+    // Obtener palabras ya usadas (para excluirlas de la lista)
     const used = (answers[q.title] && typeof answers[q.title] === 'object')
       ? Object.values(answers[q.title]).filter(v => v !== undefined && v !== null)
       : [];
+  
+    // Reemplazar marcadores de gaps: soporta [[0]], [[1]] ... o ___
+    if (q.gaps && q.gaps.length > 0) {
+      q.gaps.forEach((gap, idx) => {
+        const filled = (answers[q.title] && answers[q.title][idx]) ? escapeHtml(answers[q.title][idx]) : "";
+        // Si está vacío ponemos &nbsp; para que el span ocupe espacio y sea visible
+        const fillHtml = filled || "&nbsp;";
+        // Match [[idx]] o ___ (global)
+        const regex = new RegExp(`\\[\\[${idx}\\]\\]|___`, 'g');
+        sentence = sentence.replace(regex, `<span class="gap" data-gap="${idx}">${fillHtml}</span>`);
+      });
+    }
+  
+    // Lista de opciones que no hayan sido usadas
     const optionsHtml = (q.options || []).filter(opt => !used.includes(opt))
       .map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
   
@@ -617,124 +618,133 @@ function renderQuestion() {
     setTimeout(() => {
       const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
       const gaps = container.querySelectorAll(".gap");
-      if (!gapOptions) return;
+      if (!gapOptions || gaps.length === 0) return;
   
-      // activar drag en opciones iniciales
-      const opts = gapOptions.querySelectorAll(".gap-opt");
-      opts.forEach(addDragEvents);
+      // Asegurar que las opciones tengan manejadores de dragstart/dragend
+      gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
+        opt.setAttribute('draggable', 'true');
+        opt.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', opt.textContent);
+          opt.classList.add('dragging');
+        });
+        opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
+      });
   
-      // permitir soltar en gaps
+      // Permitir soltar en gaps
       gaps.forEach(gap => {
         gap.addEventListener('dragover', e => e.preventDefault());
         gap.addEventListener('drop', e => {
           e.preventDefault();
-          const dragged = document.querySelector(".dragging");
-          if (!dragged) return;
-  
-          // preparar objeto answers si no existe
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
-            answers[q.title] = {};
-          }
+          const text = e.dataTransfer.getData("text/plain");
+          if (!text) return;
   
           const gapIdx = String(gap.dataset.gap);
   
-          // si ya había algo en este gap -> devolverlo a la lista y borrar de answers
+          // Si ya había algo en este gap -> devolverlo a la lista y borrar de answers
           const oldText = gap.textContent.trim();
           if (oldText !== "") {
-            // crear opción de retorno
             const oldWord = document.createElement("div");
             oldWord.className = "gap-opt";
             oldWord.textContent = oldText;
             oldWord.setAttribute("draggable", "true");
             gapOptions.appendChild(oldWord);
-            addDragEvents(oldWord);
+            // agregar handlers al elemento recién creado
+            oldWord.addEventListener('dragstart', e => {
+              e.dataTransfer.setData('text/plain', oldWord.textContent);
+              oldWord.classList.add('dragging');
+            });
+            oldWord.addEventListener('dragend', () => oldWord.classList.remove('dragging'));
             // quitar del objeto answers
             if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
               delete answers[q.title][gapIdx];
             }
           }
   
-          // poner el nuevo texto en el gap y guardarlo
-          gap.textContent = dragged.textContent;
-          answers[q.title][gapIdx] = dragged.textContent;
+          // Poner el nuevo texto en el gap y guardarlo
+          gap.innerHTML = escapeHtml(text);
+          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
+            answers[q.title] = {};
+          }
+          answers[q.title][gapIdx] = text;
   
-          // eliminar el elemento que fue arrastrado (viene de la lista o de otro gap)
-          if (dragged.parentElement) dragged.parentElement.removeChild(dragged);
+          // eliminar la opción usada de la lista (si existe)
+          const optEl = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
+          if (optEl) optEl.remove();
   
           saveExamProgress();
           updateNavButtonsAndFinishButton();
         });
       });
   
-      // permitir soltar en la lista de opciones (devolver desde gap)
+      // Permitir devolver desde gap a la lista (drop sobre gapOptions)
       gapOptions.addEventListener("dragover", e => e.preventDefault());
       gapOptions.addEventListener("drop", e => {
         e.preventDefault();
-        const dragged = document.querySelector(".dragging");
-        if (!dragged) return;
+        const text = e.dataTransfer.getData("text/plain");
+        if (!text) return;
   
-        // crear una nueva opción en la lista con el texto
+        // crear una nueva opción en la lista
         const opt = document.createElement("div");
         opt.className = "gap-opt";
-        opt.textContent = dragged.textContent;
+        opt.textContent = text;
         opt.setAttribute("draggable", "true");
+        // handlers
+        opt.addEventListener('dragstart', ev => {
+          ev.dataTransfer.setData('text/plain', opt.textContent);
+          opt.classList.add('dragging');
+        });
+        opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
+  
         gapOptions.appendChild(opt);
-        addDragEvents(opt);
   
         // si provenía de un gap, limpiar ese gap y borrar la respuesta guardada
-        if (dragged.parentElement && dragged.parentElement.classList.contains("gap")) {
-          const parentGap = dragged.parentElement;
-          const gapIdx = String(parentGap.dataset.gap);
-          parentGap.innerHTML = "";
-          if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
-            delete answers[q.title][gapIdx];
+        const draggedFromGap = container.querySelector(`.gap:contains("${text}")`); // no estándar, pero no lo usamos; usamos otra técnica
+        // limpiamos gaps que tengan exactamente ese texto
+        container.querySelectorAll('.gap').forEach(g => {
+          if (g.textContent.trim() === text) {
+            const gapIdx = String(g.dataset.gap);
+            g.innerHTML = "&nbsp;";
+            if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
+              delete answers[q.title][gapIdx];
+            }
           }
-        }
+        });
   
-        // eliminar el arrastrado original
-        if (dragged.parentElement) dragged.parentElement.removeChild(dragged);
+        // eliminar repetidos de la lista original (si hubiera)
+        [...gapOptions.querySelectorAll('.gap-opt')].forEach((o, i, arr) => {
+          // eliminar duplicados simples: si hay más de 1 con mismo texto, quitamos extras
+          const same = arr.filter(x => x.textContent === o.textContent);
+          if (same.length > 1 && same[0] !== o) o.remove();
+        });
   
         saveExamProgress();
         updateNavButtonsAndFinishButton();
       });
-    }, 50);
   
-    // Botón para reiniciar los espacios (centrado y consistente)
-    setTimeout(() => {
+      // Reiniciar espacios (botón)
       const resetBtn = document.getElementById(`resetGapBtn_${currentQuestionIndex}`);
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
           const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
           const gaps = container.querySelectorAll(".gap");
-  
-          // devolver todas las palabras visibles a la lista de opciones
-          gaps.forEach(gap => {
-            if (gap.textContent.trim() !== "") {
-              const opt = document.createElement("div");
-              opt.className = "gap-opt";
-              opt.textContent = gap.textContent;
-              opt.setAttribute("draggable", "true");
-              if (gapOptions) gapOptions.appendChild(opt);
-              addDragEvents(opt);
-              gap.textContent = "";
-            }
-          });
-  
-          // limpiar las respuestas guardadas para esta pregunta
+          gaps.forEach(g => g.innerHTML = "&nbsp;");
           delete answers[q.title];
-  
-          // reconstruir la lista completa de opciones (si quieres que vuelva a la lista original)
           if (gapOptions) {
             gapOptions.innerHTML = (q.options || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
-            // volver a enlazar eventos
-            gapOptions.querySelectorAll('.gap-opt').forEach(addDragEvents);
+            gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
+              opt.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', opt.textContent);
+                opt.classList.add('dragging');
+              });
+              opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
+            });
           }
-  
           saveExamProgress();
           updateNavButtonsAndFinishButton();
         });
       }
-    }, 100);
+    }, 50);
+
   } else if (q.type === 'hotspot') {
     // Imagen interactiva (clic en zonas)
     inner += `<div class="hotspot-container">
@@ -750,7 +760,7 @@ function renderQuestion() {
       `).join('')}
     </ul>
     <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-    <p class="small"><strong>NOTA: </strong> <em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
+    <p class="small"><strong>NOTA:</strong>&nbsp;<em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
 
   } else if (q.type === 'multimedia') {
     // Contenedor del recurso multimedia
@@ -838,7 +848,7 @@ function renderQuestion() {
         `).join('')}
       </ul>
       <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-      <p class="small"><strong>NOTA: </strong> <em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
+      <p class="small"><strong>NOTA:</strong>&nbsp;<em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
     
       // listeners drag & drop
       setTimeout(() => {
@@ -877,6 +887,24 @@ function renderQuestion() {
         <img src="${subQ.image}" alt="Hotspot multimedia" class="hotspot-img" />
       </div>
       <p class="small hotspot-note">Haz clic en la zona correspondiente.</p>`;
+    } else if (subtype === 'gaptext') {
+      // subQ contiene los datos del gaptext (subQ.answers = { "0": "25", "1": "..." } u otra estructura)
+      const subQ = q.subquestion || {};
+      const studentSub = answers[q.title] || {}; // esperable: un objeto index->texto
+      const correctObj = subQ.answers || {};
+      const total = Object.keys(correctObj).length || (Array.isArray(subQ.gaps) ? subQ.gaps.length : 0);
+    
+      if (total > 0) {
+        let matches = 0;
+        Object.keys(correctObj).forEach(k => {
+          if (studentSub && studentSub[k] !== undefined && String(studentSub[k]).trim() === String(correctObj[k]).trim()) {
+            matches++;
+          }
+        });
+        qPoints = (matches / total) * possiblePoints;
+      } else {
+        qPoints = 0;
+      }
     }
     
     inner += `</div>`; // cierre subquestion
@@ -1321,158 +1349,138 @@ function evaluateOpenAnswer(answerText, q, test) {
 
 // ---------- formatear respuestas usuario ----------
 function formatAnswer(q, ans) {
-  if (ans === undefined || ans === null || ans === "" || (typeof ans === "object" && Object.keys(ans).length === 0)) {
-    return "Sin responder";
+  // normalize multimedia delegation
+  if (!q) return '';
+  if (q.type === 'multimedia' && q.subquestion) {
+    const subQ = q.subquestion;
+    const subAns = (answers && answers[q.title]) || {};
+    if (q.subtype === 'gaptext' || subQ.type === 'gaptext') {
+      return formatAnswer({...subQ, type:'gaptext'}, subAns);
+    }
+    // delegar resto de subtipos a same function by pretending it's subQ
+    return formatAnswer({...subQ, type: q.subtype || subQ.type}, subAns[q.subtype] || subAns);
   }
 
-  switch (q.type) {
-    case "mcq":
-      // opción múltiple (una sola)
-      return q.options && q.options[ans] 
-        ? (q.options[ans].text || q.options[ans]) 
-        : String(ans);
+  // GAPTEXT: construir la oración y reemplazar marcadores por <strong>...escaped...</strong>
+  if (q.type === 'gaptext') {
+    let sentence = q.sentence || q.title || "";
+    const gapsCount = Array.isArray(q.gaps) ? q.gaps.length : (Array.isArray(q.options) ? q.options.length : 0);
+    // ans esperado: objeto { "0": "25", "1": "15" } o similar
+    for (let i = 0; i < gapsCount; i++) {
+      const studentText = (ans && (ans[i] !== undefined && ans[i] !== null)) ? String(ans[i]) : "";
+      const replacement = studentText
+        ? `<strong>${escapeHtml(studentText)}</strong>`
+        : `<span class="gap-blank">&nbsp;</span>`; // visible placeholder
+      // replace either [[i]] or first occurrence of ___ (supports both formats)
+      const regex = new RegExp(`\\[\\[${i}\\]\\]|___`);
+      sentence = sentence.replace(regex, replacement);
+    }
+    return sentence; // ya contiene HTML (con contenido escapeado)
+  }
 
-    case "tf":
-      // verdadero/falso
-      return ans == 1 ? "Verdadero" : "Falso";
-
-    case "open":
-    case "short":
-      // respuesta libre
-      return String(ans);
-
-    case "multi":
-      // selección múltiple (varias correctas)
-      return Array.isArray(ans) && q.options 
-        ? ans.map(i => q.options[i].text || q.options[i]).join(", ") 
-        : String(ans);
-
-    case "likert":
-      // escala de opinión
-      return q.scale && q.scale[ans] ? q.scale[ans] : String(ans);
-
-    case "numeric":
-      // numérica
-      return String(ans);
-
-    case "match":
-      if (typeof ans === "object" && ans !== null) {
-        return Object.entries(ans)
-          .map(([i, v]) => `${q.pairs[i].left} → ${v}`)
-          .join("; ");
+  // Default: devolver texto escapeado (sin HTML)
+  if (q.type === 'mcq') {
+    if (ans === undefined || ans === null || ans === "") return escapeHtml("Sin responder");
+    if (Array.isArray(q.options)) {
+      if (typeof ans === 'number' || (/^\d+$/.test(String(ans)))) {
+        const idx = Number(ans);
+        if (q.options[idx]) return escapeHtml(q.options[idx].text || q.options[idx]);
       }
-      return "Sin responder";
+      const found = q.options.find(opt => {
+        const txt = (opt && (opt.text || opt)) || String(opt);
+        return txt === String(ans) || getOptionKey(opt) === String(ans);
+      });
+      if (found) return escapeHtml(found.text || found);
+    }
+    return escapeHtml(String(ans));
+  }
 
-    case "gaptext":
-      // completar espacios
-      return Object.entries(ans)
-        .map(([i, v]) => `${i}: ${v}`)
-        .join(", ");
-
-    case "ordering":
-      // ordenar secuencia
-      return Array.isArray(ans) ? ans.join(" → ") : String(ans);
-
-    case "hotspot":
-      // clic en zona de imagen
-      return ans.x && ans.y 
-        ? `Coordenadas: (${ans.x}, ${ans.y})` 
-        : String(ans);
-
-    case "multimedia":
-      const sub = q.subquestion || {};
-      const subtype = q.subtype;
-      let ansVal;
-      if (subtype === "match") ansVal = ans?.match;
-      else if (subtype === "ordering") ansVal = ans?.ordering;
-      else if (subtype === "hotspot") ansVal = ans?.hotspot;
-      else ansVal = ans?.[subtype];
-    
-      if (subtype === "ordering") {
-        return Array.isArray(ansVal) ? ansVal.join(" → ") : String(ansVal);
-      } else if (subtype === "match") {
-        return Object.entries(ansVal || {})
-          .map(([i, v]) => `${sub.pairs[i].left} → ${v}`)
-          .join("; ");
-      } else if (subtype === "hotspot") {
-        return ansVal?.x && ansVal?.y 
-          ? `Coordenadas: (${ansVal.x}, ${ansVal.y})` 
-          : "Sin respuesta";
+  if (q.type === 'multi') {
+    if (!Array.isArray(ans)) return escapeHtml(String(ans || ''));
+    if (!Array.isArray(q.options)) return escapeHtml(ans.join(", "));
+    return escapeHtml(ans.map(a => {
+      if (typeof a === 'number' || (/^\d+$/.test(String(a)))) {
+        const i = Number(a);
+        return q.options[i] ? (q.options[i].text || q.options[i]) : String(a);
       } else {
-        return formatAnswer({ ...sub, type: subtype }, ansVal);
+        const found = q.options.find(opt => {
+          const txt = (opt && (opt.text || opt)) || String(opt);
+          return txt === String(a) || getOptionKey(opt) === String(a);
+        });
+        return found ? (found.text || found) : String(a);
       }
-
-    default:
-      return String(ans);
+    }).join(", "));
   }
+
+  // tf, open, short, numeric, match, etc. — devolver escapeado
+  if (q.type === 'tf') return escapeHtml((parseInt(q.answer)===1) ? 'Verdadero' : 'Falso');
+  if (q.type === 'open' || q.type === 'short') return escapeHtml(String(ans || ''));
+  if (q.type === 'numeric') return escapeHtml(String(ans || ''));
+  if (q.type === 'ordering') return escapeHtml(Array.isArray(ans) ? ans.join(' , ') : String(ans || ''));
+  if (q.type === 'hotspot') return escapeHtml(ans ? JSON.stringify(ans) : '');
+  // fallback
+  return escapeHtml(String(ans || ''));
 }
 
-// ---------- formatear respuestas correctas ----------
+// ---------- formatear respuesta correcta ----------
 function formatCorrectAnswer(q) {
-  if (q.type === "mcq") {
-    return q.options && q.options[q.answer]
-      ? (q.options[q.answer].text || q.options[q.answer])
-      : String(q.answer);
+  if (!q) return '';
 
-  } else if (q.type === "tf") {
-    return q.answer == 1 ? "Verdadero" : "Falso";
-
-  } else if (q.type === "open" || q.type === "short") {
-    return q.answer ? String(q.answer) : "(respuesta abierta)";
-
-  } else if (q.type === "multi") {
-    return Array.isArray(q.answer) && q.options
-      ? q.answer.map(i => q.options[i].text || q.options[i]).join(", ")
-      : String(q.answer);
-
-  } else if (q.type === "likert") {
-    return q.scale && q.answer !== undefined
-      ? q.scale[q.answer]
-      : "(no aplica)";
-
-  } else if (q.type === "numeric") {
-    return String(q.answer);
-
-  } else if (q.type === "match") {
-    return (q.pairs || [])
-      .map(p => `${p.left} → ${p.correct}`)
-      .join("; ");
-
-  } else if (q.type === "gaptext") {
-    return q.answers
-      ? Object.entries(q.answers)
-          .map(([i,v]) => `${i}: ${v}`)
-          .join(", ")
-      : "(sin clave)";
-
-  } else if (q.type === "ordering") {
-    return q.correct ? q.correct.join(" → ") : "(sin clave)";
-
-  } else if (q.type === "hotspot") {
-    return q.correctArea
-      ? `Área válida: (${q.correctArea.x1}, ${q.correctArea.y1}) a (${q.correctArea.x2}, ${q.correctArea.y2})`
-      : "(sin clave)";
-
-  } else if (q.type === "multimedia") {
-    const subC = q.subquestion || {};
-    const subtypeC = q.subtype;
-  
-    if (subtypeC === "ordering") {
-      return subC.correct ? subC.correct.join(" → ") : "(sin clave)";
-    } else if (subtypeC === "match") {
-      return (subC.pairs || [])
-        .map(p => `${p.left} → ${p.correct}`)
-        .join("; ");
-    } else if (subtypeC === "hotspot") {
-      return subC.correctArea
-        ? `Área válida: (${subC.correctArea.x1}, ${subC.correctArea.y1}) a (${subC.correctArea.x2}, ${subC.correctArea.y2})`
-        : "(sin clave)";
-    } else {
-      return formatCorrectAnswer({ ...subC, type: subtypeC });
+  // multimedia que contiene subquestion -> delegar
+  if (q.type === 'multimedia' && q.subquestion) {
+    const subQ = q.subquestion;
+    if (q.subtype === 'gaptext' || subQ.type === 'gaptext') {
+      return formatCorrectAnswer({...subQ, type:'gaptext'});
     }
-  } else {
-    return "(sin clave)";
+    return formatCorrectAnswer({...subQ, type: q.subtype || subQ.type});
   }
+
+  if (q.type === 'gaptext') {
+    let sentence = q.sentence || q.title || "";
+    // preferir q.answers (obj index->texto) o q.correct (array) o q.gaps length
+    const correctObj = (q.answers && typeof q.answers === 'object') ? q.answers : null;
+    const gapsCount = correctObj 
+      ? Object.keys(correctObj).length
+      : (Array.isArray(q.gaps) ? q.gaps.length : (Array.isArray(q.correct) ? q.correct.length : (Array.isArray(q.options) ? q.options.length : 0)));
+
+    for (let i = 0; i < gapsCount; i++) {
+      const correctText = correctObj ? String(correctObj[i] || '') : (Array.isArray(q.correct) ? String(q.correct[i] || '') : '');
+      const replacement = correctText
+        ? `<strong>${escapeHtml(correctText)}</strong>`
+        : `<span class="gap-blank">&nbsp;</span>`;
+      const regex = new RegExp(`\\[\\[${i}\\]\\]|___`);
+      sentence = sentence.replace(regex, replacement);
+    }
+    return sentence;
+  }
+
+  // resto de tipos (escapados)
+  if (q.type === 'mcq') {
+    if (!Array.isArray(q.options)) return escapeHtml(String(q.answer ?? ''));
+    const correctKey = normalizeOptionKeyFromQuestion(q, q.answer);
+    const found = q.options.find(opt => getOptionKey(opt) === correctKey || (opt.text || opt) === correctKey);
+    return escapeHtml(found ? (found.text || found) : String(q.answer ?? ''));
+  }
+
+  if (q.type === 'multi') {
+    if (!Array.isArray(q.answer)) return escapeHtml(String(q.answer ?? ''));
+    if (!Array.isArray(q.options)) return escapeHtml(q.answer.join(", "));
+    const keys = normalizeKeysArray(q, q.answer);
+    return escapeHtml(keys.map(k => {
+      const found = q.options.find(opt => getOptionKey(opt) === k || (opt.text || opt) === k);
+      return found ? (found.text || found) : k;
+    }).join(", "));
+  }
+
+  if (q.type === 'tf') return escapeHtml((parseInt(q.answer)===1) ? 'Verdadero' : 'Falso');
+  if (q.type === 'open' || q.type === 'short') return escapeHtml(String(q.answer ?? ''));
+  if (q.type === 'numeric') return escapeHtml(String(q.answer ?? ''));
+
+  if (q.type === 'match') {
+    return escapeHtml((q.pairs || []).map(p => `${p.left} → ${p.correct ?? (p.right ? p.right[0] : '')}`).join(' ; '));
+  }
+
+  return escapeHtml(String(q.answer ?? ''));
 }
 
 // ---------- enviar correo al docente ----------
@@ -1504,6 +1512,35 @@ function enviarResultadosAlDocente(test, studentName, grade, score, details) {
   .catch(err => console.error("Error enviando correo:", err));
 }
 
+// ---------- utilidades para comparar opciones (soportan índices y claves/texto) ----------
+function normalizeOptionKeyFromQuestion(q, indexOrValue) {
+  if (indexOrValue === undefined || indexOrValue === null) return undefined;
+  // si no hay opciones, devolvemos como string
+  if (!q || !Array.isArray(q.options)) return String(indexOrValue);
+
+  // si es número (o string numérico) -> tomar la opción por índice
+  if (typeof indexOrValue === 'number' || (/^\d+$/.test(String(indexOrValue)))) {
+    const i = Number(indexOrValue);
+    if (q.options[i]) return getOptionKey(q.options[i]);
+    return String(indexOrValue);
+  }
+
+  // si es texto -> intentar emparejar con texto de alguna opción
+  const s = String(indexOrValue);
+  const found = q.options.find(opt => {
+    const txt = (opt && (opt.text || opt)) || String(opt);
+    return txt === s || getOptionKey(opt) === s;
+  });
+  if (found) return getOptionKey(found);
+
+  return s;
+}
+
+function normalizeKeysArray(q, arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map(a => normalizeOptionKeyFromQuestion(q, a)).filter(x => x !== undefined);
+}
+
 // ---------- terminar examen ----------
 function finishExam(cheatingForced = false) {
   clearInterval(timerInterval);
@@ -1523,9 +1560,13 @@ function finishExam(cheatingForced = false) {
 
     // ---------------- TIPOS DE PREGUNTAS ----------------
     if (q.type === 'mcq') {
-      if (studentAns !== undefined && parseInt(studentAns) === parseInt(q.answer)) {
+      // comparar por clave normalizada (soporta índices o texto guardado)
+      const correctKey = normalizeOptionKeyFromQuestion(q, q.answer);
+      const studentKey = normalizeOptionKeyFromQuestion(q, studentAns);
+
+      if (studentKey !== undefined && studentKey === correctKey) {
         qPoints = possiblePoints;
-      } else if (studentAns !== undefined) {
+      } else if (studentKey !== undefined) {
         qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
       }
 
@@ -1541,9 +1582,10 @@ function finishExam(cheatingForced = false) {
       qPoints = Math.round((possiblePoints * evalData.scoreRatio) * 1000) / 1000;
 
     } else if (q.type === 'multi') {
-      const correct = Array.isArray(q.answer) ? q.answer.sort().join(',') : '';
-      const given = Array.isArray(studentAns) ? studentAns.sort().join(',') : '';
-      qPoints = (correct === given) ? possiblePoints : 0;
+      // normalizar ambas listas como claves (soporta índices o textos)
+      const correctKeys = normalizeKeysArray(q, q.answer).sort().join(',');
+      const givenKeys = normalizeKeysArray(q, studentAns).sort().join(',');
+      qPoints = (correctKeys && correctKeys === givenKeys) ? possiblePoints : 0;
 
     } else if (q.type === 'likert') {
       qPoints = possiblePoints; // no hay correcto/incorrecto
@@ -1573,50 +1615,56 @@ function finishExam(cheatingForced = false) {
         const { x, y } = studentAns;
         const { x1, y1, x2, y2 } = q.correctArea;
         const tol = 0.05; // margen de tolerancia
-    
+
         if (x >= (x1 - tol) && x <= (x2 + tol) &&
             y >= (y1 - tol) && y <= (y2 + tol)) {
           qPoints = possiblePoints;
         }
       }
 
-    } else if (q.type === 'ordering') {
-      const correct = (q.correct || []).join(',');
-      const given = (studentAns || []).join(',');
-      qPoints = (correct === given) ? possiblePoints : 0;
     } else if (q.type === 'multimedia') {
+      // subpregunta dentro de multimedia (usar la misma lógica pero con subQ)
       const subQ = q.subquestion || {};
       const subtype = q.subtype;
-      const studentAns = answers[q.title]?.[subtype]; // ahora usamos el nuevo formato
-    
-      if (subtype === 'mcq' || subtype === 'tf') {
-        if (studentAns !== undefined && parseInt(studentAns) === parseInt(subQ.answer)) {
+      const studentSub = answers[q.title] || {};
+      const studentAnsSub = studentSub[subtype];
+
+      if (subtype === 'mcq') {
+        const correctKey = normalizeOptionKeyFromQuestion(subQ, subQ.answer);
+        const studentKey = normalizeOptionKeyFromQuestion(subQ, studentAnsSub);
+        if (studentKey !== undefined && studentKey === correctKey) {
           qPoints = possiblePoints;
-        } else if (studentAns !== undefined) {
+        } else if (studentKey !== undefined) {
+          qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
+        }
+      } else if (subtype === 'tf') {
+        if (studentAnsSub !== undefined && parseInt(studentAnsSub) === parseInt(subQ.answer)) {
+          qPoints = possiblePoints;
+        } else if (studentAnsSub !== undefined) {
           qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
         }
       } else if (subtype === 'open' || subtype === 'short') {
-        const evalData = evaluateOpenAnswer(String(studentAns || ''), subQ, currentTest);
+        const evalData = evaluateOpenAnswer(String(studentAnsSub || ''), subQ, currentTest);
         qPoints = Math.round((possiblePoints * evalData.scoreRatio) * 1000) / 1000;
       } else if (subtype === 'multi') {
-        const correct = Array.isArray(subQ.answer) ? subQ.answer.sort().join(',') : '';
-        const given = Array.isArray(studentAns) ? studentAns.sort().join(',') : '';
-        qPoints = (correct === given) ? possiblePoints : 0;
+        const correctKeys = normalizeKeysArray(subQ, subQ.answer).sort().join(',');
+        const givenKeys = normalizeKeysArray(subQ, studentAnsSub).sort().join(',');
+        qPoints = (correctKeys && correctKeys === givenKeys) ? possiblePoints : 0;
       } else if (subtype === 'match') {
         let matches = 0;
         (subQ.pairs || []).forEach((p,i) => {
-          if (studentAns && studentAns[i] === p.correct) matches++;
+          if (studentAnsSub && studentAnsSub[i] === p.correct) matches++;
         });
         qPoints = (matches / (subQ.pairs?.length || 1)) * possiblePoints;
       } else if (subtype === 'ordering') {
         const correct = (subQ.correct || []).join(',');
-        const given = (studentAns || []).join(',');
+        const given = (studentAnsSub || []).join(',');
         qPoints = (correct === given) ? possiblePoints : 0;
       } else if (subtype === 'hotspot') {
-        if (studentAns && subQ.correctArea) {
-          const { x, y } = studentAns;
+        if (studentAnsSub && subQ.correctArea) {
+          const { x, y } = studentAnsSub;
           const { x1, y1, x2, y2 } = subQ.correctArea;
-          const tol = 0.05; // tolerancia
+          const tol = 0.05;
           if (x >= (x1 - tol) && x <= (x2 + tol) && y >= (y1 - tol) && y <= (y2 + tol)) {
             qPoints = possiblePoints;
           }
@@ -1660,7 +1708,6 @@ function finishExam(cheatingForced = false) {
   $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)} \n Tiempo: ${min}:${sec}`;
 
   const showCorrect = !!currentTest.showCorrect;
-
   const detailsHtml = details.map(d => {
     let tipoLiteral = {
       mcq: "Selección múltiple",
@@ -1675,22 +1722,20 @@ function finishExam(cheatingForced = false) {
       hotspot: "Imagen interactiva",
       ordering: "Ordenar secuencia"
     }[d.type] || "Mixto";
-
+  
     return `<div style="margin-bottom:8px;">
       <strong>${d.index}. ${escapeHtml(d.title)}</strong><br/>
       Tipo: ${tipoLiteral}<br/>
       ${d.answered 
-        ? `<strong>Tu respuesta:</strong> ${escapeHtml(String(d.studentAnswer))}`
+        ? `<strong>Tu respuesta:</strong> ${d.studentAnswer}`
         : `<strong>Tu respuesta:</strong> <em>Sin responder</em>`}<br/>
-      ${showCorrect ? `<strong>Respuesta correcta:</strong> ${escapeHtml(String(d.correctAnswer))}<br/>` : ''}
+      ${showCorrect ? `<strong>Respuesta correcta:</strong> ${d.correctAnswer}<br/>` : ''}
       <strong>Puntos obtenidos:</strong> ${d.points}<br/>
       ${d.type === 'open' || d.type === 'short' ? `<div class="small">Palabras clave detectadas: ${d.openEval?.found?.map(f=>escapeHtml(f.word)+' (x'+f.count+')').join(', ') || 'Ninguna'}</div>` : ''}
     </div><hr/>`;
   }).join('');
 
-  $('detailedAnswers').innerHTML = `<div style="text-align:center;"><strong>Resumen de la prueba:</strong></div>
-    <div style="margin-top:8px">${detailsHtml}</div>
-    <div style="margin-top:8px; text-align: center;"><strong>Eventos de seguridad:</strong> ${cheatLogs.length ? cheatLogs.map(e=>`${e.when} (${e.kind})`).join(', ') : 'Ninguno'}</div>`;
+  $('detailedAnswers').innerHTML = detailsHtml;
 
   // guardar resultado
   try {
@@ -1708,7 +1753,8 @@ function finishExam(cheatingForced = false) {
     localStorage.setItem('results', JSON.stringify(stored));
   } catch (e) { console.error('Error guardando resultado:', e); }
 
-  // mensaje al docente
+  // (resto sin cambios...)
+  // mensaje al docente...
   const teacher = (teachers.teachers || [])[0] || {}; 
   let msg = "Envia estos resultados en PDF al docente ";
   if (teacher.name) msg += teacher.name;
@@ -1720,7 +1766,6 @@ function finishExam(cheatingForced = false) {
   msgEl.textContent = msg;
   $('result').appendChild(msgEl);
 
-  // guardar timestamp del intento para cooldown si NO fue finalizado por trampa
   if (!cheatingForced) {
     try {
       const deviceId = getDeviceId();
