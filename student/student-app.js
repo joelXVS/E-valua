@@ -2090,7 +2090,8 @@ function downloadResultsPdf(docData) {
   doc.text(`Curso: ${docData.grade}`, 40, y); y += 15;
   doc.text(`Código de prueba: ${docData.testCode}`, 40, y); y += 15;
   doc.text(`Fecha: ${docData.timestamp}`, 40, y); y += 15;
-  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y); 
+  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y += 15); 
+  doc.text(`Código de Resultado: ${docData.resultCode !== undefined ? String(docData.resultCode) : ''}`, 40, y); 
   y += 40;
   
   doc.setFontSize(12);
@@ -2170,8 +2171,8 @@ function downloadResultsPdf(docData) {
 
       columnStyles: {
         0: { cellWidth: 30, halign: 'center' },   // N°
-        1: { cellWidth: 260, halign: 'left' },    // Pregunta (más ancha)
-        2: { cellWidth: 200, halign: 'left' },    // Respuesta alumno (wrapping)
+        1: { cellWidth: 260, halign: 'center' },    // Pregunta (más ancha)
+        2: { cellWidth: 200, halign: 'center' },    // Respuesta alumno (wrapping)
         3: { cellWidth: 60, halign: 'center' }    // Puntos
       },
     
@@ -2206,6 +2207,7 @@ function downloadResultsPdf(docData) {
       styles: {
         fontSize: 9,
         halign: 'center',
+        valign: 'middle',
         lineWidth: 0.2,
         lineColor: [200, 200, 200]
       },
@@ -2349,6 +2351,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     showSection('start');
     const el = document.getElementById('viewResultArea');
     el.innerHTML = '';
+    document.getElementById('resultCodeInput').value = "";
   });
 });
 
