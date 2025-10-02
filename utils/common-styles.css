@@ -236,14 +236,15 @@ input[type="text"]:focus {
 /* gaptext */
 .gap {
   display:inline-block;
-  min-width:56px;
-  padding:6px 8px;
-  margin:0 6px;
-  border-bottom:2px dashed #e5e7eb;
   border-radius:6px;
-  vertical-align:middle;
-  text-align:center;
-  background:#fff;
+  min-width: 60px;
+  min-height: 20px;
+  border-bottom: 2px dashed #ff9800;
+  padding: 2px 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  background: #fff8e1;
+  text-align: center;
 }
 
 /* ficha arrastrable */
@@ -255,10 +256,11 @@ input[type="text"]:focus {
   margin:4px;
   user-select:none;
   cursor:grab;
-  background:#fafafa;
+  background:#fffdf5;
+  justify-content: center;
 }
 .gap-opt.dragging { opacity:0.6; }
-.gap-blank { display:inline-block; min-width:48px; border-bottom:2px dashed #ddd; }
+.gap-blank { display:inline-block; min-width:48px; border-bottom:2px dashed #fff8e1; background: #fff8e1; }
 
 
 /* Escala Likert responsiva */
