@@ -618,8 +618,8 @@ function renderQuestion() {
     const optionsHtml = (q.options || []).filter(opt => !used.includes(opt))
       .map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
   
-    inner += `<div class="gap-sentence" style="text-align: center;">${sentence}</div>
-              <div class="gap-options" id="gapOpts_${currentQuestionIndex}">
+    inner += `<div class="gap-sentence" style="text-align:center;">${sentence}</div>
+              <div class="gap-options" style="text-align:center;" id="gapOpts_${currentQuestionIndex}">
                 ${optionsHtml}
               </div>
               <div style="display:flex; justify-content:center; margin-top:18px;">
