@@ -2346,10 +2346,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const btnBackFromView = $('btnBackFromView');
   if (btnBackFromView) btnBackFromView.addEventListener('click', () => {
-    showSection('start'));
+    showSection('start');
     const el = document.getElementById('viewResultArea');
     el.innerHTML = '';
-  }
+  });
 });
 
 // prevenir cierre accidental durante examen
