@@ -248,20 +248,18 @@ input[type="text"]:focus {
 }
 
 /* ficha arrastrable */
-.gap-opt, .gap-options {
+.gap-opt {
   display:inline-block;
   padding:6px 10px;
-  border:1px solid #e6e6e6;
+  border:1px solid #ff9800;
   border-radius:8px;
-  margin:4px;
+  margin:10px;
   user-select:none;
   cursor:grab;
-  background:#fffdf5;
-  justify-content: center;
+  background:#fff8e1;
+  text-align: center;
 }
 .gap-opt.dragging { opacity:0.6; }
-.gap-blank { display:inline-block; min-width:48px; border-bottom:2px dashed #fff8e1; background: #fff8e1; }
-
 
 /* Escala Likert responsiva */
 .options.likert {
