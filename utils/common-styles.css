@@ -233,37 +233,33 @@ input[type="text"]:focus {
 }
 
 /* Espacios en blanco centrados */
+/* gaptext */
 .gap {
-  display: inline-block;
-  min-width: 60px;
-  min-height: 20px;
-  border-bottom: 2px dashed #ff9800;
-  padding: 2px 4px;
-  margin: 0 2px;
-  cursor: pointer;
-  background: #fff8e1;
-  text-align: center;
-}
-.gap-options {  
-  justify-content: center;
-  margin-top:10px; 
-  display:flex; 
-  gap:6px; 
-  flex-wrap:wrap; 
-}
-.gap-opt { 
-  padding:4px 8px; 
-  border:1px solid #ffcc80; 
-  border-radius:6px; 
-  background:#fffdf5; 
-  cursor:grab;
-}
-.gap-blank {
   display:inline-block;
-  min-width: 48px;
-  border-bottom: 2px dashed #ddd;
-  vertical-align: middle;
+  min-width:56px;
+  padding:6px 8px;
+  margin:0 6px;
+  border-bottom:2px dashed #e5e7eb;
+  border-radius:6px;
+  vertical-align:middle;
+  text-align:center;
+  background:#fff;
 }
+
+/* ficha arrastrable */
+.gap-opt {
+  display:inline-block;
+  padding:6px 10px;
+  border:1px solid #e6e6e6;
+  border-radius:8px;
+  margin:4px;
+  user-select:none;
+  cursor:grab;
+  background:#fafafa;
+}
+.gap-opt.dragging { opacity:0.6; }
+.gap-blank { display:inline-block; min-width:48px; border-bottom:2px dashed #ddd; }
+
 
 /* Escala Likert responsiva */
 .options.likert {
