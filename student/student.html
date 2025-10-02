@@ -42,6 +42,7 @@
 
         <div class="row">
           <button id="btnContinue" class="btn primary" disabled>Continuar</button>
+          <button id="btnViewResults" class="btn" style="margin-left:8px;">Ver resultados</button>
         </div>
         <div id="startMsg" class="small" style="margin-top:8px; text-align: center;"></div>
       </section>
@@ -77,6 +78,7 @@
         <h2 style="text-align: center;">Resultados</h2>
         <div id="resultSummary" class="result-summary"></div>
         <div id="detailedAnswers" class="detailed-answers"></div>
+        <div id="resultCodeDisplay" class="small" style="margin-top:12px; margin-bottom: 12px; text-align:center;"></div>
         <div class="row" style="margin-top:12px; margin-bottom: 12px;">
           <button id="downloadBtn" class="btn">Descargar JSON</button>
           <button id="downloadPdfBtn" class="btn">Exportar PDF</button>
@@ -84,13 +86,30 @@
           <button id="backBtn" class="btn">Volver</button>
         </div>
       </section>
+
+      <!-- PANTALLA - VER RESULTADOS -->
+      <section id="viewResults" class="card hidden" aria-hidden="true">
+        <h2 style="text-align: center;">Ver resultados por código</h2>
+      
+        <label class="field" style="margin-top:8px;">
+          <span>Código de Resultado</span>
+          <input id="resultCodeInput" type="text" placeholder="Ej: 01234567890" maxlength="11" />
+        </label>
+      
+        <div class="row" style="margin-top:8px;">
+          <button id="btnSearchResult" class="btn primary">Buscar</button>
+          <button id="btnBackFromView" class="btn">Volver</button>
+        </div>
+      
+        <div id="viewResultArea" style="margin-top:12px;"></div>
+      </section>
     </main>
 
     <footer class="footer card">
       <p class="small">E-valua — creado por Joel Valencia</p>
       <p class="small" style="font-size: 0.75rem;">
         <strong>
-          <em>Release Version:</em> 1.15.238
+          <em>Release Version:</em> 1.15.242
         </strong>
       </p>
     </footer>
