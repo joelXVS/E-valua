@@ -1999,24 +1999,19 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
     <hr/>
   `).join('');
 
-  // botones de exportACIÓN en esta vista
+  // botones de exportación en esta vista
   const exportButtons = `
     <div class="row" style="gap:8px; margin-top:12px;">
       <button id="viewJsonBtn" class="btn">JSON</button>
-      <button id="viewCsvBtn" class="btn">CSV</button>
       <button id="viewPdfBtn" class="btn">PDF</button>
-      <button id="viewCopyBtn" class="btn">Copiar todo</button>
     </div>
   `;
 
-  container.innerHTML = summary + exportButtons + `<div style="margin-top:12px;">${rows || '<p class="small">Sin detalles</p>'}</div>`;
+  container.innerHTML = summary + exportButtons + `<div style="margin-top:12px; justify-content:center;">${rows || '<p class="small">Sin detalles</p>'}</div>`;
 
   // añadir listeners a los nuevos botones (descargas de este resultado)
   document.getElementById('viewJsonBtn').addEventListener('click', () => downloadResults(result));
   document.getElementById('viewPdfBtn').addEventListener('click', () => downloadResultsPdf(result));
-  document.getElementById('viewCopyBtn').addEventListener('click', () => {
-    navigator.clipboard?.writeText(JSON.stringify(result, null, 2)).then(()=>alert('Resultado copiado')).catch(()=>alert('No se pudo copiar'));
-  });
 }
 
 // ---------- descargar JSON ----------
@@ -2350,20 +2345,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   const btnBackFromView = $('btnBackFromView');
-  if (btnBackFromView) btnBackFromView.addEventListener('click', () => showSection('start'));
-
-  // copiar resultado mostrado (en pantalla de resultados global)
-  const copyResultBtn = $('copyResultBtn');
-  if (copyResultBtn) copyResultBtn.addEventListener('click', () => {
-    // tomamos el último resultado guardado (u objeto actual en memoria si aplica)
-    try {
-      const stored = JSON.parse(localStorage.getItem('results') || '[]');
-      const last = stored.length ? stored[stored.length - 1] : null;
-      if (last) {
-        navigator.clipboard?.writeText(JSON.stringify(last, null, 2)).then(()=>alert('Resultado copiado'));
-      } else alert('No hay resultado para copiar.');
-    } catch (e) { alert('Error copiando.'); }
-  });
+  if (btnBackFromView) btnBackFromView.addEventListener('click', () => {
+    showSection('start'));
+    const el = document.getElementById('viewResultArea');
+    el.innerHTML = '';
+  }
 });
 
 // prevenir cierre accidental durante examen
