@@ -248,7 +248,7 @@ input[type="text"]:focus {
 }
 
 /* ficha arrastrable */
-.gap-opt {
+.gap-opt, .gap-options {
   display:inline-block;
   padding:6px 10px;
   border:1px solid #e6e6e6;
