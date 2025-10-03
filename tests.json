@@ -1022,6 +1022,370 @@
         { "type": "tf", "title": "El deporte promueve trabajo en equipo y disciplina.", "answer": 1 },
         { "type": "short", "title": "Nombre de una competición internacional en tu deporte favorito.", "answer": "" }
       ]
+    },
+    {
+      "code": "PROF-0009P030",
+      "name": "Prueba — Profesiones (Multimedia)",
+      "time": 45,
+      "freeAnswerLength": 15,
+      "points": { "ok": 3.33, "bad": 0 },
+      "startDateTime": "2025-10-01T00:00:00",
+      "endDateTime": "2025-12-01T00:00:00",
+      "showResults": true,
+      "showCorrect": false,
+      "groups": ["Invitado"],
+      "questions": [
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "mcq",
+          "subquestion": {
+            "title": "¿Qué profesión requiere jurar defender la Constitución?",
+            "options": ["Juez", "Médico", "Arquitecto", "Contador"],
+            "answer": 0
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "mcq",
+          "subquestion": {
+            "title": "¿Quién diseña la estructura de un puente?",
+            "options": ["Ingeniero civil", "Abogado", "Piloto", "Chef"],
+            "answer": 0
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "multi",
+          "subquestion": {
+            "title": "Selecciona las profesiones relacionadas con la salud.",
+            "options": ["Enfermero", "Cardiólogo", "Mecánico", "Anestesiólogo"],
+            "answer": [0,1,3]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "tf",
+          "subquestion": {
+            "title": "Un notario puede autenticar documentos legales.",
+            "answer": 1
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "short",
+          "subquestion": {
+            "title": "Escribe el nombre de la profesión que investiga el comportamiento humano.",
+            "answer": "",
+            "keywords": [
+              {"word":"psicólogo","weight":1},{"word":"psiquiatra","weight":1},{"word":"investigador","weight":1},
+              {"word":"cognitivo","weight":1},{"word":"conductual","weight":1},{"word":"clínico","weight":1},
+              {"word":"analítico","weight":1},{"word":"académico","weight":1},{"word":"neurociencia","weight":1},
+              {"word":"evaluación","weight":1},{"word":"diagnóstico","weight":1},{"word":"intervención","weight":1},
+              {"word":"psicometría","weight":1},{"word":"social","weight":1},{"word":"experimental","weight":1}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "open",
+          "subquestion": {
+            "title": "Describe brevemente las competencias clave de un cirujano.",
+            "keywords": [
+              {"word":"precisión","weight":1},{"word":"concentración","weight":1},{"word":"habilidad manual","weight":1},
+              {"word":"conocimiento anatómico","weight":1},{"word":"ética","weight":1},{"word":"resistencia","weight":1},
+              {"word":"equipo","weight":1},{"word":"decisión rápida","weight":1},{"word":"instrumental","weight":1},
+              {"word":"esterilidad","weight":1},{"word":"experiencia","weight":1},{"word":"empatía","weight":1},
+              {"word":"urgencias","weight":1},{"word":"procedimientos","weight":1},{"word":"diagnóstico","weight":1}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "numeric",
+          "subquestion": {
+            "title": "Un arquitecto diseña un edificio con 20 pisos de 4 metros de altura cada uno. ¿Cuál es la altura total?",
+            "answer": 80
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "match",
+          "subquestion": {
+            "title": "Relaciona la profesión con su herramienta principal.",
+            "pairs": [
+              {"left":"Carpintero","right":["Martillo","Microscopio","Estetoscopio"],"correct":"Martillo"},
+              {"left":"Médico","right":["Microscopio","Estetoscopio","Bisturí"],"correct":"Estetoscopio"},
+              {"left":"Topógrafo","right":["Teodolito","GPS","Compás"],"correct":"Teodolito"}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "gaptext",
+          "subquestion": {
+            "title": "Completa: El [[0]] se encarga de representar a los clientes en juicios.",
+            "sentence": "El [[0]] se encarga de representar a los clientes en juicios.",
+            "options": ["abogado","juez","testigo"],
+            "answer": ["abogado"]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "ordering",
+          "subquestion": {
+            "title": "Ordena de menor a mayor nivel de estudios académicos:",
+            "items": ["Licenciatura","Doctorado","Maestría"],
+            "answer": ["Licenciatura","Maestría","Doctorado"]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "hotspot",
+          "subquestion": {
+            "title": "Haz clic en la zona de la bata de un médico en la imagen.",
+            "correctArea": {"x1":0.3,"y1":0.4,"x2":0.6,"y2":0.8}
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "likert",
+          "subquestion": {
+            "title": "Evalúa la dificultad percibida de la profesión de piloto comercial.",
+            "scale": ["Muy baja","Baja","Moderada","Alta","Muy alta"]
+          }
+        },    
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "mcq",
+          "subquestion": {
+            "title": "¿Qué profesional estudia las leyes físicas del universo?",
+            "options": ["Físico","Geógrafo","Abogado","Contador"],
+            "answer": 0
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "multi",
+          "subquestion": {
+            "title": "Selecciona profesiones que requieren licencia estatal.",
+            "options": ["Médico","Ingeniero civil","Pintor artístico","Abogado"],
+            "answer": [0,1,3]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "tf",
+          "subquestion": {
+            "title": "Un economista puede trabajar como asesor en bancos centrales.",
+            "answer": 1
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "short",
+          "subquestion": {
+            "title": "Escribe el nombre de la profesión que estudia los volcanes.",
+            "answer": "",
+            "keywords": [
+              {"word":"vulcanólogo","weight":1},{"word":"geólogo","weight":1},{"word":"geociencias","weight":1},
+              {"word":"lava","weight":1},{"word":"magma","weight":1},{"word":"tectónica","weight":1},
+              {"word":"erupción","weight":1},{"word":"estratovolcán","weight":1},{"word":"placas","weight":1},
+              {"word":"geofísica","weight":1},{"word":"rocas","weight":1},{"word":"geología","weight":1},
+              {"word":"campo","weight":1},{"word":"observación","weight":1},{"word":"estratigrafía","weight":1}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "open",
+          "subquestion": {
+            "title": "Describe las responsabilidades de un diplomático en el extranjero.",
+            "keywords": [
+              {"word":"negociación","weight":1},{"word":"representación","weight":1},{"word":"diplomacia","weight":1},
+              {"word":"tratados","weight":1},{"word":"relaciones internacionales","weight":1},{"word":"conflictos","weight":1},
+              {"word":"mediación","weight":1},{"word":"protocolo","weight":1},{"word":"intercultural","weight":1},
+              {"word":"idiomas","weight":1},{"word":"embajada","weight":1},{"word":"consulado","weight":1},
+              {"word":"comercio","weight":1},{"word":"acuerdos","weight":1},{"word":"seguridad","weight":1}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "numeric",
+          "subquestion": {
+            "title": "Un abogado trabaja 6 casos al mes. ¿Cuántos casos atiende en un año?",
+            "answer": 72
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "match",
+          "subquestion": {
+            "title": "Relaciona profesión — campo.",
+            "pairs": [
+              {"left":"Astrónomo","right":["Estrellas","Bosques","Mercados"],"correct":"Estrellas"},
+              {"left":"Biólogo marino","right":["Océano","Montaña","Desierto"],"correct":"Océano"},
+              {"left":"Historiador","right":["Archivos","Laboratorio","Hospital"],"correct":"Archivos"}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "gaptext",
+          "subquestion": {
+            "title": "Completa: El [[0]] controla la torre de control de un aeropuerto.",
+            "sentence": "El [[0]] controla la torre de control de un aeropuerto.",
+            "options": ["controlador aéreo","piloto","mecánico"],
+            "answer": ["controlador aéreo"]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "ordering",
+          "subquestion": {
+            "title": "Ordena las etapas de formación médica:",
+            "items": ["Internado","Residencia","Pregrado"],
+            "answer": ["Pregrado","Internado","Residencia"]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "hotspot",
+          "subquestion": {
+            "title": "Haz clic en el estetoscopio en la imagen.",
+            "correctArea": {"x1":0.45,"y1":0.5,"x2":0.65,"y2":0.8}
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "likert",
+          "subquestion": {
+            "title": "Evalúa el riesgo laboral de un bombero.",
+            "scale": ["Muy bajo","Bajo","Moderado","Alto","Muy alto"]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "mcq",
+          "subquestion": {
+            "title": "¿Qué profesional evalúa la solidez financiera de una empresa antes de invertir?",
+            "options": ["Auditor", "Ingeniero eléctrico", "Médico", "Profesor"],
+            "answer": 0
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "multi",
+          "subquestion": {
+            "title": "Selecciona las profesiones directamente vinculadas con tribunales de justicia.",
+            "options": ["Abogado", "Fiscal", "Carpintero", "Juez"],
+            "answer": [0,1,3]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "tf",
+          "subquestion": {
+            "title": "Un paleontólogo estudia restos fósiles para comprender la vida prehistórica.",
+            "answer": 1
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "video",
+          "src": "",
+          "subtype": "short",
+          "subquestion": {
+            "title": "Escribe la profesión que diseña circuitos y microchips.",
+            "answer": "",
+            "keywords": [
+              {"word":"ingeniero electrónico","weight":1},{"word":"microelectrónica","weight":1},{"word":"circuitos","weight":1},
+              {"word":"chip","weight":1},{"word":"hardware","weight":1},{"word":"semiconductores","weight":1},
+              {"word":"diseño","weight":1},{"word":"integrado","weight":1},{"word":"nanotecnología","weight":1},
+              {"word":"procesador","weight":1},{"word":"PCB","weight":1},{"word":"tecnología","weight":1},
+              {"word":"ingeniería","weight":1},{"word":"eléctrica","weight":1},{"word":"digital","weight":1}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "image",
+          "src": "",
+          "subtype": "open",
+          "subquestion": {
+            "title": "Explica en qué consiste la labor de un criptógrafo en el ámbito digital.",
+            "keywords": [
+              {"word":"cifrado","weight":1},{"word":"seguridad","weight":1},{"word":"datos","weight":1},
+              {"word":"algoritmo","weight":1},{"word":"clave","weight":1},{"word":"información","weight":1},
+              {"word":"confidencialidad","weight":1},{"word":"criptografía","weight":1},{"word":"comunicaciones","weight":1},
+              {"word":"descifrar","weight":1},{"word":"matemáticas","weight":1},{"word":"protección","weight":1},
+              {"word":"privacidad","weight":1},{"word":"encriptar","weight":1},{"word":"ciberseguridad","weight":1}
+            ]
+          }
+        },
+        {
+          "type": "multimedia",
+          "mediaType": "audio",
+          "src": "",
+          "subtype": "numeric",
+          "subquestion": {
+            "title": "Un arquitecto proyecta 4 edificios con 15 pisos cada uno. Si cada piso mide 3.2 m, ¿cuál es la altura total proyectada?",
+            "answer": 192
+          }
+        }
+      ]
     }
   ]
 }
