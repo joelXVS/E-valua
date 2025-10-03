@@ -2765,13 +2765,35 @@ window.addEventListener('DOMContentLoaded', async () => {
   const closeBtn = document.getElementById("closeWhatsNew");
   const updatesList = document.getElementById("updatesList");
 
-  // Cargar novedades desde JSON
+  // Cargar novedades desde JSON y mostrar con la parte antes de ":" en negrita
   fetch("../whats_new.json")
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error('No se pudo cargar whats_new.json');
+      return res.json();
+    })
     .then(data => {
-      updatesList.innerHTML = data.updates
-        .map(update => `<li>${update}</li>`)
-        .join("");
+      if (!data || !Array.isArray(data.updates)) {
+        updatesList.innerHTML = '<li>No hay novedades disponibles.</li>';
+        return;
+      }
+
+      // generar <li> por cada update, poniendo en negrita la porción antes del primer ":" si existe
+      updatesList.innerHTML = data.updates.map(updateRaw => {
+        const u = String(updateRaw || '');
+        const idx = u.indexOf(':');
+        if (idx !== -1) {
+          const left = u.slice(0, idx).trim();
+          const right = u.slice(idx + 1).trim();
+          return `<li><strong>${escapeHtml(left)}</strong>: ${escapeHtml(right)}</li>`;
+        } else {
+          // sin dos puntos -> mostrar tal cual
+          return `<li>${escapeHtml(u)}</li>`;
+        }
+      }).join('');
+    })
+    .catch(err => {
+      console.error('Error cargando novedades:', err);
+      if (updatesList) updatesList.innerHTML = '<li class="small">No se pudieron cargar las novedades.</li>';
     });
 
   // Cerrar modal
