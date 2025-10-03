@@ -12,10 +12,7 @@
     <header class="header card" style="text-align:center;">
       <h1 style="font-size:2.5rem; color:#e65100;">E-valua</h1>
       <p class="sub" style="margin-top:8px;">
-        Plataforma creada por José Angel Perea Valencia, estudiante de Ing. Sistemas de la Universidad del Pacífico, más conocido como Joel Valencia, para gestionar y realizar evaluaciones en línea.  
-      </p>
-      <p class="sub" style="margin-top:8px;">
-        Creada para el uso de docentes de instituciones que tienen dificultades para evaluar a sus alumnos. Ahora mismo esta en modo de prueba, proximamente será lanzada con nuevas funciones.
+        Plataforma creada por José Angel Perea Valencia, estudiante de Ing. Sistemas de la Universidad del Pacífico, más conocido como Joel Valencia, para gestionar y realizar evaluaciones en línea. Creada para el uso de docentes de instituciones que tienen dificultades para evaluar a sus alumnos. Ahora mismo esta en modo de prueba, proximamente será lanzada con nuevas funciones.
       </p>
     </header>
 
@@ -26,6 +23,9 @@
       <div class="row" style="justify-content:center; margin-top:12px;">
         <button id="btnTeacher" class="btn danger">Ir a E-valua para Docentes</button>
       </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnTeacher" style="background: #ffc400; color: #ffffff;" class="btn">Ir a Sistema de Información</button>
+      </div>
     </main>
   </div>
 
@@ -33,14 +33,18 @@
     document.getElementById('btnStudent').addEventListener('click', () => {
       window.location.href = 'student/student.html';
     });
-
+    
     document.getElementById('btnTeacher').addEventListener('click', () => {
       const code = prompt('Ingrese el código de acceso para docentes:');
-      if (code === '@DOC3NT3S') {
+      if (code === '@SOYE-VALUADOR') {
         window.location.href = 'teacher/teacher.html';
       } else if (code !== null) {
-        alert('Código incorrecto.');
+        alert('Código incorrecto. Si es estudiante ingrese desde el panel de estudiantes.');
       }
+    });
+    
+    document.getElementById('btnStudent').addEventListener('click', () => {
+      window.location.href = 'sistema/info.html';
     });
   </script>
 </body>
