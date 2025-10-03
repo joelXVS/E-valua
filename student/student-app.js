@@ -19,6 +19,12 @@ function generateResultCode() {
   return String(Math.floor(Math.random() * 1e11)).padStart(11, '0');
 }
 
+// ---------- generar código de exportación (6 dígitos) ----------
+function generateExportCode() {
+  // genera un número aleatorio de 6 dígitos como string, con ceros a la izquierda si hace falta
+  return String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
+}
+
 async function loadInitialData() {
   try {
     const [gResp, tResp, teResp] = await Promise.all([
@@ -103,14 +109,17 @@ const RETAKE_COOLDOWN_MINUTES = 60;
 function getLastAttemptKey(testCode, deviceId) {
   return `lastAttempt::${testCode}::${deviceId}`;
 }
+
 function setLastAttemptTime(testCode, deviceId, whenIso) {
   try { localStorage.setItem(getLastAttemptKey(testCode, deviceId), whenIso || new Date().toISOString()); }
   catch(e){ console.warn(e); }
 }
+
 function getLastAttemptTime(testCode, deviceId) {
   try { const v = localStorage.getItem(getLastAttemptKey(testCode, deviceId)); return v ? new Date(v) : null; }
   catch(e){ return null; }
 }
+
 function minutesSince(date) { if (!date) return Infinity; return (Date.now() - date.getTime())/1000/60; }
 
 // cheat logs: por intento (se guarda también en localStorage bajo 'cheatLogs' por sesión)
@@ -1688,7 +1697,12 @@ function formatAnswer(q, ans) {
   }
 
   // tf, open, short, numeric, match, etc. — devolver escapeado
-  if (q.type === 'tf') return escapeHtml((parseInt(q.answer)===1) ? 'Verdadero' : 'Falso');
+  if (q.type === 'tf') {
+    // mostrar la respuesta del alumno (ans). Si no respondió, mostrar "Sin responder".
+    if (ans === undefined || ans === null || ans === '') return escapeHtml('Sin responder');
+    return escapeHtml(Number(ans) === 1 ? 'Verdadero' : 'Falso');
+  }
+
   if (q.type === 'open' || q.type === 'short') return escapeHtml(String(ans || ''));
   if (q.type === 'numeric') return escapeHtml(String(ans || ''));
   if (q.type === 'hotspot') return escapeHtml(ans ? JSON.stringify(ans) : '');
@@ -2297,17 +2311,59 @@ function downloadResultsPdf(docData = {}) {
   y += 18;
 
   // --- Código de presentación (11 dígitos) en la esquina superior derecha ---
-  const resultCode = docData.resultCode || generateResultCode();
+  const resultCode = docData.resultCode;
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.text(`Código de presentación: ${resultCode}`, pageW - margin, 40, { align: 'right' });
 
-  // --- Datos del estudiante (izquierda) y fecha/puntaje (derecha) ---
-  const studentName = docData.studentName || '';
-  const course = docData.course || '';
-  const testName = docData.testName || '';
-  const dateStr = formatDateNice(docData.date || new Date());
-  const scoreStr = (docData.score !== undefined && docData.score !== null) ? String(docData.score) : '';
+  // --- Datos principales (soporte para diferentes nombres de campo en docData/result) ---
+  const studentName = (
+    docData.studentName ||
+    docData.student ||
+    docData.studentFullName ||
+    (document.getElementById('studentName') ? document.getElementById('studentName').value.trim() : '') ||
+    (currentTest && currentTest.student ? currentTest.student : '') ||
+    ''
+  );
+
+  const course = (
+    docData.course ||
+    docData.grade ||
+    docData.group ||
+    (document.getElementById('gradeSelect') ? (document.getElementById('gradeSelect').selectedOptions[0]?.textContent || '') : '') ||
+    (currentTest && currentTest.grade ? currentTest.grade : '') ||
+    ''
+  );
+
+  const testName = (
+    docData.testName ||
+    docData.test ||
+    docData.test_title ||
+    (currentTest ? (currentTest.name || '') : '') ||
+    ''
+  );
+
+  // fecha: acepta date, timestamp o fallback a ahora
+  const dateStr = formatDateNice(docData.date || docData.timestamp || docData.time || new Date());
+
+  // Puntaje: si viene numérico, usarlo; si viene un resumen de texto ("Puntaje: 4 ...") intentar extraer solo el valor útil.
+  let scoreStr = '';
+  if (docData.score !== undefined && docData.score !== null) {
+    scoreStr = String(docData.score);
+  } else if (docData.resultSummary || docData.summary) {
+    const s = String(docData.resultSummary || docData.summary || '');
+    const m = s.match(/Puntaje\s*[:\-]?\s*([^\r\n]+)/i);
+    scoreStr = m ? m[1].trim() : s.split(/\r?\n/)[0].trim();
+  } else {
+    const el = document.getElementById('resultSummary');
+    if (el && el.textContent) {
+      const s = el.textContent || '';
+      const m = s.match(/Puntaje\s*[:\-]?\s*([^\r\n]+)/i);
+      scoreStr = m ? m[1].trim() : s.split(/\r?\n/)[0].trim();
+    }
+  }
+  // limpiar HTML/espacios repetidos definitivamente
+  scoreStr = stripTags(scoreStr).replace(/\s{2,}/g, ' ').trim();
 
   y += 6;
   const leftColX = margin;
@@ -2345,21 +2401,22 @@ function downloadResultsPdf(docData = {}) {
 
   y += 18;
 
-  // línea separadora
+  // --- Preparar filas de la tabla: aceptar varios nombres para detalles de preguntas ---
+  const details = Array.isArray(docData.details) ? docData.details
+    : Array.isArray(docData.answers) ? docData.answers
+    : Array.isArray(docData.questionsDetails) ? docData.questionsDetails
+    : [];
+
+  // línea separadora (asegurarse ancho correcto)
   doc.setDrawColor(200);
   doc.setLineWidth(0.5);
   doc.line(margin, y, pageW - margin, y);
   y += 10;
 
-  // --- Preparar filas de la tabla: saneamiento de studentAnswer y correctAnswer ---
-  const details = Array.isArray(docData.details) ? docData.details : [];
-
   const tableRows = details.map(d => {
-    const idx = (d.index !== undefined && d.index !== null) ? String(d.index) : '';
-    const title = stripTags(d.title || '');
-    // studentAnswer puede ser string, array, objeto (gaptext), o estructura compleja -> convertir a texto plano
-    let studentText = answerToText(d.studentAnswer, d.type);
-    // si formatAnswer produjo html (p. ej. con <strong>) lo limpiamos
+    const idx = (d.index !== undefined && d.index !== null) ? String(d.index) : (d._index !== undefined ? String(d._index) : '');
+    const title = stripTags(d.title || d.question || d.prompt || '');
+    let studentText = answerToText(d.studentAnswer ?? d.answer ?? d.given ?? d.response, d.type || type);
     studentText = stripTags(studentText);
 
     const pts = (d.points !== undefined && d.points !== null) ? String(d.points) : '';
@@ -2367,9 +2424,20 @@ function downloadResultsPdf(docData = {}) {
     return [ idx, title, studentText, pts ];
   });
 
+  // --- encabezado coloreado para la sección "Detalle de preguntas" ---
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(41, 128, 185);
+  doc.text('Detalle de preguntas:', margin + 8, y + 8);
+  // restaurar color texto
+  doc.setTextColor(0, 0, 0);
+  y += 24;
+
   // --- Dibujar tabla: preferir doc.autoTable si está disponible (mejor formato) ---
   const startYForTable = y;
   if (typeof doc.autoTable === 'function') {
+    // calcular anchos en función del ancho disponible
+    const usableWidth = pageW - margin * 2;
     // establecer estilos razonables para mantener diseño actual
     doc.autoTable({
       startY: startYForTable,
@@ -2379,6 +2447,8 @@ function downloadResultsPdf(docData = {}) {
         font: 'helvetica',
         fontSize: 10,
         cellPadding: 4,
+        lineWidth: 0.2,            // grosor de borde
+        lineColor: [100, 100, 100]
       },
       headStyles: {
         fillColor: [41, 128, 185],
@@ -2387,8 +2457,8 @@ function downloadResultsPdf(docData = {}) {
       },
       columnStyles: {
         0: { cellWidth: 30, halign: 'center' },               // #
-        1: { cellWidth: 180 },                                // Pregunta
-        2: { cellWidth: 170 },                                // Tu respuesta
+        1: { cellWidth: Math.max(usableWidth - 30 - Math.round(usableWidth * 0.35) - 50, 80) },                                // Pregunta
+        2: { cellWidth: Math.round(usableWidth * 0.35) },                                // Tu respuesta
         3: { cellWidth: 50, halign: 'center' }                // Puntos
       },
       didDrawPage: function (data) {
@@ -2410,7 +2480,7 @@ function downloadResultsPdf(docData = {}) {
     tableRows.forEach(row => {
       const line = row.map(c => stripTags(String(c))).join(' | ');
       doc.text(line, margin, y);
-      y += 12;
+      y += 24;
       // posible salto de página
       if (y > doc.internal.pageSize.getHeight() - 60) {
         doc.addPage();
@@ -2419,29 +2489,128 @@ function downloadResultsPdf(docData = {}) {
     });
   }
 
+  // --- Detectar cheat logs con tolerancia a nombres distintos ---
+  const cheatLogs = Array.isArray(docData.cheatLogs) ? docData.cheatLogs
+    : Array.isArray(docData.cheats) ? docData.cheats
+    : Array.isArray(docData.events) ? docData.events
+    : Array.isArray(docData.cheat_events) ? docData.cheat_events
+    : (window.currentCheatEvents && Array.isArray(window.currentCheatEvents) ? window.currentCheatEvents : null)
+    || (localStorage.getItem('cheatLogs') ? JSON.parse(localStorage.getItem('cheatLogs')) : []);
+
+
+  if (cheatLogs && cheatLogs.length) {
+    // encabezado coloreado
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(255, 128, 0);
+    doc.text('Intentos de trampa:', margin + 8, y + 8);
+    doc.setTextColor(0, 0, 0);
+    y += 24;
+
+    // preparar filas
+    const cheatRows = cheatLogs.map((c, i) => {
+      const when = formatDateNice(c.timestamp || c.date || c.time || '');
+      const type = c.type || c.event || c.kind || '';
+      const note = (c.note || c.details || '').toString();
+      return [ String(i + 1), when, type, stripTags(note) ];
+    });
+
+    // usar autoTable si está
+    if (typeof doc.autoTable === 'function') {
+      const usableWidth = pageW - margin * 2;
+      doc.autoTable({
+        startY: y,
+        head: [['#', 'Fecha', 'Tipo', 'Detalles']],
+        body: cheatRows,
+        styles: { fontSize: 9 },
+        headStyles: { 
+          fillColor: [255, 128, 0], 
+          textColor: 255, 
+          lineWidth: 0.2,            // grosor de borde
+          lineColor: [100, 100, 100] },
+        columnStyles: {
+          0: { cellWidth: 24, halign: 'center' },
+          1: { cellWidth: Math.round(usableWidth * 0.25) },
+          2: { cellWidth: Math.round(usableWidth * 0.2) },
+          3: { cellWidth: Math.round(usableWidth * 0.45) }
+        },
+        margin: { left: margin, right: margin }
+      });
+      y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 12 : y + 12;
+    } else {
+      // fallback simple
+      doc.setFont('helvetica', 'bold');
+      doc.text('# | Fecha | Tipo | Detalles', margin, y);
+      y += 12;
+      doc.setFont('helvetica', 'normal');
+      cheatRows.forEach(r => {
+        doc.text(r.join(' | '), margin, y);
+        y += 24;
+        if (y > doc.internal.pageSize.getHeight() - 60) {
+          doc.addPage();
+          y = 40;
+        }
+      });
+      y += 8;
+    }
+  }
+
   // --- Pie (opcional) con resumen o notas ---
   y += 8;
   if (y < doc.internal.pageSize.getHeight() - 40) {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
-    doc.text('Este documento muestra el detalle de las respuestas registradas en la prueba.', margin, y);
+    const footerText = 'Este documento muestra el detalle de las respuestas registradas en la prueba.';
+    doc.text(footerText, pageW / 2, y, { align: 'center' });
     y += 12;
   }
 
   // --- Guardar el PDF con nombre legible ---
-  const safeTestName = (docData.testName || 'resultado').replace(/[^\w\- ]+/g, '').replace(/\s+/g, '_');
-  const filename = `${safeTestName}_${resultCode}.pdf`;
-  try {
-    doc.save(filename);
-  } catch (e) {
-    // en caso de error con save (entornos restringidos), intentar open en nueva ventana
-    try {
-      const blob = doc.output('bloburl');
-      window.open(blob, '_blank');
-    } catch (e2) {
-      console.error('No se pudo descargar o abrir el PDF: ', e, e2);
-    }
-  }
+  const safeTestName = (docData.testName || 'Prueba').replace(/[^\w\- ]+/g, '').replace(/\s+/g, '_');
+  const filename = `${safeTestName}_${generateExportCode()}.pdf`;
+  // --- Intentar añadir marca de agua desde utils/logo.png (opacidad 0.4) ---
+  (function saveWithOptionalWatermark() {
+    const logoSrc = '../utils/logo.png';
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function () {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 0.4;
+        ctx.drawImage(img, 0, 0);
+        const imgData = canvas.toDataURL('image/png');
+
+        const nPages = (typeof doc.getNumberOfPages === 'function') ? doc.getNumberOfPages() : doc.internal.getNumberOfPages();
+        for (let p = 1; p <= nPages; p++) {
+          doc.setPage(p);
+          const pw = doc.internal.pageSize.getWidth();
+          const ph = doc.internal.pageSize.getHeight();
+          // Escalar la imagen para que ocupe la mitad del ancho de la página aproximadamente
+          const w = pw * 0.5;
+          const h = (img.height / img.width) * w;
+          const x = (pw - w) / 2;
+          const yImg = (ph - h) / 2;
+          try { doc.addImage(imgData, 'PNG', x, yImg, w, h); } catch (errAdd) { console.warn('addImage falló:', errAdd); }
+        }
+        try { doc.save(filename); } catch (eSave) {
+          try { window.open(doc.output('bloburl'), '_blank'); } catch (e2) { console.error('No se pudo abrir PDF', eSave, e2); alert('No se pudo generar el PDF. Revisa la consola.'); }
+        }
+      } catch (e) {
+        console.warn('Error procesando logo para watermark; guardando sin watermark.', e);
+        try { doc.save(filename); } catch (e2) { try { window.open(doc.output('bloburl'), '_blank'); } catch (e3) { console.error(e2, e3); } }
+      }
+    };
+    img.onerror = function () {
+      // si falla la carga del logo, guardar sin watermark
+      try { doc.save(filename); } catch (e) { try { window.open(doc.output('bloburl'), '_blank'); } catch (e2) { console.error('No se pudo abrir PDF', e, e2); } }
+    };
+    // arrancar carga
+    img.src = logoSrc;
+  })();
 }
 
 // ---------- descargar Certificado aparte ----------
@@ -2544,7 +2713,21 @@ window.addEventListener('DOMContentLoaded', async () => {
   $('nextBtn').addEventListener('click', nextQuestion);
   $('finishBtn').addEventListener('click', () => finishExam(false));
   $('downloadBtn').addEventListener('click', downloadResults);
-  $('downloadPdfBtn').addEventListener('click', downloadResultsPdf);
+  $('downloadPdfBtn').addEventListener('click', () => {
+    // tomar el último resultado almacenado
+    let stored = [];
+    try {
+      stored = JSON.parse(localStorage.getItem('results') || '[]');
+    } catch (e) { stored = []; }
+    const lastResult = stored.length ? stored[stored.length - 1] : null;
+
+    if (lastResult) {
+      downloadResultsPdf(lastResult);
+    } else {
+      // si no hay nada en localStorage, llamar sin parámetro (usará DOM/currentTest como fallback)
+      downloadResultsPdf();
+    }
+  });
   $('downloadCertBtn').addEventListener('click', downloadCertificate);
   $('backBtn').addEventListener('click', () => location.reload());
 
