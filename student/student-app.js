@@ -2762,23 +2762,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   const modal = document.getElementById("whatsNewModal");
-  const btn = document.getElementById("whatsNewBtn");
   const closeBtn = document.getElementById("closeWhatsNew");
   const updatesList = document.getElementById("updatesList");
 
   // Cargar novedades desde JSON
-  fetch("whats_new.json")
+  fetch("../whats_new.json")
     .then(res => res.json())
     .then(data => {
       updatesList.innerHTML = data.updates
         .map(update => `<li>${update}</li>`)
         .join("");
     });
-
-  // Abrir modal manual
-  btn.addEventListener("click", () => {
-    modal.style.display = "flex";
-  });
 
   // Cerrar modal
   closeBtn.addEventListener("click", () => {
