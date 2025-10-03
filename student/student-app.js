@@ -2042,7 +2042,12 @@ function finishExam(cheatingForced = false) {
   const elapsedSec = Math.floor(elapsedMs / 1000);
   const min = String(Math.floor(elapsedSec / 60));
   const sec = String(elapsedSec % 60).padStart(2, '0');
-  $('resultSummary').textContent = `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)} \n Tiempo: ${min}:${sec}`;
+  let summaryText = "";
+  if (currentTest.evaluativa !== false) {
+    summaryText += `Puntaje: ${totalScore} ≈ ${totalScore.toFixed(1)}\n`;
+  }
+  summaryText += `Tiempo: ${min}:${sec}`;
+  $('resultSummary').textContent = summaryText;
 
   const showCorrect = !!currentTest.showCorrect;
   const detailsHtml = details.map(d => {
@@ -2083,6 +2088,7 @@ function finishExam(cheatingForced = false) {
       student: studentName,
       grade: $('gradeSelect').selectedOptions[0].textContent,
       test: currentTest.name,
+      esEvaluativa: currentTest.evaluativa,
       testCode: currentTest.code,
       timestamp: new Date().toISOString(),
       score: totalScore,
@@ -2169,7 +2175,8 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
       <div><strong>Estudiante:</strong> ${escapeHtml(result.student)}</div>
       <div><strong>Curso:</strong> ${escapeHtml(result.grade)}</div>
       <div><strong>Prueba:</strong> ${escapeHtml(result.test)} (${escapeHtml(result.testCode)})</div>
-      <div><strong>Puntaje:</strong> ${escapeHtml(String(result.score))}</div>
+      ${result.esEvaluativa !== false ? `<div><strong>Puntaje:</strong> ${escapeHtml(String(result.score))}</div>` : ""}
+      <div><strong>Tiempo:</strong> ${escapeHtml(result.time || `${min}:${sec}`)}</div>
       <div><strong>Fecha:</strong> ${escapeHtml(result.timestamp)}</div>
       <div style="margin-top:6px;">Código: <strong class="result-code">${escapeHtml(result.resultCode)}</strong></div>
     </div>
