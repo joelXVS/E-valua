@@ -178,9 +178,9 @@
     async function loadData(){
       try{
         const [tech, mark, tuts] = await Promise.all([
-            fetch('/technique.json').then(r=>r.json()),
-            fetch('/marketing.json').then(r=>r.json()),
-            fetch('/tutorials.json').then(r=>r.json())
+            fetch('./technique.json').then(r=>r.json()),
+            fetch('./marketing.json').then(r=>r.json()),
+            fetch('./tutorials.json').then(r=>r.json())
         ]);
         technique = tech; 
         marketing = mark; 
@@ -240,10 +240,10 @@
       searchInput.value = '';
       if(tab==='tech'){
         renderList(technique.details, 'Técnica');
-        downloadJsonBtn.onclick = ()=>downloadJSON('technique.json', technique);
+        downloadJsonBtn.onclick = ()=>downloadJSON('./technique.json', technique);
       } else if(tab==='marketing'){
         renderList(marketing.details, 'Marketing');
-        downloadJsonBtn.onclick = ()=>downloadJSON('marketing.json', marketing);
+        downloadJsonBtn.onclick = ()=>downloadJSON('./marketing.json', marketing);
       } else if(tab==='tutorials'){
         listArea.innerHTML = '';
         renderTutorials();
@@ -301,8 +301,8 @@
     }
 
     downloadAll.addEventListener('click',()=>{
-      downloadJSON('technique.json', technique);
-      setTimeout(()=>downloadJSON('marketing.json', marketing), 600);
+      downloadJSON('./technique.json', technique);
+      setTimeout(()=>downloadJSON('./marketing.json', marketing), 600);
     });
 
     // quick stats
