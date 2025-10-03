@@ -212,14 +212,17 @@
     });
 
     function showTabs(){
-      document.querySelector('header.hero').scrollIntoView({behavior:'smooth'});
+      document.querySelector('header.hero').classList.add('hidden');
+      // muestra la parte de pestañas
       tabsSection.classList.remove('hidden');
-      document.querySelector('.info-wrap').scrollIntoView({behavior:'smooth'});
-      renderTab('tech');
+      window.scrollTo({top:0, behavior:'smooth'});
     }
     function showMain(){
+      // muestra la parte principal
+      document.querySelector('header.hero').classList.remove('hidden');
+      // oculta pestañas
       tabsSection.classList.add('hidden');
-      window.scrollTo({top:0,behavior:'smooth'});
+      window.scrollTo({top:0, behavior:'smooth'});
     }
 
     tabButtons.forEach(btn=>btn.addEventListener('click',()=>{
