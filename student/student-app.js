@@ -2799,14 +2799,19 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Cerrar modal
   closeBtn.addEventListener("click", () => {
     modal.style.display = "none";
-    localStorage.setItem("whatsNewSeen", "true"); // marcar como visto
+    // guardar la hora actual como última vez que se mostró
+    localStorage.setItem("whatsNewLastSeen", Date.now());
   });
-
-  // Mostrar automáticamente la primera vez
-  if (!localStorage.getItem("whatsNewSeen")) {
+  
+  // Mostrar automáticamente cada 5 horas
+  const lastSeen = localStorage.getItem("whatsNewLastSeen");
+  const now = Date.now();
+  const fiveHours = 5 * 60 * 60 * 1000; // 5h en milisegundos
+  
+  if (!lastSeen || now - lastSeen >= fiveHours) {
     setTimeout(() => {
       modal.style.display = "flex";
-    }, 500); // se abre medio segundo después de cargar
+    }, 500); // abrir medio segundo después de cargar
   }
 });
 
