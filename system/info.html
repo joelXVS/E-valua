@@ -236,16 +236,19 @@
       // toggle tutorial area
       document.getElementById('tutorialsArea').classList.toggle('hidden', tab!=='tutorials');
       document.getElementById('tabContent').classList.toggle('hidden', tab==='tutorials');
-
+    
       searchInput.value = '';
+    
       if(tab==='tech'){
+        downloadJsonBtn.style.display = 'inline-block';
         renderList(technique.details, 'Técnica');
-        downloadJsonBtn.onclick = ()=>downloadJSON('./technique.json', technique);
+        downloadJsonBtn.onclick = ()=>downloadJSON('technique.json', technique);
       } else if(tab==='marketing'){
+        downloadJsonBtn.style.display = 'inline-block';
         renderList(marketing.details, 'Marketing');
-        downloadJsonBtn.onclick = ()=>downloadJSON('./marketing.json', marketing);
+        downloadJsonBtn.onclick = ()=>downloadJSON('marketing.json', marketing);
       } else if(tab==='tutorials'){
-        listArea.innerHTML = '';
+        downloadJsonBtn.style.display = 'none';
         renderTutorials();
       }
     }
@@ -312,6 +315,32 @@
     function truncate(s, n){return s.length>n? s.slice(0,n).trim()+'…': s}
     function escapeHtml(str){return (str+'').replace(/[&<>\"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;"}[c]})}
 
+    // EXTEND IMAGE
+    function showImageModal(src){
+      const modal = document.createElement('div');
+      modal.style.position='fixed';
+      modal.style.inset=0;
+      modal.style.background='rgba(0,0,0,0.75)';
+      modal.style.display='flex';
+      modal.style.alignItems='center';
+      modal.style.justifyContent='center';
+      modal.style.zIndex=9999;
+      modal.style.cursor='zoom-out';
+    
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.maxWidth='90%';
+      img.style.maxHeight='90%';
+      img.style.borderRadius='12px';
+      img.style.boxShadow='0 8px 24px rgba(0,0,0,0.4)';
+      modal.appendChild(img);
+    
+      // cerrar al hacer clic en fondo o en la misma imagen
+      modal.addEventListener('click',()=>modal.remove());
+    
+      document.body.appendChild(modal);
+    }
+
     // TUTORIALS RENDER
     function renderTutorials(){
       tutorialList.innerHTML='';
@@ -319,37 +348,70 @@
         tutorialList.innerHTML='<p class="tiny">No hay tutoriales aún.</p>';
         return;
       }
-      tutorialsData.tutorials.forEach((t,idx)=>{
-        const div = document.createElement('div');div.className='card system-card';div.style.marginBottom='8px';
-        div.innerHTML = `<div style='display:flex;justify-content:space-between;align-items:center;gap:8px'>
-          <strong>${escapeHtml(t.title)}</strong>
-          <span class='tiny'>${new Date(t.created).toLocaleString()}</span>
-        </div>
-        <p class='small muted' style='margin-top:6px'>${escapeHtml(t.desc)}</p>`;
-
-        if(t.imgs && t.imgs.length){
-          const g = document.createElement('div');g.style.display='flex';g.style.gap='8px';g.style.marginTop='8px';
-          t.imgs.forEach(i=>{
-            const im=document.createElement('img');
-            im.src=i.url;im.style.width='120px';im.style.height='80px';
-            im.style.objectFit='cover';im.style.borderRadius='6px';
-            g.appendChild(im)
-          });
-          div.appendChild(g);
+    
+      // función que pinta lista filtrada
+      function draw(filter=''){
+        tutorialList.innerHTML='';
+        const items = tutorialsData.tutorials.filter(t=>
+          t.title.toLowerCase().includes(filter) || 
+          (t.desc && t.desc.toLowerCase().includes(filter))
+        );
+        if(!items.length){
+          tutorialList.innerHTML='<p class="tiny">No se encontraron resultados</p>';
+          return;
         }
-        if(t.vid){
-          const emb = youtubeEmbed(t.vid);
-          if(emb){
-            const f = document.createElement('iframe');f.className='preview';f.src=emb;
-            div.appendChild(f);
-          } else {
-            const p=document.createElement('p');p.className='tiny';p.textContent='Video: ' + t.vid;
-            div.appendChild(p)
+    
+        items.forEach((t,idx)=>{
+          const div = document.createElement('div');div.className='card system-card';div.style.marginBottom='8px';
+          div.innerHTML = `<div style='display:flex;justify-content:space-between;align-items:center;gap:8px'>
+            <strong>${escapeHtml(t.title)}</strong>
+            <span class='tiny'>${new Date(t.created).toLocaleString()}</span>
+          </div>
+          <p class='small muted' style='margin-top:6px'>${escapeHtml(t.desc)}</p>`;
+    
+          if(t.imgs && t.imgs.length){
+            const g=document.createElement('div');
+            g.style.display='flex';
+            g.style.gap='8px';
+            g.style.marginTop='8px';
+            g.style.flexWrap='wrap';
+          
+            t.imgs.forEach(i=>{
+              const im=document.createElement('img');
+              im.src=i.url;
+              im.style.width='120px';
+              im.style.height='80px';
+              im.style.objectFit='cover';
+              im.style.borderRadius='6px';
+              im.style.cursor='zoom-in';
+              im.addEventListener('click',()=>showImageModal(i.url)); // 👈 abrir modal
+              g.appendChild(im);
+            });
+          
+            div.appendChild(g);
           }
-        }
-
-        tutorialList.appendChild(div);
-      })
+          if(t.vid){
+            const emb = youtubeEmbed(t.vid);
+            if(emb){
+              const f=document.createElement('iframe');f.className='preview';f.src=emb;
+              div.appendChild(f);
+            } else {
+              const p=document.createElement('p');p.className='tiny';p.textContent='Video: '+t.vid;
+              div.appendChild(p);
+            }
+          }
+          tutorialList.appendChild(div);
+        });
+      }
+    
+      // inicial
+      draw();
+    
+      // hook al search
+      searchInput.oninput = ()=>{
+        const q = searchInput.value.trim().toLowerCase();
+        draw(q);
+      };
     }
 
     function youtubeEmbed(url){
