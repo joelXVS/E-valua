@@ -670,6 +670,7 @@
       "groups": ["Séptimo 1", "Séptimo 2", "Séptimo 3", "Séptimo 4", "Octavo 1", "Octavo 2", "Octavo 3", "Octavo 4", "Undécimo 1", "Undécimo 2", "Undécimo 3"],
       "showResults": false,
       "showCorrect": false,
+      "evaluativa": false,
       "questions": [
         {
           "type": "likert",
