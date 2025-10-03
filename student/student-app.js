@@ -325,6 +325,7 @@ async function startExam() {
 
   // Mezclar opciones de las preguntas MCQ
   currentTest.questions.forEach(q => {
+    // MCQ (una correcta)
     if (q.type === 'mcq' && Array.isArray(q.options)) {
       // Guardar el índice correcto original
       const originalAnswerIndex = q.answer;
@@ -341,6 +342,79 @@ async function startExam() {
   
       // Buscar la nueva posición de la opción correcta
       q.answer = q.options.findIndex(opt => opt._originalIndex === originalAnswerIndex);
+    }
+
+    // MULTI (varias correctas)
+    if (q.type === 'multi' && Array.isArray(q.options)) {
+      q.options = q.options.map((opt, i) => (typeof opt === 'string') ? { text: opt, _originalIndex: i } : { ...opt, _originalIndex: i });
+      q.options = mezclarArray([...q.options]);
+      if (Array.isArray(q.answer)) {
+        // q.answer tiene índices originales -> buscar nuevas posiciones
+        q.answer = q.answer.map(origIdx => q.options.findIndex(o => o._originalIndex === origIdx));
+      }
+    }
+
+    // MATCH (mezclar las columnas de la derecha)
+    if (q.type === 'match' && Array.isArray(q.pairs)) {
+      q.pairs.forEach((p, pi) => {
+        p.right = (p.right || []).map((r, ri) => (typeof r === 'string') ? { text: r, _originalIndex: ri } : { ...r, _originalIndex: ri });
+        p.right = mezclarArray([...p.right]);
+        // si q.answer es array de índices originales, guardamos índice actualizado en p._correctIndex (opcional)
+        if (Array.isArray(q.answer) && typeof q.answer[pi] !== 'undefined') {
+          const orig = q.answer[pi];
+          p._correctIndex = p.right.findIndex(o => o._originalIndex === orig);
+        }
+      });
+    }
+
+    // --- Mezclar ITEMS de preguntas ORDERING y subquestions ordering de multimedia ---
+    if (q.type === 'ordering' && Array.isArray(q.items) && q.items.length > 0) {
+      // Guardar copia original si la quieres conservar (opcional)
+      q._originalItems = Array.isArray(q._originalItems) ? q._originalItems : [...q.items];
+      // Mezclar y asignar para la vista (así el alumno ve los items aleatorizados)
+      q.items = mezclarArray([...q.items]);
+      // Nota: q.answer debe seguir conteniendo el orden correcto (strings) tal como en tests.json
+    }
+
+    // Si es multimedia y la subpregunta es ordering, mezclar también subQ.items
+    if (q.type === 'multimedia' && q.subtype === 'ordering' && q.subquestion && Array.isArray(q.subquestion.items)) {
+      q.subquestion._originalItems = Array.isArray(q.subquestion._originalItems) ? q.subquestion._originalItems : [...q.subquestion.items];
+      q.subquestion.items = mezclarArray([...q.subquestion.items]);
+    }
+
+    // GAPTEXT: normalizar q.answer (array) a objeto q.answers { "0": "texto" }
+    if (q.type === 'gaptext') {
+      if (!q.answers && Array.isArray(q.answer)) {
+        q.answers = {};
+        q.answer.forEach((a, i) => { q.answers[String(i)] = a; });
+      }
+    }
+
+    // Si es multimedia con subquestion, hacer lo mismo para el subQ
+    if (q.type === 'multimedia' && q.subquestion) {
+      const subQ = q.subquestion;
+      if (subQ.type === 'multi' && Array.isArray(subQ.options)) {
+        subQ.options = subQ.options.map((opt, i) => (typeof opt === 'string') ? { text: opt, _originalIndex: i } : { ...opt, _originalIndex: i });
+        subQ.options = mezclarArray([...subQ.options]);
+        if (Array.isArray(subQ.answer)) {
+          subQ.answer = subQ.answer.map(origIdx => subQ.options.findIndex(o => o._originalIndex === origIdx));
+        }
+      }
+      if (subQ.type === 'match' && Array.isArray(subQ.pairs)) {
+        subQ.pairs.forEach((p, pi) => {
+          p.right = (p.right || []).map((r, ri) => (typeof r === 'string') ? { text: r, _originalIndex: ri } : { ...r, _originalIndex: ri });
+          p.right = mezclarArray([...p.right]);
+          if (Array.isArray(subQ.answer) && typeof subQ.answer[pi] !== 'undefined') {
+            p._correctIndex = p.right.findIndex(o => o._originalIndex === subQ.answer[pi]);
+          }
+        });
+      }
+      if (subQ.type === 'gaptext') {
+        if (!subQ.answers && Array.isArray(subQ.answer)) {
+          subQ.answers = {};
+          subQ.answer.forEach((a,i) => subQ.answers[String(i)] = a);
+        }
+      }
     }
   });
 
@@ -579,59 +653,78 @@ function renderQuestion() {
         <select id="match_${currentQuestionIndex}_${i}">
           <option value="">-- Selecciona --</option>
           ${p.right.map(r => `
-            <option value="${escapeHtml(r)}" ${savedAns===r?'selected':''}>
-              ${escapeHtml(r)}
+            <option value="${escapeHtml((r && (r.text || r)) || '')}" ${savedAns === (r && (r.text || r)) ? 'selected' : ''}>
+              ${escapeHtml((r && (r.text || r)) || '')}
             </option>`).join('')}
         </select>
       </div>`;
     });
     inner += `</div>`;
 
-  } else if (q.type === "gaptext") {
-    // Construir texto con gaps — restaurando valores guardados y ocultando opciones usadas
+  } else if (q.type === 'gaptext') {
+    // Helpers locales (si no tienes los globales, funcionan aquí)
+    function createGapOptionElement(text) {
+      const el = document.createElement('div');
+      el.className = 'gap-opt';
+      el.textContent = text;
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', el.textContent);
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      return el;
+    }
+
+    function addGapOptionIfMissing(container, text) {
+      if (!container || !text) return;
+      // evitar duplicados exactos por texto
+      if ([...container.querySelectorAll('.gap-opt')].some(o => o.textContent === text)) return;
+      container.appendChild(createGapOptionElement(text));
+    }
+
+    // Construir sentence con gaps — restaurando valores guardados y ocultando opciones usadas
     let sentence = q.sentence || q.title || "";
-  
-    // objeto de respuestas guardadas para esta pregunta
+
+    // respuestas guardadas para esta pregunta (objeto con índices "0","1",...)
     const saved = (answers[q.title] && typeof answers[q.title] === 'object') ? answers[q.title] : {};
-  
-    // Usadas (para excluirlas de la lista)
+
+    // opciones ya usadas
     const used = Object.values(saved).filter(v => v !== undefined && v !== null);
-  
-    // Determinar número de gaps: preferir q.gaps.length, sino q.options.length, sino buscar markers en sentence
-    let gapsCount = Array.isArray(q.gaps) ? q.gaps.length 
-                   : (Array.isArray(q.options) ? q.options.length : 0);
+
+    // determinar número de gaps: preferir q.gaps.length, sino q.options.length, sino marcadores en sentence
+    let gapsCount = Array.isArray(q.gaps) ? q.gaps.length : (Array.isArray(q.options) ? q.options.length : 0);
     if (!gapsCount) {
-      // buscar patrón [[n]] en sentence
       const matches = sentence.match(/\[\[\d+\]\]/g);
       gapsCount = matches ? matches.length : (sentence.includes("___") ? (sentence.split("___").length - 1) : 0);
     }
-  
+
     // Reemplazar marcadores por span.gap (soporta [[0]] o ___)
     for (let idx = 0; idx < gapsCount; idx++) {
       const filled = saved && saved[idx] ? escapeHtml(saved[idx]) : "";
-      const fillHtml = filled || "&nbsp;"; // si está vacío ponemos &nbsp; para que sea droppable/visible
+      const fillHtml = filled || "&nbsp;"; // &nbsp; visible y droppable
       const regex = new RegExp(`\\[\\[${idx}\\]\\]|___`);
       sentence = sentence.replace(regex, `<span class="gap" data-gap="${idx}">${fillHtml}</span>`);
     }
-  
+
     // Generar lista de opciones excluyendo las ya usadas (si ya hay respuestas guardadas)
     const optionsHtml = (q.options || []).filter(opt => !used.includes(opt))
       .map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
-  
+
     inner += `<div class="gap-sentence" style="text-align:center;">${sentence}</div>
-              <div class="gap-options" style="text-align:center;" id="gapOpts_${currentQuestionIndex}">
+              <div class="gap-options" id="gapOpts_${currentQuestionIndex}" style="text-align:center; display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
                 ${optionsHtml}
               </div>
               <div style="display:flex; justify-content:center; margin-top:18px;">
                 <button id="resetGapBtn_${currentQuestionIndex}" class="btn">Reiniciar espacios</button>
               </div>`;
-  
+
     // Inicializar drag & drop y listeners (con guardado consistente)
     setTimeout(() => {
       const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
       const gaps = container.querySelectorAll(".gap");
       if (!gapOptions) return;
-  
+
       // Asegurar handlers en cada opción
       gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
         opt.addEventListener('dragstart', e => {
@@ -640,108 +733,89 @@ function renderQuestion() {
         });
         opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
       });
-  
+
       // permitir soltar en gaps
       gaps.forEach(gap => {
         gap.addEventListener('dragover', e => e.preventDefault());
         gap.addEventListener('drop', e => {
           e.preventDefault();
-          const text = e.dataTransfer.getData("text/plain");
+          const text = e.dataTransfer.getData('text/plain');
           if (!text) return;
-  
+
           const gapIdx = String(gap.dataset.gap);
-  
-          // si ya había algo en este gap -> devolverlo a la lista y borrar de answers
-          const oldText = gap.textContent.trim();
-          if (oldText !== "" && oldText !== '\u00A0') {
-            const oldWord = document.createElement("div");
-            oldWord.className = "gap-opt";
-            oldWord.textContent = oldText;
-            oldWord.setAttribute("draggable", "true");
-            gapOptions.appendChild(oldWord);
-            // handlers
-            oldWord.addEventListener('dragstart', ev => {
-              ev.dataTransfer.setData('text/plain', oldWord.textContent);
-              oldWord.classList.add('dragging');
-            });
-            oldWord.addEventListener('dragend', () => oldWord.classList.remove('dragging'));
+
+          // texto previo en el gap (si había uno) -> lo reinsertamos en la lista si hace falta
+          const prevText = (gap.textContent || "").trim();
+          if (prevText && prevText !== '\u00A0' && prevText !== text) {
+            addGapOptionIfMissing(gapOptions, prevText);
+            // borrar registro anterior
             if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
               delete answers[q.title][gapIdx];
             }
           }
-  
-          // poner el nuevo texto en el gap y guardarlo
+
+          // poner el nuevo texto y guardar
           gap.innerHTML = escapeHtml(text);
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) answers[q.title] = {};
+          if (!answers[q.title] || typeof answers[q.title] !== 'object') answers[q.title] = {};
           answers[q.title][gapIdx] = text;
-  
-          // eliminar la opción usada de la lista (si existe)
-          const optEl = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
-          if (optEl) optEl.remove();
-  
+
+          // quitar opción usada de la lista (si existe)
+          const existing = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
+          if (existing) existing.remove();
+
           saveExamProgress();
           updateNavButtonsAndFinishButton();
         });
       });
-  
+
       // permitir devolver desde gap a la lista (drop sobre gapOptions)
       gapOptions.addEventListener("dragover", e => e.preventDefault());
       gapOptions.addEventListener("drop", e => {
         e.preventDefault();
         const text = e.dataTransfer.getData("text/plain");
         if (!text) return;
-  
-        // crear una nueva opción en la lista
-        const opt = document.createElement("div");
-        opt.className = "gap-opt";
-        opt.textContent = text;
-        opt.setAttribute("draggable", "true");
-        opt.addEventListener('dragstart', ev => {
-          ev.dataTransfer.setData('text/plain', opt.textContent);
-          opt.classList.add('dragging');
-        });
-        opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
-        gapOptions.appendChild(opt);
-  
-        // limpiar gaps que tengan exactamente ese texto
+
+        // añadir opción si no existe ya
+        addGapOptionIfMissing(gapOptions, text);
+
+        // limpiar gaps que tengan ese texto (y borrar en answers)
         container.querySelectorAll('.gap').forEach(g => {
-          if (g.textContent.trim() === text) {
-            const gapIdx = String(g.dataset.gap);
+          if ((g.textContent || "").trim() === text) {
+            const gi = String(g.dataset.gap);
             g.innerHTML = "&nbsp;";
-            if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
-              delete answers[q.title][gapIdx];
+            if (answers[q.title] && answers[q.title][gi] !== undefined) {
+              delete answers[q.title][gi];
             }
           }
         });
-  
+
         saveExamProgress();
         updateNavButtonsAndFinishButton();
       });
-  
-      // Reiniciar espacios (botón)
+
+      // Reiniciar (botón)
       const resetBtn = document.getElementById(`resetGapBtn_${currentQuestionIndex}`);
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          const gapOptions = document.getElementById(`gapOpts_${currentQuestionIndex}`);
           const gaps = container.querySelectorAll(".gap");
           gaps.forEach(g => g.innerHTML = "&nbsp;");
-          delete answers[q.title];
-          if (gapOptions) {
-            gapOptions.innerHTML = (q.options || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
-            gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
-              opt.addEventListener('dragstart', e => {
-                e.dataTransfer.setData('text/plain', opt.textContent);
-                opt.classList.add('dragging');
-              });
-              opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
+          if (answers[q.title]) delete answers[q.title];
+          // reconstruir opciones originales
+          gapOptions.innerHTML = (q.options || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
+          // volver a enganchar eventos de drag a cada opción nueva
+          gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
+            opt.addEventListener('dragstart', e => {
+              e.dataTransfer.setData('text/plain', opt.textContent);
+              opt.classList.add('dragging');
             });
-          }
+            opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
+          });
           saveExamProgress();
           updateNavButtonsAndFinishButton();
         });
       }
     }, 50);
-  
+
   } else if (q.type === 'hotspot') {
     // Imagen interactiva (clic en zonas)
     inner += `<div class="hotspot-container">
@@ -831,7 +905,10 @@ function renderQuestion() {
           <span>${escapeHtml(p.left)}</span>
           <select id="multi_match_${currentQuestionIndex}_${i}">
             <option value="">-- Selecciona --</option>
-            ${p.right.map(r => `<option value="${escapeHtml(r)}" ${ans===r?'selected':''}>${escapeHtml(r)}</option>`).join('')}
+            ${p.right.map(r => `
+              <option value="${escapeHtml((r && (r.text || r)) || '')}" ${savedAns === (r && (r.text || r)) ? 'selected' : ''}>
+                ${escapeHtml((r && (r.text || r)) || '')}
+              </option>`).join('')}
           </select>
         </div>`;
       });
@@ -870,9 +947,7 @@ function renderQuestion() {
                   answers[q.title] = {};
                 }
     
-                answers[q.title].ordering = [...list.querySelectorAll('.order-item')]
-                  .map(li => li.textContent);
-    
+                answers[q.title] = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
                 updateNavButtonsAndFinishButton();
               }
             });
@@ -885,52 +960,82 @@ function renderQuestion() {
       </div>
       <p class="small hotspot-note">Haz clic en la zona correspondiente.</p>`;
     
-    } else if (subType === 'gaptext') {
-      const subQ = q.subquestion || {};
-      // estructura de respuestas para multimedia: answers[q.title] = { gaptext: { "0":"25", ... }, ... }
-      if (typeof answers[q.title] !== "object" || answers[q.title] === null) answers[q.title] = {};
-      const savedSub = answers[q.title].gaptext && typeof answers[q.title].gaptext === 'object'
-        ? answers[q.title].gaptext
-        : {};
-    
-      // construir sentence (usar subQ.sentence o subQ.title)
-      let sentence = subQ.sentence || subQ.title || "";
-      // determinar cantidad de gaps
-      let gapsCount = Array.isArray(subQ.gaps) ? subQ.gaps.length
-                    : (Array.isArray(subQ.options) ? subQ.options.length : 0);
+    } else if (q.type === 'multimedia' && q.subtype === 'gaptext') {
+      // Subquestion (compatibilidad con diferentes formatos de tests.json)
+      const sub = q.subquestion || q.sub || {};
+      // si la subquestion no tiene sentence, usar q.title/ q.sentence como fallback
+      let sentence = sub.sentence || sub.title || q.sentence || q.title || "";
+
+      // Helpers locales (nombres únicos para evitar colisiones con el otro bloque)
+      const createGapOptionElementMulti = (function () {
+        // si ya existe una función global con el mismo propósito, reutilizarla
+        if (typeof createGapOptionElement === 'function') return createGapOptionElement;
+        return function (text) {
+          const el = document.createElement('div');
+          el.className = 'gap-opt';
+          el.textContent = text;
+          el.setAttribute('draggable', 'true');
+          el.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', el.textContent);
+            el.classList.add('dragging');
+          });
+          el.addEventListener('dragend', () => el.classList.remove('dragging'));
+          return el;
+        };
+      })();
+
+      const addGapOptionIfMissingMulti = function (container, text) {
+        if (!container || !text) return;
+        if ([...container.querySelectorAll('.gap-opt')].some(o => o.textContent === text)) return;
+        container.appendChild(createGapOptionElementMulti(text));
+      };
+
+      // respuestas guardadas para esta pregunta (objeto con índices "0","1",...)
+      const saved = (answers[q.title] && typeof answers[q.title] === 'object') ? answers[q.title] : {};
+
+      // opciones ya usadas (valores guardados)
+      const used = Object.values(saved).filter(v => v !== undefined && v !== null);
+
+      // Obtener opciones desde la subquestion (o desde q si no existe)
+      const optionsList = Array.isArray(sub.options) ? sub.options : (Array.isArray(sub.choices) ? sub.choices : (Array.isArray(q.options) ? q.options : []));
+
+      // Determinar número de gaps (primero sub.gaps, luego markers)
+      let gapsCount = Array.isArray(sub.gaps) ? sub.gaps.length : (Array.isArray(sub.options) ? sub.options.length : 0);
       if (!gapsCount) {
         const matches = sentence.match(/\[\[\d+\]\]/g);
         gapsCount = matches ? matches.length : (sentence.includes("___") ? (sentence.split("___").length - 1) : 0);
       }
-    
-      // reemplazar marcadores por span.gap (visibles)
-      for (let gi = 0; gi < gapsCount; gi++) {
-        const filled = savedSub[gi] ? escapeHtml(savedSub[gi]) : "";
+
+      // Reemplazar marcadores por span.gap con data-gap
+      for (let idx = 0; idx < gapsCount; idx++) {
+        const filled = saved && saved[idx] ? escapeHtml(saved[idx]) : "";
         const fillHtml = filled || "&nbsp;";
-        const regex = new RegExp(`\\[\\[${gi}\\]\\]|___`);
-        sentence = sentence.replace(regex, `<span class="gap" data-gap="${gi}">${fillHtml}</span>`);
+        const regex = new RegExp(`\\[\\[${idx}\\]\\]|___`);
+        sentence = sentence.replace(regex, `<span class="gap" data-gap="${idx}">${fillHtml}</span>`);
       }
-    
-      // generar lista opciones (excluir usadas)
-      const used = Object.values(savedSub).filter(v => v !== undefined && v !== null);
-      const optionsHtml = (subQ.options || []).filter(opt => !used.includes(opt))
-        .map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
-    
-      inner += `<div class="gap-sentence">${sentence}</div>
-                <div class="gap-options" id="gapOpts_multi_${currentQuestionIndex}" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-                  ${optionsHtml}
-                </div>
-                <div style="display:flex; justify-content:center; margin-top:18px;">
-                  <button id="resetGapBtn_multi_${currentQuestionIndex}" class="btn">Reiniciar espacios</button>
+
+      // Media (si existe) — si tienes HTML embebido en q.mediaHtml u otra propiedad
+      const mediaHtml = q.mediaHtml || q.media || "";
+
+      // Construir HTML (añade un contenedor especial para multimedia)
+      inner += `<div class="multimedia-gaptext">
+                  <div class="multimedia-media">${mediaHtml}</div>
+                  <div class="gap-sentence" style="text-align:center; margin-top:10px;">${sentence}</div>
+                  <div class="gap-options" id="gapOpts_multi_${currentQuestionIndex}" style="text-align:center; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
+                    ${(optionsList || []).filter(opt => !used.includes(opt)).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join('')}
+                  </div>
+                  <div style="display:flex; justify-content:center; margin-top:12px;">
+                    <button id="resetGapBtn_multi_${currentQuestionIndex}" class="btn">Reiniciar espacios</button>
+                  </div>
                 </div>`;
-    
-      // inicializar drag/drop (aislado para este subquestion)
+
+      // Inicializar drag & drop y listeners
       setTimeout(() => {
         const gapOptions = document.getElementById(`gapOpts_multi_${currentQuestionIndex}`);
         const gaps = container.querySelectorAll(".gap");
         if (!gapOptions) return;
-    
-        // handlers en fichas
+
+        // Asegurar events en cada opción inicial
         gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
           opt.addEventListener('dragstart', e => {
             e.dataTransfer.setData('text/plain', opt.textContent);
@@ -938,92 +1043,75 @@ function renderQuestion() {
           });
           opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
         });
-    
-        // drop en gaps
+
+        // permitir soltar en gaps
         gaps.forEach(gap => {
           gap.addEventListener('dragover', e => e.preventDefault());
           gap.addEventListener('drop', e => {
             e.preventDefault();
-            const text = e.dataTransfer.getData("text/plain");
+            const text = e.dataTransfer.getData('text/plain');
             if (!text) return;
-    
+
             const gapIdx = String(gap.dataset.gap);
-    
-            // devolver texto anterior a la lista si existía
-            const oldText = gap.textContent.trim();
-            if (oldText !== "" && oldText !== '\u00A0') {
-              const oldWord = document.createElement("div");
-              oldWord.className = "gap-opt";
-              oldWord.textContent = oldText;
-              oldWord.setAttribute("draggable", "true");
-              gapOptions.appendChild(oldWord);
-              oldWord.addEventListener('dragstart', ev => {
-                ev.dataTransfer.setData('text/plain', oldWord.textContent);
-                oldWord.classList.add('dragging');
-              });
-              oldWord.addEventListener('dragend', () => oldWord.classList.remove('dragging'));
-              if (answers[q.title] && answers[q.title].gaptext && answers[q.title].gaptext[gapIdx] !== undefined) {
-                delete answers[q.title].gaptext[gapIdx];
+
+            // texto previo en el gap (si había uno) -> lo reinsertamos en la lista si hace falta
+            const prevText = (gap.textContent || "").trim();
+            if (prevText && prevText !== '\u00A0' && prevText !== text) {
+              addGapOptionIfMissingMulti(gapOptions, prevText);
+              if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
+                delete answers[q.title][gapIdx];
               }
             }
-    
-            // poner nuevo texto y guardar
+
+            // poner el nuevo texto y guardar
             gap.innerHTML = escapeHtml(text);
-            if (!answers[q.title]) answers[q.title] = {};
-            if (!answers[q.title].gaptext || typeof answers[q.title].gaptext !== 'object') answers[q.title].gaptext = {};
-            answers[q.title].gaptext[gapIdx] = text;
-    
-            // quitar opción usada
-            const optEl = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
-            if (optEl) optEl.remove();
-    
+            if (!answers[q.title] || typeof answers[q.title] !== 'object') answers[q.title] = {};
+            answers[q.title][gapIdx] = text;
+
+            // quitar opción usada de la lista (si existe)
+            const existing = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
+            if (existing) existing.remove();
+
             saveExamProgress();
             updateNavButtonsAndFinishButton();
           });
         });
-    
-        // drop de vuelta en la lista
+
+        // permitir devolver desde gap a la lista (drop sobre gapOptions)
         gapOptions.addEventListener("dragover", e => e.preventDefault());
         gapOptions.addEventListener("drop", e => {
           e.preventDefault();
           const text = e.dataTransfer.getData("text/plain");
           if (!text) return;
-    
-          // crear nueva ficha en la lista
-          const opt = document.createElement("div");
-          opt.className = "gap-opt";
-          opt.textContent = text;
-          opt.setAttribute("draggable", "true");
-          opt.addEventListener('dragstart', ev => {
-            ev.dataTransfer.setData('text/plain', opt.textContent);
-            opt.classList.add('dragging');
-          });
-          opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
-          gapOptions.appendChild(opt);
-    
+
+          // añadir opción si no existe ya
+          addGapOptionIfMissingMulti(gapOptions, text);
+
           // limpiar gaps que tengan ese texto (y borrar en answers)
           container.querySelectorAll('.gap').forEach(g => {
-            if (g.textContent.trim() === text) {
+            if ((g.textContent || "").trim() === text) {
               const gi = String(g.dataset.gap);
               g.innerHTML = "&nbsp;";
-              if (answers[q.title] && answers[q.title].gaptext && answers[q.title].gaptext[gi] !== undefined) {
-                delete answers[q.title].gaptext[gi];
+              if (answers[q.title] && answers[q.title][gi] !== undefined) {
+                delete answers[q.title][gi];
               }
             }
           });
-    
+
           saveExamProgress();
           updateNavButtonsAndFinishButton();
         });
-    
-        // reiniciar botón
+
+        // Reiniciar (botón)
         const resetBtn = document.getElementById(`resetGapBtn_multi_${currentQuestionIndex}`);
         if (resetBtn) {
           resetBtn.addEventListener('click', () => {
             const gaps = container.querySelectorAll(".gap");
             gaps.forEach(g => g.innerHTML = "&nbsp;");
-            if (answers[q.title]) delete answers[q.title].gaptext;
-            gapOptions.innerHTML = (subQ.options || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
+            if (answers[q.title]) delete answers[q.title];
+            // reconstruir opciones originales
+            gapOptions.innerHTML = (optionsList || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
+            // volver a enganchar eventos de drag a cada opción nueva
             gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
               opt.addEventListener('dragstart', e => {
                 e.dataTransfer.setData('text/plain', opt.textContent);
@@ -1048,9 +1136,14 @@ function renderQuestion() {
 
   // ---------- LISTENERS PARA RESPUESTAS ----------
   // Radios (mcq, tf, likert)
-  container.querySelectorAll('input[type=radio]').forEach(inp => {
+  container.querySelectorAll(`input[type=radio][name="q${currentQuestionIndex}"]`).forEach(inp => {
     inp.addEventListener('change', () => {
-      answers[q.title] = inp.value;
+      // si es TF guardamos Number para comparar con q.answer numérico
+      if (q.type === 'tf') {
+        answers[q.title] = Number(inp.value);
+      } else {
+        answers[q.title] = inp.value;
+      }
       updateNavButtonsAndFinishButton();
     });
   });
@@ -1112,8 +1205,11 @@ function renderQuestion() {
       if (!answers[q.title]) answers[q.title] = {};
       answers[q.title][span.dataset.gap] = text;
       // eliminar opción usada
-      const optEl = [...container.querySelectorAll('.gap-opt')].find(o=>o.textContent===text);
-      if(optEl) optEl.remove();
+      if (container) {
+        const existing = [...container.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
+        if (existing) existing.remove();
+      }
+
       updateNavButtonsAndFinishButton();
     });
   });
@@ -1227,7 +1323,7 @@ function renderQuestion() {
           if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
             answers[q.title] = {}; 
           }
-          answers[q.title].tf = inp.value;
+          answers[q.title].tf = Number(inp.value);
           updateNavButtonsAndFinishButton();
         });
       });
@@ -1271,7 +1367,7 @@ function renderQuestion() {
               if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
                 answers[q.title] = {}; 
               }
-              answers[q.title].ordering = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
+              answers[q.title] = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
               updateNavButtonsAndFinishButton();
             }
           });
@@ -1492,6 +1588,35 @@ function formatAnswer(q, ans) {
     return formatAnswer({...subQ, type: q.subtype || subQ.type}, subAns[q.subtype] || subAns);
   }
 
+  // manejo ordering + multimedia subtype ordering
+  if (q.type === 'ordering' || (q.type === 'multimedia' && q.subtype === 'ordering')) {
+    // ans puede venir en muchas formas; priorizamos arrays directos, luego .ordering, luego subestructuras
+    let arr = [];
+
+    if (Array.isArray(ans)) {
+      arr = ans;
+    } else if (ans && Array.isArray(ans.ordering)) {
+      arr = ans.ordering;
+    } else if (ans && Array.isArray(ans.subanswer)) {
+      arr = ans.subanswer;
+    } else if (ans && typeof ans === 'object') {
+      // casos posibles por compatibilidad: { ordering: [...] }, { sub: [...] }, etc.
+      const keys = ['ordering','sub','subOrdering','subanswer','answers'];
+      for (const k of keys) {
+        if (Array.isArray(ans[k])) { arr = ans[k]; break; }
+      }
+    }
+
+    // Si es multimedia y no encontramos respuesta, puede que la respuesta esté puesta bajo answers[q.title] directamente
+    if ((!arr || arr.length === 0) && q.type === 'multimedia' && q.subquestion) {
+      const maybe = q.subquestion.items || q.subquestion.answer || q.subquestion.correct;
+      // no asumimos que esto sea la respuesta del alumno, pero lo intentamos mostrar si es array
+      if (Array.isArray(maybe)) arr = maybe;
+    }
+
+    return escapeHtml(Array.isArray(arr) ? arr.join(' , ') : String(arr || ''));
+  }
+
   // GAPTEXT: construir la oración y reemplazar marcadores por <strong>...escaped...</strong>
   if (q.type === 'gaptext') {
     let sentence = q.sentence || q.title || "";
@@ -1566,7 +1691,6 @@ function formatAnswer(q, ans) {
   if (q.type === 'tf') return escapeHtml((parseInt(q.answer)===1) ? 'Verdadero' : 'Falso');
   if (q.type === 'open' || q.type === 'short') return escapeHtml(String(ans || ''));
   if (q.type === 'numeric') return escapeHtml(String(ans || ''));
-  if (q.type === 'ordering') return escapeHtml(Array.isArray(ans) ? ans.join(' , ') : String(ans || ''));
   if (q.type === 'hotspot') return escapeHtml(ans ? JSON.stringify(ans) : '');
   // fallback
   return escapeHtml(String(ans || ''));
@@ -1576,13 +1700,32 @@ function formatAnswer(q, ans) {
 function formatCorrectAnswer(q) {
   if (!q) return '';
 
-  // multimedia que contiene subquestion -> delegar
+  // multimedia subquestions
   if (q.type === 'multimedia' && q.subquestion) {
     const subQ = q.subquestion;
     if (q.subtype === 'gaptext' || subQ.type === 'gaptext') {
       return formatCorrectAnswer({...subQ, type:'gaptext'});
     }
     return formatCorrectAnswer({...subQ, type: q.subtype || subQ.type});
+  }
+
+  // ordering + multimedia subtype ordering
+  if (q.type === 'ordering' || (q.type === 'multimedia' && q.subtype === 'ordering')) {
+    // La respuesta correcta suele estar en q.answer (array) para ordering,
+    // o en q.subquestion.answer para multimedia/subtype ordering.
+    let correctArr = [];
+
+    if (Array.isArray(q.answer)) {
+      correctArr = q.answer;
+    } else if (q.type === 'multimedia' && q.subquestion && Array.isArray(q.subquestion.answer)) {
+      correctArr = q.subquestion.answer;
+    } else if (Array.isArray(q.correct)) {
+      correctArr = q.correct;
+    } else if (q.subquestion && Array.isArray(q.subquestion.correct)) {
+      correctArr = q.subquestion.correct;
+    }
+
+    return escapeHtml(Array.isArray(correctArr) ? correctArr.join(' , ') : String(correctArr || ''));
   }
 
   if (q.type === 'gaptext') {
@@ -1625,7 +1768,6 @@ function formatCorrectAnswer(q) {
   if (q.type === 'tf') return escapeHtml((parseInt(q.answer)===1) ? 'Verdadero' : 'Falso');
   if (q.type === 'open' || q.type === 'short') return escapeHtml(String(q.answer ?? ''));
   if (q.type === 'numeric') return escapeHtml(String(q.answer ?? ''));
-
   if (q.type === 'match') {
     return escapeHtml((q.pairs || []).map(p => `${p.left} → ${p.correct ?? (p.right ? p.right[0] : '')}`).join(' ; '));
   }
@@ -1746,9 +1888,40 @@ function finishExam(cheatingForced = false) {
     } else if (q.type === 'match') {
       let matches = 0;
       (q.pairs || []).forEach((p,i) => {
-        if (studentAns && studentAns[i] === p.correct) matches++;
+        const studentSel = (studentAns && studentAns[i] !== undefined) ? String(studentAns[i]) : null;
+        // obtener valor correcto (string) de forma robusta
+        let correctVal = null;
+        if (p.correct !== undefined) {
+          correctVal = String(p.correct);
+        } else if (typeof p._correctIndex === 'number' && p.right && p.right[p._correctIndex]) {
+          correctVal = String(p.right[p._correctIndex].text || p.right[p._correctIndex]);
+        } else if (Array.isArray(q.answer) && typeof q.answer[i] !== 'undefined') {
+          const maybe = p.right && p.right[q.answer[i]];
+          correctVal = maybe ? String(maybe.text || maybe) : null;
+        }
+        if (studentSel !== null && correctVal !== null && normalizeText(studentSel) === normalizeText(correctVal)) {
+          matches++;
+        }
       });
       qPoints = (matches / (q.pairs?.length || 1)) * possiblePoints;
+    
+    } else if (q.type === 'ordering') {
+      // normalizar respuesta correcta y respuesta del alumno como arrays de strings
+      const correctArr = Array.isArray(q.answer) ? q.answer : (Array.isArray(q.correct) ? q.correct : []);
+      let givenArr = [];
+      if (Array.isArray(studentAns)) {
+        givenArr = studentAns;
+      } else if (studentAns && Array.isArray(studentAns.ordering)) {
+        // por compatibilidad antigua
+        givenArr = studentAns.ordering;
+      } else if (studentAns && Array.isArray(studentAns)) {
+        givenArr = studentAns;
+      }
+
+      // comparar como strings (unión con separador determinístico)
+      const correctKey = correctArr.join('||'); // separador improbable
+      const givenKey = givenArr.join('||');
+      qPoints = (correctKey && correctKey === givenKey) ? possiblePoints : 0;
 
     } else if (q.type === 'gaptext') {
       let matches = 0;
@@ -2016,21 +2189,27 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
 
 // ---------- descargar JSON ----------
 function downloadResults(resultObj) {
-  // Si no hay test en contexto y tampoco se pasó un objeto, no hacemos nada
   if (!currentTest && !resultObj) return;
 
-  // Si se pasó un resultObj (desde "Ver resultados"), lo usamos tal cual.
-  // Si no, construimos el objeto como antes (resguarda compatibilidad).
+  // si resultObj viene desde "Ver resultados" pero no trae detalles, ofrecer fallback
+  if (resultObj && (!resultObj.details || resultObj.details.length === 0)) {
+    if (!confirm('El resultado que intentas descargar no contiene detalles. ¿Deseas descargar tus respuestas actuales en su lugar?')) {
+      return;
+    }
+    resultObj = null; // forzar fallback below
+  }
+
   const data = resultObj ? resultObj : {
     student: $('studentName').value.trim(),
     grade: $('gradeSelect').selectedOptions[0].textContent,
-    test: currentTest.name,
-    testCode: currentTest.code,
+    test: currentTest ? currentTest.name : '',
+    testCode: currentTest ? currentTest.code : '',
     timestamp: new Date().toISOString(),
     answers,
     cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
   };
 
+  console.log('Downloading result JSON:', data);
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2047,121 +2226,222 @@ function truncateText(text, maxLength) {
 }
 
 // ---------- exportar PDF ----------
-// ---------- exportar PDF (versión robusta que acepta docData opcional) ----------
-function downloadResultsPdf(docData) {
-  // 1) Si nos pasaron docData ya (por ejemplo desde Ver resultados), lo usamos directamente.
-  // 2) Si no, intentamos tomar el último guardado en localStorage.
-  // 3) Si tampoco hay, construimos un fallback seguro (sin acceder a propiedades inexistentes).
-  if (!docData) {
+function downloadResultsPdf(docData = {}) {
+  // --- helpers internos ---
+  function stripTags(input) {
+    if (input === undefined || input === null) return '';
     try {
-      const stored = JSON.parse(localStorage.getItem('results') || '[]');
-      docData = stored.length ? stored[stored.length - 1] : null;
-    } catch (e) {
-      docData = null;
+      const s = String(input);
+      return s.replace(/<[^>]*>/g, '').replace(/\s{2,}/g, ' ').trim();
+    } catch (e) { return String(input); }
+  }
+
+  function formatDateNice(d) {
+    if (!d) return '';
+    const dateObj = (d instanceof Date) ? d : (isNaN(Date.parse(d)) ? null : new Date(d));
+    if (!dateObj) return String(d);
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    const hh = String(dateObj.getHours()).padStart(2, '0');
+    const mm = String(dateObj.getMinutes()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hh}:${mm}`;
+  }
+
+  function answerToText(ans, qtype) {
+    // Convierte cualquier studentAnswer/correctAnswer a texto plano legible
+    if (ans === undefined || ans === null) return '';
+    if (typeof ans === 'string' || typeof ans === 'number' || typeof ans === 'boolean') return stripTags(ans);
+    if (Array.isArray(ans)) {
+      return ans.map(a => stripTags(a)).filter(x => x).join(' , ');
     }
+    if (typeof ans === 'object') {
+      // Si es un objeto de gaps: { "0": "a", "1": "b" } -> ordenar por clave
+      const keys = Object.keys(ans);
+      if (keys.length === 0) return '';
+      const allNumeric = keys.every(k => /^\d+$/.test(k));
+      if (allNumeric) {
+        return keys.sort((a,b)=>Number(a)-Number(b)).map(k => stripTags(ans[k])).filter(x => x).join(' | ');
+      }
+      // matches / map-like: mostrar clave:valor
+      return keys.map(k => `${k}: ${stripTags(ans[k])}`).join(' ; ');
+    }
+    try { return stripTags(String(ans)); } catch (e) { return ''; }
   }
 
-  if (!docData) {
-    // Fallback seguro: usar optional chaining y valores por defecto para evitar 'undefined'
-    docData = {
-      student: $('studentName')?.value?.trim() || '',
-      grade: $('gradeSelect')?.selectedOptions?.[0]?.textContent || '',
-      test: currentTest?.name || '',
-      testCode: currentTest?.code || '',
-      timestamp: new Date().toISOString(),
-      score: $('resultSummary')?.textContent || '',
-      details: (typeof details !== 'undefined') ? details : [],
-      cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
-    };
+  // Guard: jsPDF debe estar disponible como window.jspdf.jsPDF
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    console.warn('jsPDF no está disponible en este entorno. downloadResultsPdf requiere jsPDF.');
+    alert('No se puede generar PDF: la librería jsPDF no está cargada. Asegúrate de incluir jspdf en el HTML.');
+    return;
   }
-
-  // DEBUG (temporal): descomenta para inspeccionar lo que realmente llega
-  // console.log('downloadResultsPdf -> docData:', docData);
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p', 'pt', 'letter');
+  let doc;
+  try {
+    doc = new jsPDF('p', 'pt', 'a4');
+  } catch (e) {
+    console.error('Error inicializando jsPDF:', e);
+    alert('No se pudo inicializar jsPDF en este navegador.');
+    return;
+  }
 
-  // Cabecera
+  const pageW = doc.internal.pageSize.getWidth();
+  const margin = 40;
+  let y = 40;
+
+  // --- Cabecera título ---
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.setTextColor(40, 40, 40);
-  doc.text(truncateText(`Resultados — ${docData.test || ''}`, 120), 40, 40, { maxWidth: 500 });
+  doc.text('Resultados de la evaluación', margin, y);
+  y += 18;
+
+  // --- Código de presentación (11 dígitos) en la esquina superior derecha ---
+  const resultCode = docData.resultCode || generateResultCode();
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Código de presentación: ${resultCode}`, pageW - margin, 40, { align: 'right' });
+
+  // --- Datos del estudiante (izquierda) y fecha/puntaje (derecha) ---
+  const studentName = docData.studentName || '';
+  const course = docData.course || '';
+  const testName = docData.testName || '';
+  const dateStr = formatDateNice(docData.date || new Date());
+  const scoreStr = (docData.score !== undefined && docData.score !== null) ? String(docData.score) : '';
+
+  y += 6;
+  const leftColX = margin;
+  const rightColX = pageW - margin;
 
   doc.setFontSize(11);
-  doc.setTextColor(80, 80, 80);
-  let y = 80;
-  doc.text(`Estudiante: ${docData.student || ''}`, 40, y); y += 15;
-  doc.text(`Curso: ${docData.grade || ''}`, 40, y); y += 15;
-  doc.text(`Código de prueba: ${docData.testCode || ''}`, 40, y); y += 15;
-  doc.text(`Fecha: ${docData.timestamp || ''}`, 40, y); y += 15;
-  doc.text(`Puntaje: ${docData.score !== undefined ? String(docData.score) : ''}`, 40, y); 
-  y += 40;
-  
-  doc.setFontSize(12);
-  doc.setTextColor(41, 128, 185);
-  doc.text('Detalles de prueba:', 40, y);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Estudiante:', leftColX, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text(stripTags(studentName), leftColX + 80, y);
+
+  // derecha: Fecha
+  doc.setFont('helvetica', 'bold');
+  doc.text('Fecha:', rightColX - 120, y, { align: 'left' });
+  doc.setFont('helvetica', 'normal');
+  doc.text(dateStr, rightColX - 60, y, { align: 'left' });
+
+  y += 16;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Curso:', leftColX, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text(stripTags(course), leftColX + 80, y);
+
+  // derecha: Puntaje
+  doc.setFont('helvetica', 'bold');
+  doc.text('Puntaje:', rightColX - 120, y, { align: 'left' });
+  doc.setFont('helvetica', 'normal');
+  doc.text(scoreStr, rightColX - 60, y, { align: 'left' });
+
+  y += 16;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Prueba:', leftColX, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text(stripTags(testName), leftColX + 80, y);
+
+  y += 18;
+
+  // línea separadora
+  doc.setDrawColor(200);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, pageW - margin, y);
   y += 10;
 
-  // Tabla de resultados si hay detalles
-  if (docData.details && docData.details.length) {
-    const rows = docData.details.map(d => {
-      let ansText = '';
-      if (d.type === 'mcq') {
-        ansText = d.studentAnswer?.text || d.studentAnswer || '';
-      } else if (d.type === 'tf') {
-        ansText = d.studentAnswer === '1' ? 'VERDADERO' : d.studentAnswer === '0' ? 'FALSO' : (d.studentAnswer || '');
-      } else if (d.type === 'ordering') {
-        ansText = Array.isArray(d.studentAnswer) ? d.studentAnswer.join(' → ') : String(d.studentAnswer || '');
-      } else if (d.type === 'match') {
-        ansText = Array.isArray(d.studentAnswer) ? d.studentAnswer.join('; ') : (typeof d.studentAnswer === 'string' ? d.studentAnswer : JSON.stringify(d.studentAnswer || {}));
-      } else {
-        ansText = String(d.studentAnswer || '');
+  // --- Preparar filas de la tabla: saneamiento de studentAnswer y correctAnswer ---
+  const details = Array.isArray(docData.details) ? docData.details : [];
+
+  const tableRows = details.map(d => {
+    const idx = (d.index !== undefined && d.index !== null) ? String(d.index) : '';
+    const title = stripTags(d.title || '');
+    // studentAnswer puede ser string, array, objeto (gaptext), o estructura compleja -> convertir a texto plano
+    let studentText = answerToText(d.studentAnswer, d.type);
+    // si formatAnswer produjo html (p. ej. con <strong>) lo limpiamos
+    studentText = stripTags(studentText);
+
+    const pts = (d.points !== undefined && d.points !== null) ? String(d.points) : '';
+
+    return [ idx, title, studentText, pts ];
+  });
+
+  // --- Dibujar tabla: preferir doc.autoTable si está disponible (mejor formato) ---
+  const startYForTable = y;
+  if (typeof doc.autoTable === 'function') {
+    // establecer estilos razonables para mantener diseño actual
+    doc.autoTable({
+      startY: startYForTable,
+      head: [[ '#', 'Pregunta', 'Tu respuesta', 'Puntos' ]],
+      body: tableRows,
+      styles: {
+        font: 'helvetica',
+        fontSize: 10,
+        cellPadding: 4,
+      },
+      headStyles: {
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        halign: 'center'
+      },
+      columnStyles: {
+        0: { cellWidth: 30, halign: 'center' },               // #
+        1: { cellWidth: 180 },                                // Pregunta
+        2: { cellWidth: 170 },                                // Tu respuesta
+        3: { cellWidth: 50, halign: 'center' }                // Puntos
+      },
+      didDrawPage: function (data) {
+        // si se requieren encabezados/pie adicionales por página, se pueden agregar aquí
+      },
+      margin: { left: margin, right: margin }
+    });
+    // después de autoTable, obtener la y final
+    y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 12 : doc.previousAutoTable ? doc.previousAutoTable.finalY + 12 : startYForTable + 12;
+  } else {
+    // Fallback: imprimir tabla simple a mano
+    const headings = ['#','Pregunta','Tu respuesta','Puntos'];
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text(headings.join(' | '), margin, y);
+    y += 14;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    tableRows.forEach(row => {
+      const line = row.map(c => stripTags(String(c))).join(' | ');
+      doc.text(line, margin, y);
+      y += 12;
+      // posible salto de página
+      if (y > doc.internal.pageSize.getHeight() - 60) {
+        doc.addPage();
+        y = 40;
       }
-      ansText = ansText.replace(/\r\n|\r|\n/g, ' ').replace(/\s{2,}/g, ' ');
-      ansText = truncateText(ansText, 120);
-      return [
-        d.index || '',
-        truncateText(String(d.title || ''), 60),
-        ansText,
-        d.points || ''
-      ];
-    });
-
-    doc.autoTable({
-      startY: y,
-      head: [['N°', 'Pregunta', 'Respuesta alumno', 'Puntos']],
-      body: rows,
-      styles: { fontSize: 9, valign: 'middle', overflow: 'linebreak' },
-      headStyles: { fillColor: [41,128,185], textColor: 255 },
-      margin: { left: 40, right: 40 },
-      columnStyles: { 0:{cellWidth:30, halign:'center'}, 1:{cellWidth:260}, 2:{cellWidth:200}, 3:{cellWidth:60, halign:'center'} },
-      tableWidth: 'auto'
-    });
-
-    y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 20 : y + 80;
-  }
-
-  // Eventos de seguridad
-  if ((docData.cheatLogs || []).length) {
-    doc.setFontSize(12); doc.setTextColor(200,0,0);
-    doc.text('Eventos de seguridad detectados:', 40, y); y += 10;
-    const cheatRows = (docData.cheatLogs || []).map(e => [
-      e.when ? new Date(e.when).toLocaleString('es-CO') : '',
-      e.kind || ''
-    ]);
-    doc.autoTable({
-      startY: y,
-      head: [['Fecha/Hora','Evento']],
-      body: cheatRows,
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [192,57,43], textColor: 255 },
-      margin: { left: 40, right: 40 }
     });
   }
 
-  // Guardar archivo (nombre seguro)
-  const safeTestCode = (docData.testCode || 'result').toString().replace(/\s+/g,'_');
-  const safeName = (docData.student || 'estudiante').toString().replace(/\s+/g,'_');
-  doc.save(`${safeTestCode}-${safeName}.pdf`);
+  // --- Pie (opcional) con resumen o notas ---
+  y += 8;
+  if (y < doc.internal.pageSize.getHeight() - 40) {
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Este documento muestra el detalle de las respuestas registradas en la prueba.', margin, y);
+    y += 12;
+  }
+
+  // --- Guardar el PDF con nombre legible ---
+  const safeTestName = (docData.testName || 'resultado').replace(/[^\w\- ]+/g, '').replace(/\s+/g, '_');
+  const filename = `${safeTestName}_${resultCode}.pdf`;
+  try {
+    doc.save(filename);
+  } catch (e) {
+    // en caso de error con save (entornos restringidos), intentar open en nueva ventana
+    try {
+      const blob = doc.output('bloburl');
+      window.open(blob, '_blank');
+    } catch (e2) {
+      console.error('No se pudo descargar o abrir el PDF: ', e, e2);
+    }
+  }
 }
 
 // ---------- descargar Certificado aparte ----------
