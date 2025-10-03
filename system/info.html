@@ -178,9 +178,9 @@
     async function loadData(){
       try{
         const [tech, mark, tuts] = await Promise.all([
-            fetch('technique.json').then(r=>r.json()),
-            fetch('marketing.json').then(r=>r.json()),
-            fetch('tutorials.json').then(r=>r.json())
+            fetch('/technique.json').then(r=>r.json()),
+            fetch('/marketing.json').then(r=>r.json()),
+            fetch('/tutorials.json').then(r=>r.json())
         ]);
         technique = tech; 
         marketing = mark; 
