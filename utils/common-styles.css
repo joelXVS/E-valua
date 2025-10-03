@@ -454,21 +454,8 @@ input[type="text"]:focus {
 }
 
 /* ===================== */
-/* Nuevos tipos de preguntas */
+/* Panel de Novedades */
 /* ===================== */
-
-.floating-btn {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: #5a3ea6;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 50px;
-  cursor: pointer;
-  z-index: 1000;
-}
 
 .modal-overlay {
   display: none;
@@ -482,7 +469,7 @@ input[type="text"]:focus {
 }
 
 .modal-content {
-  background: #fff;
+  background: #fffbea;
   max-width: 400px;
   width: 90%;
   max-height: 80%;
@@ -494,14 +481,4 @@ input[type="text"]:focus {
 
 .modal-content h2 {
   margin-top: 0;
-}
-
-.close-btn {
-  margin-top: 15px;
-  background: #d33;
-  color: #fff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
 }
