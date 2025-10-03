@@ -1039,7 +1039,7 @@
         {
           "type": "multimedia",
           "mediaType": "image",
-          "src": "",
+          "src": "https://images.cdn3.buscalibre.com/fit-in/360x360/08/dc/08dcd552f3548f2853b49dba06e270f0.jpg",
           "subtype": "mcq",
           "subquestion": {
             "title": "¿Qué profesión requiere jurar defender la Constitución?",
@@ -1050,7 +1050,7 @@
         {
           "type": "multimedia",
           "mediaType": "image",
-          "src": "",
+          "src": "https://images.cdn3.buscalibre.com/fit-in/360x360/08/dc/08dcd552f3548f2853b49dba06e270f0.jpg",
           "subtype": "mcq",
           "subquestion": {
             "title": "¿Quién diseña la estructura de un puente?",
@@ -1061,7 +1061,7 @@
         {
           "type": "multimedia",
           "mediaType": "audio",
-          "src": "",
+          "src": "https://open.spotify.com/episode/3IgfhTVfRccTkOMcWW8DlI?go=1&sp_cid=5f20298f9d2107800fd5a0c76a1cc48e&utm_source=embed_player_p&utm_medium=desktop",
           "subtype": "multi",
           "subquestion": {
             "title": "Selecciona las profesiones relacionadas con la salud.",
