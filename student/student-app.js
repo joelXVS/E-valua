@@ -2103,7 +2103,7 @@ function finishExam(cheatingForced = false) {
     const codeEl = $('resultCodeDisplay');
     if (codeEl) {
       codeEl.innerHTML = `Código de resultado: <strong class="result-code" style="margin-right:8px;">${resultCode}</strong> 
-        <button id="copyResultCodeBtn" class="btn" style="margin-top:4px; margin-bottom:4px; margin-left:6px;">Copiar código</button>`;
+        <button id="copyResultCodeBtn" class="btn" style="margin-top:10px; margin-bottom:10px; margin-left:8px;">Copiar código</button>`;
       const copyBtn = $('copyResultCodeBtn');
       if (copyBtn) {
         copyBtn.addEventListener('click', () => {
