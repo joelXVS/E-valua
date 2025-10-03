@@ -190,8 +190,8 @@
     async function loadData(){
       try{
         const [tech,mark] = await Promise.all([
-            fetch('../technique.json').then(r=>r.json()),
-            fetch('../marketing.json').then(r=>r.json())
+          fetch('../technique.json').then(r=>r.json()),
+          fetch('../marketing.json').then(r=>r.json())
         ]);
         technique = tech; marketing = mark;
         quickStats.textContent = `Técnica: ${technique.details.length} — Marketing: ${marketing.details.length}`;
