@@ -2215,7 +2215,7 @@ function downloadResults(resultObj) {
 
   // si resultObj viene desde "Ver resultados" pero no trae detalles, ofrecer fallback
   if (resultObj && (!resultObj.details || resultObj.details.length === 0)) {
-    if (!confirm('El resultado que intentas descargar no contiene detalles. ¿Deseas descargar tus respuestas actuales en su lugar?')) {
+    if (!confirm('¿Estás seguro de que deseas descargar tus respuestas actuales en formato JSON?')) {
       return;
     }
     resultObj = null; // forzar fallback below
@@ -2226,6 +2226,7 @@ function downloadResults(resultObj) {
     grade: $('gradeSelect').selectedOptions[0].textContent,
     test: currentTest ? currentTest.name : '',
     testCode: currentTest ? currentTest.code : '',
+    resultCode: currentTest ? currentTest.resultCode : '',
     timestamp: new Date().toISOString(),
     answers,
     cheatLogs: getCheatLogsForSession(currentSessionId) || currentCheatEvents || []
@@ -2385,7 +2386,7 @@ function downloadResultsPdf(docData = {}) {
 
   // derecha: Fecha
   doc.setFont('helvetica', 'bold');
-  doc.text('Fecha:', rightColX - 120, y, { align: 'left' });
+  doc.text('Fecha:', rightColX - 180, y, { align: 'left' });
   doc.setFont('helvetica', 'normal');
   doc.text(dateStr, rightColX - 60, y, { align: 'left' });
 
@@ -2397,7 +2398,7 @@ function downloadResultsPdf(docData = {}) {
 
   // derecha: Puntaje
   doc.setFont('helvetica', 'bold');
-  doc.text('Puntaje:', rightColX - 120, y, { align: 'left' });
+  doc.text('Puntaje:', rightColX - 180, y, { align: 'left' });
   doc.setFont('helvetica', 'normal');
   doc.text(scoreStr, rightColX - 60, y, { align: 'left' });
 
@@ -2436,10 +2437,10 @@ function downloadResultsPdf(docData = {}) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(41, 128, 185);
-  doc.text('Detalle de preguntas:', margin + 8, y + 8);
+  doc.text('Detalle de preguntas:', margin + 8, y + 12);
   // restaurar color texto
   doc.setTextColor(0, 0, 0);
-  y += 24;
+  y += 12;
 
   // --- Dibujar tabla: preferir doc.autoTable si está disponible (mejor formato) ---
   const startYForTable = y;
@@ -2510,10 +2511,10 @@ function downloadResultsPdf(docData = {}) {
     // encabezado coloreado
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
-    doc.setTextColor(255, 128, 0);
-    doc.text('Intentos de trampa:', margin + 8, y + 8);
+    doc.setTextColor(255, 38, 0);
+    doc.text('Intentos de trampa:', margin + 8, y + 12);
     doc.setTextColor(0, 0, 0);
-    y += 24;
+    y += 12;
 
     // preparar filas
     const cheatRows = cheatLogs.map((c, i) => {
@@ -2532,7 +2533,7 @@ function downloadResultsPdf(docData = {}) {
         body: cheatRows,
         styles: { fontSize: 9 },
         headStyles: { 
-          fillColor: [255, 128, 0], 
+          fillColor: [255, 38, 0], 
           textColor: 255, 
           lineWidth: 0.2,            // grosor de borde
           lineColor: [100, 100, 100] },
