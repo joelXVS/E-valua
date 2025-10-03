@@ -2102,8 +2102,8 @@ function finishExam(cheatingForced = false) {
     // Mostrar código en la pantalla de resultados y añadir botón copiar
     const codeEl = $('resultCodeDisplay');
     if (codeEl) {
-      codeEl.innerHTML = `Código de resultado: <strong class="result-code">${resultCode}</strong> 
-        <button id="copyResultCodeBtn" class="btn" style="margin-left:8px;">Copiar código</button>`;
+      codeEl.innerHTML = `Código de resultado: <strong class="result-code" style="margin-right:8px;">${resultCode}</strong> 
+        <button id="copyResultCodeBtn" class="btn" style="margin-top:4px; margin-bottom:4px; margin-left:6px;">Copiar código</button>`;
       const copyBtn = $('copyResultCodeBtn');
       if (copyBtn) {
         copyBtn.addEventListener('click', () => {
@@ -2130,6 +2130,7 @@ function finishExam(cheatingForced = false) {
   const msgEl = document.createElement("p");
   msgEl.className = "small";
   msgEl.style.marginTop = "12px";
+  msgEl.style.textAlign = "center";
   msgEl.textContent = msg;
   $('result').appendChild(msgEl);
 
@@ -2758,6 +2759,38 @@ window.addEventListener('DOMContentLoaded', async () => {
     el.innerHTML = '';
     document.getElementById('resultCodeInput').value = "";
   });
+
+  const modal = document.getElementById("whatsNewModal");
+  const btn = document.getElementById("whatsNewBtn");
+  const closeBtn = document.getElementById("closeWhatsNew");
+  const updatesList = document.getElementById("updatesList");
+
+  // Cargar novedades desde JSON
+  fetch("whats_new.json")
+    .then(res => res.json())
+    .then(data => {
+      updatesList.innerHTML = data.updates
+        .map(update => `<li>${update}</li>`)
+        .join("");
+    });
+
+  // Abrir modal manual
+  btn.addEventListener("click", () => {
+    modal.style.display = "flex";
+  });
+
+  // Cerrar modal
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    localStorage.setItem("whatsNewSeen", "true"); // marcar como visto
+  });
+
+  // Mostrar automáticamente la primera vez
+  if (!localStorage.getItem("whatsNewSeen")) {
+    setTimeout(() => {
+      modal.style.display = "flex";
+    }, 500); // se abre medio segundo después de cargar
+  }
 });
 
 // prevenir cierre accidental durante examen
