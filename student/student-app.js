@@ -376,7 +376,7 @@ async function startExam() {
       });
     }
 
-    // --- Mezclar ITEMS de preguntas ORDERING y subquestions ordering de multimedia ---
+    // --- Mezclar ITEMS de preguntas ORDERING ---
     if (q.type === 'ordering' && Array.isArray(q.items) && q.items.length > 0) {
       // Guardar copia original si la quieres conservar (opcional)
       q._originalItems = Array.isArray(q._originalItems) ? q._originalItems : [...q.items];
@@ -385,44 +385,11 @@ async function startExam() {
       // Nota: q.answer debe seguir conteniendo el orden correcto (strings) tal como en tests.json
     }
 
-    // Si es multimedia y la subpregunta es ordering, mezclar también subQ.items
-    if (q.type === 'multimedia' && q.subtype === 'ordering' && q.subquestion && Array.isArray(q.subquestion.items)) {
-      q.subquestion._originalItems = Array.isArray(q.subquestion._originalItems) ? q.subquestion._originalItems : [...q.subquestion.items];
-      q.subquestion.items = mezclarArray([...q.subquestion.items]);
-    }
-
     // GAPTEXT: normalizar q.answer (array) a objeto q.answers { "0": "texto" }
     if (q.type === 'gaptext') {
       if (!q.answers && Array.isArray(q.answer)) {
         q.answers = {};
         q.answer.forEach((a, i) => { q.answers[String(i)] = a; });
-      }
-    }
-
-    // Si es multimedia con subquestion, hacer lo mismo para el subQ
-    if (q.type === 'multimedia' && q.subquestion) {
-      const subQ = q.subquestion;
-      if (subQ.type === 'multi' && Array.isArray(subQ.options)) {
-        subQ.options = subQ.options.map((opt, i) => (typeof opt === 'string') ? { text: opt, _originalIndex: i } : { ...opt, _originalIndex: i });
-        subQ.options = mezclarArray([...subQ.options]);
-        if (Array.isArray(subQ.answer)) {
-          subQ.answer = subQ.answer.map(origIdx => subQ.options.findIndex(o => o._originalIndex === origIdx));
-        }
-      }
-      if (subQ.type === 'match' && Array.isArray(subQ.pairs)) {
-        subQ.pairs.forEach((p, pi) => {
-          p.right = (p.right || []).map((r, ri) => (typeof r === 'string') ? { text: r, _originalIndex: ri } : { ...r, _originalIndex: ri });
-          p.right = mezclarArray([...p.right]);
-          if (Array.isArray(subQ.answer) && typeof subQ.answer[pi] !== 'undefined') {
-            p._correctIndex = p.right.findIndex(o => o._originalIndex === subQ.answer[pi]);
-          }
-        });
-      }
-      if (subQ.type === 'gaptext') {
-        if (!subQ.answers && Array.isArray(subQ.answer)) {
-          subQ.answers = {};
-          subQ.answer.forEach((a,i) => subQ.answers[String(i)] = a);
-        }
       }
     }
   });
@@ -483,13 +450,11 @@ function attachAntiCheatListeners() {
     if (document.hidden && !visibilityLock) {
       visibilityLock = true;
       tabSwitchCount++;
-
-      // registrar evento en logs
-      const ev = recordEvent('visibility-change');
+      recordEvent('visibility-change');
 
       if (tabSwitchCount === 1) {
         alert('Atención: Cambio de pestaña detectado. Tienes 2 advertencias más antes de terminar la prueba.');
-      } else if (tabSwitchCount >= 3) {
+      } else if (tabSwitchCount >= 2) {
         alert('Se detectaron 3 cambios de pestaña. La prueba ha terminado.');
         examTerminatedForCheating = true;
         const name = $('studentName').value.trim();
@@ -511,7 +476,7 @@ function attachAntiCheatListeners() {
 
       if (blurCount === 1) {
         alert('Atención: Se detectó que la pestaña quedó en segundo plano. Tienes 2 advertencias más.');
-      } else if (blurCount >= 3) {
+      } else if (blurCount >= 2) {
         alert('Se detectaron 3 cambios a segundo plano. La prueba ha terminado.');
         examTerminatedForCheating = true;
         const name = $('studentName').value.trim();
@@ -845,301 +810,6 @@ function renderQuestion() {
     <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
     <p class="small"><strong>NOTA:</strong>&nbsp;<em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
 
-  } else if (q.type === 'multimedia') {
-    // Contenedor del recurso multimedia
-    inner += `<div class="multimedia-container">`;
-    
-    if (q.mediaType === "video") {
-      inner += `<video controls style="max-width:100%; border-radius:10px;">
-                  <source src="${q.src}" type="video/mp4">
-                  Tu navegador no soporta video.
-                </video>`;
-    } else if (q.mediaType === "audio") {
-      inner += `<audio controls>
-                  <source src="${q.src}" type="audio/mpeg">
-                  Tu navegador no soporta audio.
-                </audio>`;
-    } else if (q.mediaType === "image") {
-      inner += `<img src="${q.src}" alt="Multimedia" class="multimedia-img" />`;
-    }
-  
-    inner += `</div>`;
-    
-    // Render de la subpregunta anidada (usa q.subtype y q.subquestion)
-    const subQ = q.subquestion || {};
-    const subType = q.subtype;
-    
-    inner += `<div class="subquestion">`;
-    inner += `<h4 style="margin-top:8px;">${escapeHtml(subQ.title || "Pregunta")}</h4>`;
-    
-    if (subType === 'open') {
-      inner += `<textarea id="multi_open_${currentQuestionIndex}" rows="5" style="width:100%" 
-        placeholder="Escribe tu respuesta aquí...">${answers[q.title]?.open || ''}</textarea>`;
-    
-    } else if (subType === 'short') {
-      inner += `<input type="text" id="multi_short_${currentQuestionIndex}" 
-        style="width:100%; padding:8px;" 
-        placeholder="Respuesta breve..." value="${answers[q.title]?.short || ''}" />`;
-    
-    } else if (subType === 'mcq') {
-      inner += `<div class="options">${(subQ.options || []).map(opt => {
-        const key = getOptionKey(opt);
-        const checked = answers[q.title]?.mcq === key;
-        return `
-          <label style="display:block; margin:6px 0;">
-            <input type="radio" name="multi_q${currentQuestionIndex}" value="${key}" ${checked ? 'checked' : ''}>
-            ${escapeHtml(opt.text || opt)}
-          </label>`;
-      }).join('')}</div>`;
-
-    } else if (subType === 'multi') {
-      inner += `<div class="options">${(subQ.options || []).map(opt => {
-        const key = getOptionKey(opt);
-        const checked = Array.isArray(answers[q.title]?.multi) && answers[q.title].multi.includes(key);
-        return `
-          <label style="display:block; margin:6px 0;">
-            <input type="checkbox" name="multi_q${currentQuestionIndex}" value="${key}" ${checked ? 'checked' : ''}>
-            ${escapeHtml(opt.text || opt)}
-          </label>`;
-      }).join('')}</div>`;
-    
-    } else if (subType === 'tf') {
-      inner += `<div class="options options-tf">
-        <label><input type="radio" name="multi_q${currentQuestionIndex}" value="1" ${answers[q.title]?.tf==1?'checked':''}> Verdadero</label>
-        <label><input type="radio" name="multi_q${currentQuestionIndex}" value="0" ${answers[q.title]?.tf==0?'checked':''}> Falso</label>
-      </div>`;
-    
-    } else if (subType === 'match') {
-      inner += `<div class="match-container">`;
-      (subQ.pairs || []).forEach((p, i) => {
-        const ans = answers[q.title]?.match?.[i] || "";
-        inner += `<div class="match-row">
-          <span>${escapeHtml(p.left)}</span>
-          <select id="multi_match_${currentQuestionIndex}_${i}">
-            <option value="">-- Selecciona --</option>
-            ${p.right.map(r => `
-              <option value="${escapeHtml((r && (r.text || r)) || '')}" ${savedAns === (r && (r.text || r)) ? 'selected' : ''}>
-                ${escapeHtml((r && (r.text || r)) || '')}
-              </option>`).join('')}
-          </select>
-        </div>`;
-      });
-      inner += `</div>`;
-    
-    } else if (subType === 'ordering') {
-      const items = answers[q.title]?.ordering || subQ.items || [];
-      inner += `<ul class="ordering" id="multi_order_${currentQuestionIndex}">
-        ${items.map((item, i) => `
-          <li class="order-item" draggable="true" data-idx="${i}">${escapeHtml(item)}</li>
-        `).join('')}
-      </ul>
-      <p class="small">Arrastra los elementos para ponerlos en el orden correcto.</p>
-      <p class="small"><strong>NOTA:</strong>&nbsp;<em>Este tipo de pregunta se reordena en cada sesión.</em></p>`;
-    
-      // listeners drag & drop
-      setTimeout(() => {
-        const list = document.getElementById(`multi_order_${currentQuestionIndex}`);
-        if (list) {
-          let dragged;
-          list.querySelectorAll('.order-item').forEach(item => {
-            item.addEventListener('dragstart', e => {
-              dragged = item;
-              e.dataTransfer.effectAllowed = "move";
-            });
-            item.addEventListener('dragover', e => e.preventDefault());
-            item.addEventListener('drop', e => {
-              e.preventDefault();
-              if (dragged && dragged !== item) {
-                const rect = item.getBoundingClientRect();
-                const isAfter = (e.clientY - rect.top) > rect.height / 2;
-                list.insertBefore(dragged, isAfter ? item.nextSibling : item);
-    
-                // Asegurar que sea objeto antes de guardar
-                if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
-                  answers[q.title] = {};
-                }
-    
-                answers[q.title] = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
-                updateNavButtonsAndFinishButton();
-              }
-            });
-          });
-        }
-      }, 50);
-    } else if (subType === 'hotspot') {
-      inner += `<div class="hotspot-container">
-        <img src="${subQ.image}" alt="Hotspot multimedia" class="hotspot-img" />
-      </div>
-      <p class="small hotspot-note">Haz clic en la zona correspondiente.</p>`;
-    
-    } else if (q.type === 'multimedia' && q.subtype === 'gaptext') {
-      // Subquestion (compatibilidad con diferentes formatos de tests.json)
-      const sub = q.subquestion || q.sub || {};
-      // si la subquestion no tiene sentence, usar q.title/ q.sentence como fallback
-      let sentence = sub.sentence || sub.title || q.sentence || q.title || "";
-
-      // Helpers locales (nombres únicos para evitar colisiones con el otro bloque)
-      const createGapOptionElementMulti = (function () {
-        // si ya existe una función global con el mismo propósito, reutilizarla
-        if (typeof createGapOptionElement === 'function') return createGapOptionElement;
-        return function (text) {
-          const el = document.createElement('div');
-          el.className = 'gap-opt';
-          el.textContent = text;
-          el.setAttribute('draggable', 'true');
-          el.addEventListener('dragstart', e => {
-            e.dataTransfer.setData('text/plain', el.textContent);
-            el.classList.add('dragging');
-          });
-          el.addEventListener('dragend', () => el.classList.remove('dragging'));
-          return el;
-        };
-      })();
-
-      const addGapOptionIfMissingMulti = function (container, text) {
-        if (!container || !text) return;
-        if ([...container.querySelectorAll('.gap-opt')].some(o => o.textContent === text)) return;
-        container.appendChild(createGapOptionElementMulti(text));
-      };
-
-      // respuestas guardadas para esta pregunta (objeto con índices "0","1",...)
-      const saved = (answers[q.title] && typeof answers[q.title] === 'object') ? answers[q.title] : {};
-
-      // opciones ya usadas (valores guardados)
-      const used = Object.values(saved).filter(v => v !== undefined && v !== null);
-
-      // Obtener opciones desde la subquestion (o desde q si no existe)
-      const optionsList = Array.isArray(sub.options) ? sub.options : (Array.isArray(sub.choices) ? sub.choices : (Array.isArray(q.options) ? q.options : []));
-
-      // Determinar número de gaps (primero sub.gaps, luego markers)
-      let gapsCount = Array.isArray(sub.gaps) ? sub.gaps.length : (Array.isArray(sub.options) ? sub.options.length : 0);
-      if (!gapsCount) {
-        const matches = sentence.match(/\[\[\d+\]\]/g);
-        gapsCount = matches ? matches.length : (sentence.includes("___") ? (sentence.split("___").length - 1) : 0);
-      }
-
-      // Reemplazar marcadores por span.gap con data-gap
-      for (let idx = 0; idx < gapsCount; idx++) {
-        const filled = saved && saved[idx] ? escapeHtml(saved[idx]) : "";
-        const fillHtml = filled || "&nbsp;";
-        const regex = new RegExp(`\\[\\[${idx}\\]\\]|___`);
-        sentence = sentence.replace(regex, `<span class="gap" data-gap="${idx}">${fillHtml}</span>`);
-      }
-
-      // Media (si existe) — si tienes HTML embebido en q.mediaHtml u otra propiedad
-      const mediaHtml = q.mediaHtml || q.media || "";
-
-      // Construir HTML (añade un contenedor especial para multimedia)
-      inner += `<div class="multimedia-gaptext">
-                  <div class="multimedia-media">${mediaHtml}</div>
-                  <div class="gap-sentence" style="text-align:center; margin-top:10px;">${sentence}</div>
-                  <div class="gap-options" id="gapOpts_multi_${currentQuestionIndex}" style="text-align:center; display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
-                    ${(optionsList || []).filter(opt => !used.includes(opt)).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join('')}
-                  </div>
-                  <div style="display:flex; justify-content:center; margin-top:12px;">
-                    <button id="resetGapBtn_multi_${currentQuestionIndex}" class="btn">Reiniciar espacios</button>
-                  </div>
-                </div>`;
-
-      // Inicializar drag & drop y listeners
-      setTimeout(() => {
-        const gapOptions = document.getElementById(`gapOpts_multi_${currentQuestionIndex}`);
-        const gaps = container.querySelectorAll(".gap");
-        if (!gapOptions) return;
-
-        // Asegurar events en cada opción inicial
-        gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
-          opt.addEventListener('dragstart', e => {
-            e.dataTransfer.setData('text/plain', opt.textContent);
-            opt.classList.add('dragging');
-          });
-          opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
-        });
-
-        // permitir soltar en gaps
-        gaps.forEach(gap => {
-          gap.addEventListener('dragover', e => e.preventDefault());
-          gap.addEventListener('drop', e => {
-            e.preventDefault();
-            const text = e.dataTransfer.getData('text/plain');
-            if (!text) return;
-
-            const normText = normalizeGapText(text);
-            const gapIdx = String(gap.dataset.gap);
-            const prevRaw = (gap.textContent || "").trim();
-            const prevNorm = normalizeGapText(prevRaw);
-            if (prevNorm && prevNorm !== normText) {
-              addGapOptionIfMissingMulti(gapOptions, prevRaw);
-              if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
-                delete answers[q.title][gapIdx];
-              }
-            }
-
-            gap.innerHTML = escapeHtml(text);
-            if (!answers[q.title] || typeof answers[q.title] !== 'object') answers[q.title] = {};
-            answers[q.title][gapIdx] = text;
-
-            // elimina opción usada (comparando normalizado)
-            [...gapOptions.querySelectorAll('.gap-opt')].forEach(o => {
-              if (normalizeGapText(o.textContent) === normText) o.remove();
-            });
-
-            saveExamProgress();
-            updateNavButtonsAndFinishButton();
-          });
-        });
-
-        // permitir devolver desde gap a la lista (drop sobre gapOptions)
-        gapOptions.addEventListener("dragover", e => e.preventDefault());
-        gapOptions.addEventListener("drop", e => {
-          e.preventDefault();
-          const text = e.dataTransfer.getData("text/plain");
-          if (!text) return;
-
-          // añadir opción si no existe ya
-          addGapOptionIfMissingMulti(gapOptions, text);
-
-          // limpiar gaps que tengan ese texto (y borrar en answers)
-          container.querySelectorAll('.gap').forEach(g => {
-            if ((g.textContent || "").trim() === text) {
-              const gi = String(g.dataset.gap);
-              g.innerHTML = "&nbsp;";
-              if (answers[q.title] && answers[q.title][gi] !== undefined) {
-                delete answers[q.title][gi];
-              }
-            }
-          });
-
-          saveExamProgress();
-          updateNavButtonsAndFinishButton();
-        });
-
-        // Reiniciar (botón)
-        const resetBtn = document.getElementById(`resetGapBtn_multi_${currentQuestionIndex}`);
-        if (resetBtn) {
-          resetBtn.addEventListener('click', () => {
-            const gaps = container.querySelectorAll(".gap");
-            gaps.forEach(g => g.innerHTML = "&nbsp;");
-            if (answers[q.title]) delete answers[q.title];
-            // reconstruir opciones originales
-            gapOptions.innerHTML = (optionsList || []).map(opt => `<div class="gap-opt" draggable="true">${escapeHtml(opt)}</div>`).join("");
-            // volver a enganchar eventos de drag a cada opción nueva
-            gapOptions.querySelectorAll('.gap-opt').forEach(opt => {
-              opt.addEventListener('dragstart', e => {
-                e.dataTransfer.setData('text/plain', opt.textContent);
-                opt.classList.add('dragging');
-              });
-              opt.addEventListener('dragend', () => opt.classList.remove('dragging'));
-            });
-            saveExamProgress();
-            updateNavButtonsAndFinishButton();
-          });
-        }
-      }, 50);
-    }
-    
-    inner += `</div>`; // cierre subquestion
-  
   } else {
     inner += `<div class="small">Tipo de pregunta desconocido.</div>`;
   }
@@ -1277,146 +947,6 @@ function renderQuestion() {
     });
   }
 
-  // ----- LISTENERS MULTIMEDIA -----
-  if (q.type === 'multimedia') {
-    const subQ = q.subquestion || {}; 
-    const subType = q.subtype;
-  
-    if (subType === 'open') {
-      const ta = container.querySelector(`#multi_open_${currentQuestionIndex}`);
-      if (ta) ta.addEventListener('input', () => {
-        if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-          answers[q.title] = {}; 
-        }
-        answers[q.title].open = ta.value;
-        updateNavButtonsAndFinishButton();
-      });
-    }
-  
-    if (subType === 'short') {
-      const si = container.querySelector(`#multi_short_${currentQuestionIndex}`);
-      if (si) si.addEventListener('input', () => {
-        if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-          answers[q.title] = {}; 
-        }
-        answers[q.title].short = si.value.trim();
-        updateNavButtonsAndFinishButton();
-      });
-    }
-  
-    if (subType === 'mcq') {
-      container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]`).forEach(inp => {
-        inp.addEventListener('change', () => {
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-            answers[q.title] = {}; 
-          }
-          answers[q.title].mcq = inp.value;
-          updateNavButtonsAndFinishButton();
-        });
-      });
-    }
-  
-    if (subType === 'multi') {
-      container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]`).forEach(chk => {
-        chk.addEventListener('change', () => {
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-            answers[q.title] = {}; 
-          }
-          answers[q.title].multi = Array.from(container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]:checked`))
-            .map(c => c.value);
-          updateNavButtonsAndFinishButton();
-        });
-      });
-    }
-  
-    if (subType === 'tf') {
-      container.querySelectorAll(`input[name=multi_q${currentQuestionIndex}]`).forEach(inp => {
-        inp.addEventListener('change', () => {
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-            answers[q.title] = {}; 
-          }
-          answers[q.title].tf = Number(inp.value);
-          updateNavButtonsAndFinishButton();
-        });
-      });
-    }
-  
-    if (subType === 'match') {
-      (subQ.pairs || []).forEach((p,i) => {
-        const sel = container.querySelector(`#multi_match_${currentQuestionIndex}_${i}`);
-        if (sel) sel.addEventListener('change', () => {
-          // Asegurar que siempre sea objeto
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {
-            answers[q.title] = {};
-          }
-      
-          if (!answers[q.title].match) {
-            answers[q.title].match = {};
-          }
-      
-          answers[q.title].match[i] = sel.value;
-          updateNavButtonsAndFinishButton();
-        });
-      });
-    }
-  
-    if (subType === 'ordering') {
-      const list = container.querySelector(`#multi_order_${currentQuestionIndex}`);
-      if (list) {
-        let dragged;
-        list.querySelectorAll('.order-item').forEach(item => {
-          item.addEventListener('dragstart', e => {
-            dragged = item;
-            e.dataTransfer.effectAllowed = "move";
-          });
-          item.addEventListener('dragover', e => e.preventDefault());
-          item.addEventListener('drop', e => {
-            e.preventDefault();
-            if (dragged && dragged !== item) {
-              const rect = item.getBoundingClientRect();
-              const isAfter = (e.clientY - rect.top) > rect.height / 2;
-              list.insertBefore(dragged, isAfter ? item.nextSibling : item);
-              if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-                answers[q.title] = {}; 
-              }
-              answers[q.title] = [...list.querySelectorAll('.order-item')].map(li => li.textContent);
-              updateNavButtonsAndFinishButton();
-            }
-          });
-        });
-      }
-    }
-  
-    if (subType === 'hotspot') {
-      const img = container.querySelector('.hotspot-img');
-      if (img) {
-        // Mostrar coordenadas previas si existen
-        if (answers[q.title]?.hotspot?.x && answers[q.title]?.hotspot?.y) {
-          const smallTxt = container.querySelector(".hotspot-note");
-          if (smallTxt) {
-            smallTxt.textContent = `Coordenadas seleccionadas: (${answers[q.title].hotspot.x}, ${answers[q.title].hotspot.y})`;
-          }
-        }
-        
-        img.addEventListener('click', e => {
-          const rect = e.target.getBoundingClientRect();
-          const x = ((e.clientX - rect.left) / rect.width).toFixed(2);
-          const y = ((e.clientY - rect.top) / rect.height).toFixed(2);
-          if (typeof answers[q.title] !== "object" || answers[q.title] === null) {   
-            answers[q.title] = {}; 
-          }
-          answers[q.title].hotspot = { x, y };
-          
-          const smallTxt = container.querySelector(".hotspot-note");
-          if (smallTxt) {
-            smallTxt.textContent = `Coordenadas seleccionadas: (${x}, ${y})`;
-          }
-          updateNavButtonsAndFinishButton();
-        });
-      }
-    }
-  }
-
   // ---------- NAV ----------
   saveExamProgress();
   $('prevBtn').disabled = currentQuestionIndex === 0;
@@ -1527,7 +1057,7 @@ function normalizeText(txt) {
 }
 
 // Evaluación de respuesta abierta con keywords + longitud + antitramposos
-function evaluateOpenAnswer(answerText, q, test) {
+function evaluateTextualAnswer(answerText, q, test) {
   const text = String(answerText || '').trim();
   const lower = normalizeText(text);
 
@@ -1596,18 +1126,9 @@ function evaluateOpenAnswer(answerText, q, test) {
 function formatAnswer(q, ans) {
   // normalize multimedia delegation
   if (!q) return '';
-  if (q.type === 'multimedia' && q.subquestion) {
-    const subQ = q.subquestion;
-    const subAns = (answers && answers[q.title]) || {};
-    if (q.subtype === 'gaptext' || subQ.type === 'gaptext') {
-      return formatAnswer({...subQ, type:'gaptext'}, subAns);
-    }
-    // delegar resto de subtipos a same function by pretending it's subQ
-    return formatAnswer({...subQ, type: q.subtype || subQ.type}, subAns[q.subtype] || subAns);
-  }
 
-  // manejo ordering + multimedia subtype ordering
-  if (q.type === 'ordering' || (q.type === 'multimedia' && q.subtype === 'ordering')) {
+  // manejo ordering
+  if (q.type === 'ordering') {
     // ans puede venir en muchas formas; priorizamos arrays directos, luego .ordering, luego subestructuras
     let arr = [];
 
@@ -1723,29 +1244,15 @@ function formatAnswer(q, ans) {
 function formatCorrectAnswer(q) {
   if (!q) return '';
 
-  // multimedia subquestions
-  if (q.type === 'multimedia' && q.subquestion) {
-    const subQ = q.subquestion;
-    if (q.subtype === 'gaptext' || subQ.type === 'gaptext') {
-      return formatCorrectAnswer({...subQ, type:'gaptext'});
-    }
-    return formatCorrectAnswer({...subQ, type: q.subtype || subQ.type});
-  }
-
-  // ordering + multimedia subtype ordering
-  if (q.type === 'ordering' || (q.type === 'multimedia' && q.subtype === 'ordering')) {
-    // La respuesta correcta suele estar en q.answer (array) para ordering,
-    // o en q.subquestion.answer para multimedia/subtype ordering.
+  // ordering
+  if (q.type === 'ordering') {
+    // La respuesta correcta suele estar en q.answer (array) para ordering
     let correctArr = [];
 
     if (Array.isArray(q.answer)) {
       correctArr = q.answer;
-    } else if (q.type === 'multimedia' && q.subquestion && Array.isArray(q.subquestion.answer)) {
-      correctArr = q.subquestion.answer;
     } else if (Array.isArray(q.correct)) {
       correctArr = q.correct;
-    } else if (q.subquestion && Array.isArray(q.subquestion.correct)) {
-      correctArr = q.subquestion.correct;
     }
 
     return escapeHtml(Array.isArray(correctArr) ? correctArr.join(' , ') : String(correctArr || ''));
@@ -1893,7 +1400,7 @@ function finishExam(cheatingForced = false) {
       }
 
     } else if (q.type === 'open' || q.type === 'short') {
-      const evalData = evaluateOpenAnswer(String(studentAns || ''), q, currentTest);
+      const evalData = evaluateTextualAnswer(String(studentAns || ''), q, currentTest);
       qPoints = Math.round((possiblePoints * evalData.scoreRatio) * 1000) / 1000;
 
     } else if (q.type === 'multi') {
@@ -1967,55 +1474,6 @@ function finishExam(cheatingForced = false) {
           qPoints = possiblePoints;
         }
       }
-
-    } else if (q.type === 'multimedia') {
-      // subpregunta dentro de multimedia (usar la misma lógica pero con subQ)
-      const subQ = q.subquestion || {};
-      const subtype = q.subtype;
-      const studentSub = answers[q.title] || {};
-      const studentAnsSub = studentSub[subtype];
-
-      if (subtype === 'mcq') {
-        const correctKey = normalizeOptionKeyFromQuestion(subQ, subQ.answer);
-        const studentKey = normalizeOptionKeyFromQuestion(subQ, studentAnsSub);
-        if (studentKey !== undefined && studentKey === correctKey) {
-          qPoints = possiblePoints;
-        } else if (studentKey !== undefined) {
-          qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
-        }
-      } else if (subtype === 'tf') {
-        if (studentAnsSub !== undefined && parseInt(studentAnsSub) === parseInt(subQ.answer)) {
-          qPoints = possiblePoints;
-        } else if (studentAnsSub !== undefined) {
-          qPoints = (currentTest.points && currentTest.points.bad) ? -Math.abs(Number(currentTest.points.bad)) : 0;
-        }
-      } else if (subtype === 'open' || subtype === 'short') {
-        const evalData = evaluateOpenAnswer(String(studentAnsSub || ''), subQ, currentTest);
-        qPoints = Math.round((possiblePoints * evalData.scoreRatio) * 1000) / 1000;
-      } else if (subtype === 'multi') {
-        const correctKeys = normalizeKeysArray(subQ, subQ.answer).sort().join(',');
-        const givenKeys = normalizeKeysArray(subQ, studentAnsSub).sort().join(',');
-        qPoints = (correctKeys && correctKeys === givenKeys) ? possiblePoints : 0;
-      } else if (subtype === 'match') {
-        let matches = 0;
-        (subQ.pairs || []).forEach((p,i) => {
-          if (studentAnsSub && studentAnsSub[i] === p.correct) matches++;
-        });
-        qPoints = (matches / (subQ.pairs?.length || 1)) * possiblePoints;
-      } else if (subtype === 'ordering') {
-        const correct = (subQ.correct || []).join(',');
-        const given = (studentAnsSub || []).join(',');
-        qPoints = (correct === given) ? possiblePoints : 0;
-      } else if (subtype === 'hotspot') {
-        if (studentAnsSub && subQ.correctArea) {
-          const { x, y } = studentAnsSub;
-          const { x1, y1, x2, y2 } = subQ.correctArea;
-          const tol = 0.05;
-          if (x >= (x1 - tol) && x <= (x2 + tol) && y >= (y1 - tol) && y <= (y2 + tol)) {
-            qPoints = possiblePoints;
-          }
-        }
-      }
     }
 
     totalScore += qPoints;
@@ -2034,7 +1492,7 @@ function finishExam(cheatingForced = false) {
     };
 
     if (q.type === 'open' || q.type === 'short') {
-      detail.openEval = evaluateOpenAnswer(String(studentAns || ''), q, currentTest);
+      detail.openEval = evaluateTextualAnswer(String(studentAns || ''), q, currentTest);
     }
 
     details.push(detail);
@@ -2072,7 +1530,7 @@ function finishExam(cheatingForced = false) {
       gaptext: "Completar espacios",
       hotspot: "Imagen interactiva",
       ordering: "Ordenar secuencia"
-    }[d.type] || "Mixto";
+    }[d.type] || "Desconocido";
   
     return `<div style="margin-bottom:8px;">
       <strong>${d.index}. ${escapeHtml(d.title)}</strong><br/>
@@ -2291,7 +1749,7 @@ function downloadResultsPdf(docData = {}) {
     return `${day}/${month}/${year} ${hh}:${mm}`;
   }
 
-  function answerToText(ans, qtype) {
+  function answerToText(ans) {
     // Convierte cualquier studentAnswer/correctAnswer a texto plano legible
     if (ans === undefined || ans === null) return '';
     if (typeof ans === 'string' || typeof ans === 'number' || typeof ans === 'boolean') return stripTags(ans);
@@ -2462,7 +1920,7 @@ function downloadResultsPdf(docData = {}) {
   doc.text('Detalle de preguntas:', margin + 8, y + 12);
   // restaurar color texto
   doc.setTextColor(0, 0, 0);
-  y += 36;
+  y += 24;
 
   // --- Dibujar tabla: preferir doc.autoTable si está disponible (mejor formato) ---
   const startYForTable = y;
@@ -2478,7 +1936,7 @@ function downloadResultsPdf(docData = {}) {
         font: 'helvetica',
         fontSize: 10,
         cellPadding: 4,
-        lineWidth: 0.2,            // grosor de borde
+        lineWidth: 0.2,
         lineColor: [100, 100, 100]
       },
       headStyles: {
@@ -2538,7 +1996,7 @@ function downloadResultsPdf(docData = {}) {
     doc.setTextColor(255, 38, 0);
     doc.text('Intentos de trampa:', margin + 8, y + 12);
     doc.setTextColor(0, 0, 0);
-    y += 36;
+    y += 24;
 
     // preparar filas
     const cheatRows = cheatLogs.map((c, i) => {
@@ -2555,12 +2013,17 @@ function downloadResultsPdf(docData = {}) {
         startY: y,
         head: [['#', 'Fecha', 'Tipo', 'Detalles']],
         body: cheatRows,
-        styles: { fontSize: 9 },
+        styles: { 
+          font: 'helvetica',
+          fontSize: 10,
+          cellPadding: 4,
+          lineWidth: 0.2, 
+          lineColor: [100, 100, 100] 
+        },
         headStyles: { 
           fillColor: [255, 38, 0], 
-          textColor: 255, 
-          lineWidth: 0.2,            // grosor de borde
-          lineColor: [100, 100, 100] },
+          textColor: 255 
+        },
         columnStyles: {
           0: { cellWidth: 24, halign: 'center' },
           1: { cellWidth: Math.round(usableWidth * 0.25) },
@@ -2588,8 +2051,8 @@ function downloadResultsPdf(docData = {}) {
     }
   }
 
-  // --- Pie (opcional) con resumen o notas ---
-  y += 8;
+  // --- Pie con resumen o notas ---
+  y += 12;
   if (y < doc.internal.pageSize.getHeight() - 40) {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
@@ -2601,7 +2064,7 @@ function downloadResultsPdf(docData = {}) {
   // --- Guardar el PDF con nombre legible ---
   const safeTestName = (docData.testName || 'Prueba').replace(/[^\w\- ]+/g, '').replace(/\s+/g, '_');
   const filename = `${safeTestName}_${generateExportCode()}.pdf`;
-  // --- Intentar añadir marca de agua desde utils/logo.png (opacidad 0.4) ---
+  // --- Intentar añadir marca de agua desde utils/logo.png ---
   (function saveWithOptionalWatermark() {
     const logoSrc = '../utils/logo.png';
     const img = new Image();
@@ -2613,7 +2076,7 @@ function downloadResultsPdf(docData = {}) {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 0.4;
+        ctx.globalAlpha = 0.28;
         ctx.drawImage(img, 0, 0);
         const imgData = canvas.toDataURL('image/png');
 
@@ -2686,7 +2149,7 @@ function downloadCertificate() {
   // Fuente académica
   doc.setFont("times", "normal");
 
-  // Logo (si existe)
+  // Logo
   try {
     const img = new Image();
     img.src = "../utils/logo.png";
@@ -2804,13 +2267,13 @@ window.addEventListener('DOMContentLoaded', async () => {
       // generar <li> por cada update, poniendo en negrita la porción antes del primer ":" si existe
       updatesList.innerHTML = data.updates.map(updateRaw => {
         const u = String(updateRaw || '');
-        const idx = u.indexOf(':');
+        const idx = u.indexOf(': ');
         if (idx !== -1) {
           const left = u.slice(0, idx).trim();
           const right = u.slice(idx + 1).trim();
           return `<li><strong>${escapeHtml(left)}</strong>: ${escapeHtml(right)}</li>`;
         } else {
-          // sin dos puntos -> mostrar tal cual
+          // sin dos puntos
           return `<li>${escapeHtml(u)}</li>`;
         }
       }).join('');
@@ -2848,17 +2311,3 @@ window.addEventListener('beforeunload', function (e) {
   }
   return undefined;
 });
-
-// DEBUG: capturar errores globales para evitar que una excepción silenciosa "mate" la app.
-// Puedes quitarlo en producción si lo deseas.
-if (!window.__dev_error_logged) {
-  window.__dev_error_logged = true;
-  window.addEventListener('error', function (e) {
-    console.error('Global error capturado:', e.error || e.message || e);
-  });
-  window.addEventListener('unhandledrejection', function (e) {
-    console.error('Unhandled rejection:', e.reason || e);
-  });
-}
-
-console.debug('renderQuestion', currentQuestionIndex, 'total:', currentTest?.questions?.length, 'q:', currentTest?.questions?.[currentQuestionIndex]?.type, currentTest?.questions?.[currentQuestionIndex]?.subtype);
