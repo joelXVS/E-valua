@@ -687,8 +687,9 @@ function renderQuestion() {
 
     function addGapOptionIfMissing(container, text) {
       if (!container || !text) return;
-      // evitar duplicados exactos por texto
-      if ([...container.querySelectorAll('.gap-opt')].some(o => o.textContent === text)) return;
+      const n = normalizeGapText(text);
+      // evitar duplicados comparando normalizado
+      if ([...container.querySelectorAll('.gap-opt')].some(o => normalizeGapText(o.textContent) === n)) return;
       container.appendChild(createGapOptionElement(text));
     }
 
@@ -751,26 +752,28 @@ function renderQuestion() {
           const text = e.dataTransfer.getData('text/plain');
           if (!text) return;
 
+          const normText = normalizeGapText(text);
           const gapIdx = String(gap.dataset.gap);
 
-          // texto previo en el gap (si había uno) -> lo reinsertamos en la lista si hace falta
-          const prevText = (gap.textContent || "").trim();
-          if (prevText && prevText !== '\u00A0' && prevText !== text) {
-            addGapOptionIfMissing(gapOptions, prevText);
-            // borrar registro anterior
+          // texto previo en el gap (si había uno) -> reinsertarlo en la lista si hace falta
+          const prevRaw = (gap.textContent || "").trim();
+          const prevNorm = normalizeGapText(prevRaw);
+          if (prevNorm && prevNorm !== normText) {
+            addGapOptionIfMissing(gapOptions, prevRaw);
             if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
               delete answers[q.title][gapIdx];
             }
           }
 
-          // poner el nuevo texto y guardar
+          // poner el nuevo texto y guardar (guardamos el texto original, para mostrar exactamente igual)
           gap.innerHTML = escapeHtml(text);
           if (!answers[q.title] || typeof answers[q.title] !== 'object') answers[q.title] = {};
           answers[q.title][gapIdx] = text;
 
-          // quitar opción usada de la lista (si existe)
-          const existing = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
-          if (existing) existing.remove();
+          // quitar opción usada de la lista (si existe) comparando normalizado
+          [...gapOptions.querySelectorAll('.gap-opt')].forEach(o => {
+            if (normalizeGapText(o.textContent) === normText) o.remove();
+          });
 
           saveExamProgress();
           updateNavButtonsAndFinishButton();
@@ -1061,25 +1064,25 @@ function renderQuestion() {
             const text = e.dataTransfer.getData('text/plain');
             if (!text) return;
 
+            const normText = normalizeGapText(text);
             const gapIdx = String(gap.dataset.gap);
-
-            // texto previo en el gap (si había uno) -> lo reinsertamos en la lista si hace falta
-            const prevText = (gap.textContent || "").trim();
-            if (prevText && prevText !== '\u00A0' && prevText !== text) {
-              addGapOptionIfMissingMulti(gapOptions, prevText);
+            const prevRaw = (gap.textContent || "").trim();
+            const prevNorm = normalizeGapText(prevRaw);
+            if (prevNorm && prevNorm !== normText) {
+              addGapOptionIfMissingMulti(gapOptions, prevRaw);
               if (answers[q.title] && answers[q.title][gapIdx] !== undefined) {
                 delete answers[q.title][gapIdx];
               }
             }
 
-            // poner el nuevo texto y guardar
             gap.innerHTML = escapeHtml(text);
             if (!answers[q.title] || typeof answers[q.title] !== 'object') answers[q.title] = {};
             answers[q.title][gapIdx] = text;
 
-            // quitar opción usada de la lista (si existe)
-            const existing = [...gapOptions.querySelectorAll('.gap-opt')].find(o => o.textContent === text);
-            if (existing) existing.remove();
+            // elimina opción usada (comparando normalizado)
+            [...gapOptions.querySelectorAll('.gap-opt')].forEach(o => {
+              if (normalizeGapText(o.textContent) === normText) o.remove();
+            });
 
             saveExamProgress();
             updateNavButtonsAndFinishButton();
@@ -1506,6 +1509,12 @@ function escapeHtml(s) {
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// ---- Normalizar texto para comparaciones en gaptext (quita NBSP y espacios extra)
+function normalizeGapText(s) {
+  if (s === undefined || s === null) return '';
+  return String(s).replace(/\u00A0/g, ' ').trim();
 }
 
 // Normalizar respuestas abiertas
@@ -2259,6 +2268,17 @@ function downloadResultsPdf(docData = {}) {
     } catch (e) { return String(input); }
   }
 
+  // ---- Sanitizar texto para PDF: evitar "->" que rompe la fuente/tabla en algunos generadores PDF
+  function sanitizeForPdf(input) {
+    if (input === undefined || input === null) return '';
+    try {
+      // Usamos ':' (ASCII) en lugar de '->' y normalizamos espacios.
+      return String(input).replace(/->/g, ' : ').replace(/\s{2,}/g, ' ').trim();
+    } catch (e) {
+      return String(input);
+    }
+  }
+
   function formatDateNice(d) {
     if (!d) return '';
     const dateObj = (d instanceof Date) ? d : (isNaN(Date.parse(d)) ? null : new Date(d));
@@ -2382,31 +2402,31 @@ function downloadResultsPdf(docData = {}) {
   doc.setFont('helvetica', 'bold');
   doc.text('Estudiante:', leftColX, y);
   doc.setFont('helvetica', 'normal');
-  doc.text(stripTags(studentName), leftColX + 80, y);
+  doc.text(stripTags(studentName), leftColX + 65, y);
 
   // derecha: Fecha
   doc.setFont('helvetica', 'bold');
   doc.text('Fecha:', rightColX - 180, y, { align: 'left' });
   doc.setFont('helvetica', 'normal');
-  doc.text(dateStr, rightColX - 60, y, { align: 'left' });
+  doc.text(dateStr, rightColX - 115, y, { align: 'left' });
 
   y += 16;
   doc.setFont('helvetica', 'bold');
   doc.text('Curso:', leftColX, y);
   doc.setFont('helvetica', 'normal');
-  doc.text(stripTags(course), leftColX + 80, y);
+  doc.text(stripTags(course), leftColX + 65, y);
 
   // derecha: Puntaje
   doc.setFont('helvetica', 'bold');
   doc.text('Puntaje:', rightColX - 180, y, { align: 'left' });
   doc.setFont('helvetica', 'normal');
-  doc.text(scoreStr, rightColX - 60, y, { align: 'left' });
+  doc.text(scoreStr, rightColX - 115, y, { align: 'left' });
 
   y += 16;
   doc.setFont('helvetica', 'bold');
   doc.text('Prueba:', leftColX, y);
   doc.setFont('helvetica', 'normal');
-  doc.text(stripTags(testName), leftColX + 80, y);
+  doc.text(stripTags(testName), leftColX + 65, y);
 
   y += 18;
 
@@ -2420,16 +2440,18 @@ function downloadResultsPdf(docData = {}) {
   doc.setDrawColor(200);
   doc.setLineWidth(0.5);
   doc.line(margin, y, pageW - margin, y);
-  y += 10;
+  y += 12;
 
   const tableRows = details.map(d => {
     const idx = (d.index !== undefined && d.index !== null) ? String(d.index) : (d._index !== undefined ? String(d._index) : '');
-    const title = stripTags(d.title || d.question || d.prompt || '');
+    const rawTitle = d.title || d.question || d.prompt || '';
+    const title = sanitizeForPdf(stripTags(rawTitle));
+    
     let studentText = answerToText(d.studentAnswer ?? d.answer ?? d.given ?? d.response, d.type || type);
-    studentText = stripTags(studentText);
-
+    studentText = sanitizeForPdf(stripTags(studentText));
+    
     const pts = (d.points !== undefined && d.points !== null) ? String(d.points) : '';
-
+    
     return [ idx, title, studentText, pts ];
   });
 
@@ -2440,7 +2462,7 @@ function downloadResultsPdf(docData = {}) {
   doc.text('Detalle de preguntas:', margin + 8, y + 12);
   // restaurar color texto
   doc.setTextColor(0, 0, 0);
-  y += 12;
+  y += 36;
 
   // --- Dibujar tabla: preferir doc.autoTable si está disponible (mejor formato) ---
   const startYForTable = y;
@@ -2494,6 +2516,8 @@ function downloadResultsPdf(docData = {}) {
       if (y > doc.internal.pageSize.getHeight() - 60) {
         doc.addPage();
         y = 40;
+      } else {
+        y += 24;
       }
     });
   }
@@ -2514,7 +2538,7 @@ function downloadResultsPdf(docData = {}) {
     doc.setTextColor(255, 38, 0);
     doc.text('Intentos de trampa:', margin + 8, y + 12);
     doc.setTextColor(0, 0, 0);
-    y += 12;
+    y += 36;
 
     // preparar filas
     const cheatRows = cheatLogs.map((c, i) => {
@@ -2824,3 +2848,17 @@ window.addEventListener('beforeunload', function (e) {
   }
   return undefined;
 });
+
+// DEBUG: capturar errores globales para evitar que una excepción silenciosa "mate" la app.
+// Puedes quitarlo en producción si lo deseas.
+if (!window.__dev_error_logged) {
+  window.__dev_error_logged = true;
+  window.addEventListener('error', function (e) {
+    console.error('Global error capturado:', e.error || e.message || e);
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    console.error('Unhandled rejection:', e.reason || e);
+  });
+}
+
+console.debug('renderQuestion', currentQuestionIndex, 'total:', currentTest?.questions?.length, 'q:', currentTest?.questions?.[currentQuestionIndex]?.type, currentTest?.questions?.[currentQuestionIndex]?.subtype);
