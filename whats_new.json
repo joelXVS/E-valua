@@ -1,7 +1,7 @@
 {
   "updates": [
-    "Nueva función: Código de resultado único de 11 dígitos para cada evaluación completada",
     "Novedad: Se añadieron ventanas emergentes e interfaces para mejor visualización",
+    "Nueva función: Código de resultado único de 11 dígitos para cada evaluación completada",
     "Mejora: Bloqueo automático por intentos de trampa detectados en el dispositivo",
     "Novedad: Control de tiempo entre reintentos de pruebas (60 minutos mínimo)",
     "Función: Modal de novedades que se muestra cada 5 horas con actualizaciones",
