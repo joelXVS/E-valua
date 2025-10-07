@@ -1,0 +1,13 @@
+{
+  "tutorials": [
+    {
+      "title": "E-valua Introducción",
+      "desc": "Explicación rápida sobre la app: Introducción.",
+      "imgs": [
+        { "url": "../utils/logo.png" }
+      ],
+      "vid": "",
+      "created": "2025-10-03T17:14:39Z"
+    }
+  ]
+}
