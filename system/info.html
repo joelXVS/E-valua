@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua — Sistema de Información</title>
+  <link rel="icon" type="image/png" href="../utils/logo.png">
+  <!-- Usa los estilos base comunes (si existen en tu proyecto) -->
+  <link rel="stylesheet" href="../utils/common-styles.css" type="text/css"/>
+  <style>
+    /* Estilos adicionales y animaciones para esta página */
+    :root{
+      --accent:#ff9800;
+      --accent-2:#e65100;
+      --muted:#666;
+      --card-bg:#fffdf5;
+      --glass: rgba(255,255,255,0.65);
+    }
+    
+    p {text-align: center;}
+
+    .hero{display:grid;grid-template-columns:1fr;gap:12px;align-items:center}
+    @media(min-width:840px){.hero{grid-template-columns: 1fr 360px;}}
+
+    .logo-spot{display:flex;align-items:center;gap:12px}
+    .logo-spot img{width:68px;height:68px;border-radius:12px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+    .system-card{padding:18px;border-radius:14px;background:var(--card-bg);box-shadow:0 6px 20px rgba(0,0,0,0.06);}
+
+    h2.title{font-size:1.35rem;color:var(--accent-2);}
+    p.lead{color:var(--muted);margin-top:6px;font-size:0.95rem}
+
+    .small-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px}
+    @media(min-width:600px){.small-grid{grid-template-columns:repeat(2,1fr);}}
+
+    .meta-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .pill{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2)100%);color:#fff;padding:6px 10px;border-radius:999px;font-weight:700;box-shadow:0 6px 12px rgba(230,81,0,0.12)}
+    .version-text::before {content: "v" var(--version) " • Release";}
+
+    /* Tabs */
+    .tabs{margin-top:14px;background:transparent}
+    .tabs-nav{display:flex;gap:8px;flex-wrap:wrap}
+    .tab-btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,152,0,0.12);background:#fff;cursor:pointer;transition:all .18s;}
+    .tab-btn.active{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2)100%);color:#fff;border-color:transparent;transform:translateY(-3px)}
+
+    .tab-content{margin-top:12px;background:var(--glass);padding:12px;border-radius:12px;border:1px solid rgba(255,200,120,0.15);min-height:180px;}
+
+    .list-item{padding:10px;border-radius:8px;margin-bottom:8px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.04);transition:transform .12s,box-shadow .12s}
+    .list-item:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+    .badge{font-size:0.75rem;padding:3px 8px;border-radius:999px;background:#fff8e1;border:1px solid rgba(255,152,0,0.12);margin-left:8px}
+
+    /* Search / utilities */
+    .tool-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+    .search-input{flex:1;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.08)}
+
+    /* Tutorial area */
+    .tutorials{margin-top:14px}
+    .tutorial-form{display:grid;gap:8px}
+    .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .thumbs img{width:120px;height:80px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+    iframe.preview{width:100%;height:220px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)}
+
+    /* Footer small */
+    .tiny{font-size:0.82rem;color:var(--muted);margin-top:8px}
+
+    /* Animations */
+    @keyframes floatIn {from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .anim-in{animation:floatIn .36s ease both}
+
+    /* Responsive tweaks */
+    @media(max-width:420px){
+      .logo-spot img{width:58px;height:58px}
+      .pill{font-size:0.8rem;padding:6px 8px}
+      .tab-btn{padding:7px 9px}
+    }
+  </style>
+</head>
+<body>
+  <div class="info-wrap">
+    <header class="hero system-card anim-in">
+      <div>
+        <div class="logo-spot">
+          <img src="../utils/logo.png" alt="Logo E-valua" onerror="this.style.display='none'" />
+          <div>
+            <h2 class="title">E-valua — Sistema de Información</h2>
+            <p class="lead">Panel informativo con datos técnicos y de marketing para que los usuarios visualicen información relevante sobre el sistema.</p>
+            <div class="meta-row" style="margin-top:8px">
+              <span class="pill version-text"></span>
+              <span class="tiny">E-duca by Gamerker Education</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="small-grid">
+          <div class="card system-card">
+            <h4 style="color:var(--accent-2)">Sobre el sistema</h4>
+            <p class="small muted">E-valua es una plataforma de evaluación local que prioriza trazabilidad, anti-trampa y exportación de evidencia.</p>
+            <ul style="margin-top:8px;list-style:disc;padding-left:18px;color:var(--muted)">
+              <!--li></li-->
+            </ul>
+          </div>
+
+          <div class="card system-card">
+            <h4 style="color:var(--accent-2)">Autor & Empresa</h4>
+            <p class="small muted">Creado por José Angel Perea Valencia (Joel Valencia) — Est. Ing. de Sistemas, Universidad del Pacífico.</p>
+            <p class="tiny">Empresa: E-duca — Contacto: <a onclick="showSnackbar('Abriendo aplicación de correo…', { duration: 4000 });" href="mailto:servicese.duca@gmail.com?subject=Solicitud%20de%20informaci%C3%B3n">servicese.duca@gmail.com</a></p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card system-card">
+          <h4 style="color:var(--accent-2)">Cómo usar esta página</h4>
+          <ol style="padding-left:18px; color:var(--muted)">
+            <li>Pulsa "Ir a pestañas" para explorar las colecciones de marketing, técnico y tutoriales.</li>
+            <li>Usa la sección de Tutoriales para guiarte en el uso de este sistema.</li>
+          </ol>
+          <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-start;flex-wrap:wrap">
+            <button id="toTabs" class="btn primary">Ir a pestañas</button>
+            <button id="openContact" class="btn">Solicitar info por correo</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="system-card">
+        <h4 style="color:var(--accent-2)">Detalles rápidos</h4>
+        <p class="small muted" id="quick-stats">Cargando datos…</p>
+        <div style="margin-top:10px">
+          <button style="display: block; margin: 0 auto;" id="downloadAll" class="btn">Descargar los JSON</button>
+        </div>
+        <p class="tiny">También puedes navegar a la sección de Tabs para ver cada archivo por separado.</p>
+      </aside>
+    </header>
+
+    <!-- TABS SECTION -->
+    <section id="tabsSection" class="card hidden anim-in" style="margin-top:14px;padding:14px">
+      <div class="tabs">
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="tech">Técnica</button>
+          <button class="tab-btn" data-tab="marketing">Marketing</button>
+          <button class="tab-btn" data-tab="tutorials">Tutoriales</button>
+        </div>
+
+        <div class="tool-row">
+        <input id="search" class="search-input" placeholder="Filtrar por texto (ej. Ayuda)" />
+        <button id="downloadJsonBtn" class="btn">Descargar JSON</button>
+        <button id="backMain" class="btn">Volver a principal</button>
+        </div>
+
+        <div class="tab-content" id="tabContent">
+          <!-- contenido renderizado por JS -->
+
+          <div id="listArea">
+            <!-- lista -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TUTORIALS UI (hidden por defecto, muestra en tab) -->
+      <div id="tutorialsArea" class="hidden" style="margin-top:12px">
+        <h4 style="color:var(--accent-2)">Galería de tutoriales</h4>
+        <div class="thumbs" id="thumbs"></div>
+        <div id="videoPreview" style="margin-top:8px"></div>
+        <div id="tutorialList" style="margin-top:10px"></div>
+      </div>
+
+    </section>
+
+    <footer class="card footer" style="margin-top:12px;text-align:center">
+      <small>Creado con ❤️ por Joel Valencia</small>
+    </footer>
+  </div>
+
+  <script src="../utils/dialogs.js"></script>
+  <script src="../utils/snackbar.js"></script>
+  <script>
+    // Intenta usar fetch desde archivos externos si el proyecto así lo requiere, sino usa los datos embebidos
+    let technique = {details:[]}, marketing={details:[]}, tutorialsData={tutorials:[]};
+
+    async function loadData(){
+      try{
+        const [tech, mark, tuts] = await Promise.all([
+            fetch('./technique.json').then(r=>r.json()),
+            fetch('./marketing.json').then(r=>r.json()),
+            fetch('./tutorials.json').then(r=>r.json())
+        ]);
+        technique = tech; 
+        marketing = mark; 
+        tutorialsData = tuts;
+
+        quickStats.textContent = `Entradas Técnicas: ${technique.details.length} — Entradas de Marketing: ${marketing.details.length} — Tutoriales: ${tutorialsData.tutorials.length}`;
+        renderTab('tech');
+      }catch(e){
+        quickStats.textContent = 'Error cargando JSON';
+      }
+    }
+
+    // UI references
+    const tabsSection = document.getElementById('tabsSection');
+    const toTabs = document.getElementById('toTabs');
+    const backMain = document.getElementById('backMain');
+    const tabButtons = Array.from(document.querySelectorAll('.tab-btn'));
+    const listArea = document.getElementById('listArea');
+    const searchInput = document.getElementById('search');
+    const quickStats = document.getElementById('quick-stats');
+    const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+    const downloadAll = document.getElementById('downloadAll');
+    const openContact = document.getElementById('openContact');
+
+    document.getElementById('backMain').addEventListener('click', showMain);
+    toTabs.addEventListener('click', showTabs);
+    openContact.addEventListener('click', ()=>{
+      window.location.href = 'mailto:servicese.scolar@gmail.com?subject=Solicitud%20de%20informaci%C3%B3n&body=Hola%2C%0A%0AQuisiera%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20E-valua.%20Mi%20consulta%20es%3A%0A%0A';
+      showSnackbar("Abriendo aplicación de correo…", { duration: 4000 });
+    });
+
+    function showTabs(){
+      document.querySelector('header.hero').classList.add('hidden');
+      // muestra la parte de pestañas
+      tabsSection.classList.remove('hidden');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+    function showMain(){
+      // muestra la parte principal
+      document.querySelector('header.hero').classList.remove('hidden');
+      // oculta pestañas
+      tabsSection.classList.add('hidden');
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    tabButtons.forEach(btn=>btn.addEventListener('click',()=>{
+      tabButtons.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const t = btn.dataset.tab;
+      renderTab(t);
+    }));
+
+    function renderTab(tab){
+      // toggle tutorial area
+      document.getElementById('tutorialsArea').classList.toggle('hidden', tab!=='tutorials');
+      document.getElementById('tabContent').classList.toggle('hidden', tab==='tutorials');
+    
+      searchInput.value = '';
+    
+      if(tab==='tech'){
+        downloadJsonBtn.style.display = 'inline-block';
+        renderList(technique.details, 'Técnica');
+        downloadJsonBtn.addEventListener('click', async () => {
+          const downloadTech = await customDialog(
+            "confirm",
+            "Descargar _technique-data.json:",
+            "¿Estás seguro de que quieres descargar el archivo .json de datos técnicos de E-valua?"
+          );
+          if (downloadTech) {
+            showSnackbar("Descargando _technique-data.json…", { duration: 4000 });
+            setTimeout(() => downloadJSON('./technique-data.json', technique), 600);
+          } else {
+            showSnackbar("Descarga cancelada", { type: 'warn' });
+          }
+        });
+      } else if(tab==='marketing'){
+        downloadJsonBtn.style.display = 'inline-block';
+        renderList(marketing.details, 'Marketing');
+        downloadJsonBtn.addEventListener('click', async () => {
+          const downloadMark = await customDialog(
+            "confirm",
+            "Descargar _marketing-data.json:",
+            "¿Estás seguro de que quieres descargar el archivo .json de datos de marketing de E-valua?"
+          );
+          if (downloadMark) {
+            showSnackbar("Descargando _marketing-data.json…", { duration: 4000 });
+            setTimeout(() => downloadJSON('./marketing-data.json', marketing), 600);
+          } else {
+            showSnackbar("Descarga cancelada", { type: 'warn' });
+          }
+        });
+      } else if(tab==='tutorials'){
+        downloadJsonBtn.style.display = 'none';
+        renderTutorials();
+      }
+    }
+
+    function renderList(items, title){
+      listArea.innerHTML = '';
+      const head = document.createElement('div');
+      head.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>${title}</strong><span class='badge'>${items.length} items</span></div>`;
+      listArea.appendChild(head);
+
+      const container = document.createElement('div');
+      items.forEach((it, i)=>{
+        const card = document.createElement('div');
+        card.className = 'list-item';
+        card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style='flex:1'><strong>#${i+1}</strong> — <span style='color:var(--muted)'>${truncate(it,120)}</span></div><div style='min-width:80px;text-align:right'><button class='btn' data-index='${i}'>Ver</button></div></div>`;
+        card.querySelector('button').addEventListener('click',()=>showDetail(it,i,title));
+        container.appendChild(card);
+      });
+      listArea.appendChild(container);
+
+      // filtro en vivo
+      searchInput.oninput = ()=>{
+        const q = searchInput.value.trim().toLowerCase();
+        const filtered = items.map((it,idx)=>({it,idx})).filter(o=>o.it.toLowerCase().includes(q));
+        container.innerHTML = '';
+        if(filtered.length===0){container.innerHTML = '<p class="tiny">No se encontraron resultados</p>';return}
+        filtered.forEach(({it,idx})=>{
+          const c = document.createElement('div');c.className='list-item';
+          c.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style='flex:1'><strong>#${idx+1}</strong> — <span style='color:var(--muted)'>${truncate(it,200)}</span></div><div style='min-width:80px;text-align:right'><button class='btn' data-index='${idx}'>Ver</button></div></div>`;
+          c.querySelector('button').addEventListener('click',()=>showDetail(it,idx,title));
+          container.appendChild(c);
+        })
+      }
+    }
+
+    function showDetail(text, idx, title){
+      const modal = document.createElement('div');
+      modal.style.position='fixed';modal.style.inset=0;modal.style.display='flex';modal.style.alignItems='center';modal.style.justifyContent='center';modal.style.background='rgba(0,0,0,0.45)';modal.style.zIndex=9999;
+      const card = document.createElement('div');card.className='card';card.style.maxWidth='820px';card.style.width='94%';card.style.padding='18px';
+      card.innerHTML = `<h3 style='margin-bottom:8px'>${title} — Item #${idx+1}</h3><pre style='white-space:pre-wrap;color:var(--muted);line-height:1.4'>${escapeHtml(text)}</pre><div style='display:flex;gap:8px;justify-content:flex-end;margin-top:12px'><button class='btn' id='closeModal'>Cerrar</button></div>`;
+      modal.appendChild(card);
+      document.body.appendChild(modal);
+      document.getElementById('closeModal').addEventListener('click', ()=>modal.remove());
+    }
+
+    function downloadJSON(filename, data){
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    }
+
+    downloadAll.addEventListener('click', async () => {
+      const downloadBoth = await customDialog(
+        "confirm",
+        "Descargar archivos .json:",
+        "¿Estás seguro de que quieres descargar los archivos .json de datos técnicos y de marketing de E-valua?"
+      );
+      if (downloadBoth) {
+        showSnackbar("Descargando archivos…", { duration: 4000 });
+        setTimeout(() => downloadJSON('./technique-data.json', technique), 450);
+        setTimeout(() => downloadJSON('./marketing-data.json', marketing), 450);
+      } else {
+        showSnackbar("Descarga cancelada", { type: 'warn' });
+      }
+    });
+
+    // util
+    function truncate(s, n){return s.length>n? s.slice(0,n).trim()+'…': s}
+    function escapeHtml(str){return (str+'').replace(/[&<>\"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;"}[c]})}
+
+    // EXTEND IMAGE
+    function showImageModal(src){
+      const modal = document.createElement('div');
+      modal.style.position='fixed';
+      modal.style.inset=0;
+      modal.style.background='rgba(0,0,0,0.75)';
+      modal.style.display='flex';
+      modal.style.alignItems='center';
+      modal.style.justifyContent='center';
+      modal.style.zIndex=9999;
+      modal.style.cursor='zoom-out';
+    
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.maxWidth='90%';
+      img.style.maxHeight='90%';
+      img.style.borderRadius='12px';
+      img.style.boxShadow='0 8px 24px rgba(0,0,0,0.4)';
+      modal.appendChild(img);
+    
+      // cerrar al hacer clic en fondo o en la misma imagen
+      modal.addEventListener('click',()=>modal.remove());
+    
+      document.body.appendChild(modal);
+    }
+
+    // TUTORIALS RENDER
+    function renderTutorials(){
+      tutorialList.innerHTML='';
+      if(!tutorialsData.tutorials.length){
+        tutorialList.innerHTML='<p class="tiny">No hay tutoriales aún.</p>';
+        return;
+      }
+    
+      // función que pinta lista filtrada
+      function draw(filter=''){
+        tutorialList.innerHTML='';
+        const items = tutorialsData.tutorials.filter(t=>
+          t.title.toLowerCase().includes(filter) || 
+          (t.desc && t.desc.toLowerCase().includes(filter))
+        );
+        if(!items.length){
+          tutorialList.innerHTML='<p class="tiny">No se encontraron resultados</p>';
+          return;
+        }
+    
+        items.forEach((t,idx)=>{
+          const div = document.createElement('div');div.className='card system-card';div.style.marginBottom='8px';
+          div.innerHTML = `<div style='display:flex;justify-content:space-between;align-items:center;gap:8px'>
+            <strong>${escapeHtml(t.title)}</strong>
+            <span class='tiny'>${new Date(t.created).toLocaleString()}</span>
+          </div>
+          <p class='small muted' style='margin-top:6px'>${escapeHtml(t.desc)}</p>`;
+    
+          if(t.imgs && t.imgs.length){
+            const g=document.createElement('div');
+            g.style.display='flex';
+            g.style.gap='8px';
+            g.style.marginTop='8px';
+            g.style.flexWrap='wrap';
+          
+            t.imgs.forEach(i=>{
+              const im=document.createElement('img');
+              im.src=i.url;
+              im.style.width='120px';
+              im.style.height='80px';
+              im.style.objectFit='cover';
+              im.style.borderRadius='6px';
+              im.style.cursor='zoom-in';
+              im.addEventListener('click',()=>showImageModal(i.url));
+              g.appendChild(im);
+            });
+          
+            div.appendChild(g);
+          }
+          if(t.vid){
+            const emb = youtubeEmbed(t.vid);
+            if(emb){
+              const f=document.createElement('iframe');f.className='preview';f.src=emb;
+              div.appendChild(f);
+            } else {
+              const p=document.createElement('p');p.className='tiny';p.textContent='Video: '+t.vid;
+              div.appendChild(p);
+            }
+          }
+          tutorialList.appendChild(div);
+        });
+      }
+    
+      // inicial
+      draw();
+    
+      // hook al search
+      searchInput.oninput = ()=>{
+        const q = searchInput.value.trim().toLowerCase();
+        draw(q);
+      };
+    }
+
+    function youtubeEmbed(url){
+      // Simple extractor
+      try{
+        const u = new URL(url);
+        if(u.hostname.includes('youtube.com')){
+          const v = u.searchParams.get('v'); if(v) return 'https://www.youtube.com/embed/'+v;
+        }
+        if(u.hostname.includes('youtu.be')){ const id = u.pathname.slice(1); if(id) return 'https://www.youtube.com/embed/'+id }
+      }catch(e){return null}
+      return null;
+    }
+
+    // inicial
+    loadData();
+
+  </script>
+</body>
+</html>

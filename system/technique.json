@@ -1,0 +1,303 @@
+{
+  "details": [
+    "Mecánica 1: El sistema genera un identificador único por dispositivo almacenado localmente para mantener coherencia entre sesiones y aplicar bloqueos individuales. Este identificador se usa para rastreo de reintentos y control de acceso por dispositivo.",
+    "Mejora 1: Implementar un generador de UUID v4 con componente criptográfico y marca temporal que refuerce la unicidad y prevenga manipulación manual del identificador.",
+
+    "Mecánica 2: Control de reintentos basado en almacenamiento local con clave combinada de prueba y dispositivo que guarda el momento del último intento en formato de tiempo legible.",
+    "Mejora 2: Incorporar control centralizado por usuario, con contador de intentos máximo configurable y registro de motivos de cada reintento para análisis de comportamiento.",
+
+    "Mecánica 3: Sistema de detección de trampas mediante eventos de cambio de visibilidad o pérdida de foco en la ventana activa, con conteo acumulativo que bloquea al superar cierto umbral.",
+    "Mejora 3: Añadir detección de apertura de herramientas de desarrollo, cambios anómalos de tamaño de ventana, capturas de pantalla y patrones de respuesta atípicamente rápidos.",
+
+    "Mecánica 4: Mezcla de preguntas empleando un algoritmo de barajado que conserva la integridad de índices originales y mantiene correspondencia entre opciones y respuestas correctas.",
+    "Mejora 4: Integrar mezcla ponderada por nivel de dificultad y semilla de aleatoriedad reproducible para auditoría y depuración controlada.",
+
+    "Mecánica 5: Evaluación de respuestas abiertas mediante búsqueda de palabras clave con pesos diferenciados, validación de extensión mínima y normalización textual para evitar sesgos de formato.",
+    "Mejora 5: Incorporar procesamiento de lenguaje natural para detección de sinónimos, estructura argumentativa y aprendizaje automático basado en correcciones previas.",
+
+    "Mecánica 6: Persistencia de progreso del examen mediante almacenamiento local del índice actual, respuestas y tiempo restante, permitiendo restaurar el estado tras recargar la página.",
+    "Mejora 6: Migrar a una base de datos local más robusta y sincronizada con el servidor, añadiendo compresión, validación de integridad y recuperación ante fallos.",
+
+    "Mecánica 7: Renderizado dinámico de cada tipo de pregunta mediante plantillas HTML generadas en tiempo real según su estructura y tipo de respuesta requerido.",
+    "Mejora 7: Crear un sistema modular de componentes con carga diferida de recursos multimedia y representación virtual para optimizar el rendimiento.",
+
+    "Mecánica 8: Cálculo de puntajes configurable por tipo de prueba y pregunta, con lógica diferenciada según tipo de respuesta (selección única, múltiple u abierta).",
+    "Mejora 8: Incorporar ponderación personalizada, puntuación parcial por coincidencias parciales y rúbricas configurables con criterios múltiples.",
+
+    "Mecánica 9: Generación de informes en PDF con estructura tabular y marca de agua institucional, diseñada para adaptarse a distintos formatos de entrada de datos.",
+    "Mejora 9: Implementar motor de plantillas profesionales, inclusión de gráficos de rendimiento y firmas digitales verificables para autenticidad documental.",
+
+    "Mecánica 10: Validación temporal que determina la disponibilidad de una evaluación comparando la hora actual con el rango autorizado de apertura y cierre.",
+    "Mejora 10: Incorporar sincronización horaria con un servidor de referencia, soporte de zonas horarias y reglas de extensión temporal bajo autorización.",
+
+    "Mecánica 11: Bloqueo por estudiante basado en identificadores asociados a dispositivo, código de prueba y motivo de restricción, almacenados localmente.",
+    "Mejora 11: Añadir niveles de bloqueo (suave, medio, permanente), panel administrativo de revisión y sincronización con un sistema central de incidencias.",
+
+    "Mecánica 12: Gestión del estado del examen mediante variables globales que controlan progreso, respuestas y contexto de ejecución en memoria.",
+    "Mejora 12: Implementar arquitectura de estado predecible con registro de acciones, depuración temporal y creación de instantáneas automáticas.",
+
+    "Mecánica 13: Identificación de sesión única por combinación de nombre, código y tiempo de inicio, utilizada para agrupar registros de comportamiento y eventos de trampa.",
+    "Mejora 13: Incorporar identificadores universales de sesión, latidos de actividad para detectar sesiones inactivas y limpieza automática de registros antiguos.",
+
+    "Mecánica 14: Normalización de opciones de respuesta para asegurar coincidencia lógica independientemente de formato o mayúsculas, garantizando comparaciones coherentes.",
+    "Mejora 14: Implementar generación de huellas digitales para cada opción, con verificación de integridad y caché de normalización para rendimiento.",
+
+    "Mecánica 15: Interacción de arrastrar y soltar para ordenar o completar espacios en blanco, utilizando eventos de arrastre estándar y actualización de estado reactiva.",
+    "Mejora 15: Añadir respuesta háptica o animaciones suaves, accesibilidad por teclado y detección avanzada de áreas de destino para mayor precisión.",
+
+    "Mecánica 16: Preguntas de punto interactivo donde el usuario selecciona coordenadas relativas dentro de una imagen para marcar zonas correctas.",
+    "Mejora 16: Permitir polígonos complejos, herramientas de zoom y desplazamiento, y un editor visual para definir áreas válidas múltiples.",
+
+    "Mecánica 17: Preguntas de emparejamiento con conjuntos de elementos en columnas opuestas, mezcladas para aleatorizar las combinaciones posibles.",
+    "Mejora 17: Incorporar arrastre visual entre columnas, validación de emparejamientos incompletos y soporte de correspondencias múltiples por elemento.",
+
+    "Mecánica 18: Preguntas con espacios de texto a completar en oraciones, utilizando marcadores identificadores y opciones desplazables que se insertan en huecos válidos.",
+    "Mejora 18: Añadir autocompletado inteligente, validación de tipo de dato y soporte para expresiones regulares o equivalencias múltiples.",
+
+    "Mecánica 19: Temporizador basado en actualización periódica que reduce el tiempo restante en pantalla y finaliza automáticamente al agotarse.",
+    "Mejora 19: Migrar la gestión del tiempo a procesos dedicados para mayor precisión, incluir pausas controladas y alertas por umbrales de tiempo.",
+
+    "Mecánica 20: Carga inicial de datos mediante solicitudes paralelas de recursos y gestión individual de errores para evitar bloqueos globales.",
+    "Mejora 20: Incorporar estrategias de caché, compresión y precarga predictiva basada en frecuencia de uso para optimizar tiempos de inicio.",
+
+    "Mecánica 21: Generación de códigos de exportación y resultados aleatorios de longitud predefinida usados para identificación de exámenes y reportes.",
+    "Mejora 21: Implementar códigos con verificación mediante suma de comprobación y generación de códigos QR para facilitar el intercambio seguro.",
+
+    "Mecánica 22: Envío de resultados al docente a través de solicitudes remotas con carga estructurada de información del estudiante, puntaje y detalles.",
+    "Mejora 22: Añadir reintentos automáticos con retardo exponencial, confirmación de recepción y plantillas personalizables de notificación.",
+
+    "Mecánica 23: Búsqueda local de resultados almacenados y visualización de detalles de desempeño dentro del área de resultados del sistema.",
+    "Mejora 23: Incorporar índices de búsqueda optimizados, filtros por categoría y exportación masiva de registros en distintos formatos.",
+
+    "Mecánica 24: Validación de formulario de inicio que verifica datos de identidad, curso y código de acceso antes de permitir el inicio de la evaluación.",
+    "Mejora 24: Integrar validaciones estructuradas con esquemas predefinidos, sugerencias automáticas y verificación con bases de datos locales.",
+
+    "Mecánica 25: Activación de modo de pantalla completa durante el examen para minimizar distracciones y prevenir cambios de contexto no deseados.",
+    "Mejora 25: Implementar detección de falsos modos de pantalla completa, modo kiosco y mecanismos de salida de emergencia controlados.",
+
+    "Mecánica 26: Sistema modular de registro de eventos de trampa que adjunta y separa controladores dinámicamente según el estado del examen.",
+    "Mejora 26: Crear una arquitectura de eventos extensible con métricas de rendimiento y soporte de complementos de detección adicionales.",
+
+    "Mecánica 27: Soporte de medios integrados como imágenes, audios o videos dentro de las preguntas con carga anticipada y controles básicos.",
+    "Mejora 27: Implementar carga diferida por visibilidad, transcodificación de medios y soporte de subtítulos y descripción auditiva.",
+
+    "Mecánica 28: Navegación entre preguntas secuencial con actualización de índice actual y control del estado de botones según posición.",
+    "Mejora 28: Incorporar navegación por teclado, mapa visual de progreso y marcadores personalizados para preguntas importantes.",
+
+    "Mecánica 29: Sistema de notificaciones periódicas que muestra novedades o mensajes informativos tras intervalos definidos de tiempo.",
+    "Mejora 29: Añadir niveles de prioridad, telemetría de interacción y personalización de mensajes según el rol o contexto del usuario.",
+
+    "Mecánica 30: Escapado de contenido dinámico para evitar inserción de código malicioso en campos de texto o preguntas renderizadas.",
+    "Mejora 30: Integrar bibliotecas de sanitización especializadas, listas blancas de etiquetas seguras y validación en tiempo real.",
+
+    "Mecánica 31: Cálculo del progreso del examen mediante conteo de preguntas respondidas basado en el tipo de respuesta y su contenido.",
+    "Mejora 31: Incorporar estimación del tiempo restante, métricas de confianza por respuesta y predicción del puntaje final esperado.",
+
+    "Mecánica 32: Copia de seguridad automática del progreso tras acciones clave para prevenir pérdida de datos durante la sesión.",
+    "Mejora 32: Implementar versionado incremental de copias, compresión diferencial y verificación de integridad de los respaldos.",
+
+    "Mecánica 33: Normalización textual que unifica mayúsculas, acentos y espacios para comparaciones consistentes entre respuestas.",
+    "Mejora 33: Incluir análisis morfológico del idioma, corrección ortográfica opcional y conversión semántica de números escritos.",
+
+    "Mecánica 34: Manejo de errores mediante bloques de control y valores por defecto en caso de fallos de lectura o escritura de datos.",
+    "Mejora 34: Crear sistema estructurado de registro de errores, reportes automáticos y recuperación ante fallos comunes.",
+
+    "Mecánica 35: Configuración implícita en propiedades de la evaluación que definen comportamiento general, tiempo y reglas de puntuación.",
+    "Mejora 35: Centralizar configuración con validación estructurada, herencia de plantillas y perfiles personalizados por usuario.",
+
+    "Mecánica 36: Inicialización del sistema al cargar la página mediante ejecución secuencial de rutinas y activación de manejadores de eventos.",
+    "Mejora 36: Introducir inyección de dependencias, estados visuales de carga y reintentos automáticos en caso de fallos iniciales.",
+
+    "Mecánica 37: Protección contra cierre accidental de la ventana durante una evaluación activa mediante confirmaciones preventivas.",
+    "Mejora 37: Implementar envío automático en cierres forzados, recuperación de sesiones abandonadas y registro de motivos de salida.",
+
+    "Mecánica 38: Sistema de plantillas embebidas que generan dinámicamente el HTML de cada tipo de pregunta en función de su estructura.",
+    "Mejora 38: Migrar a un motor de plantillas compilado con recarga dinámica y componentes reutilizables para optimizar mantenimiento.",
+
+    "Mecánica 39: Liberación de recursos al finalizar la prueba mediante cancelación de intervalos activos y eliminación de manejadores de eventos.",
+    "Mejora 39: Añadir limpieza de variables de gran tamaño, uso de referencias débiles y análisis de memoria durante el desarrollo.",
+
+    "Mecánica 40: Comunicación externa con servicios remotos para registrar resultados y estadísticas de evaluación de forma asíncrona.",
+    "Mejora 40: Implementar cola de solicitudes fuera de línea, sincronización en segundo plano y versionamiento del protocolo de envío.",
+
+    "Mecánica 41: Accesibilidad básica mediante atributos alternativos y control de visibilidad de secciones según contexto activo.",
+    "Mejora 41: Integrar soporte completo de lectores de pantalla, modo de alto contraste y comandos de voz para navegación asistida.",
+
+    "Mecánica 42: Optimización de rendimiento basada en mezcla eficiente y renderizado progresivo para evitar bloqueos visuales.",
+    "Mejora 42: Implementar fragmentación de código, procesos en paralelo para cálculos y carga diferida de componentes pesados.",
+
+    "Mecánica 43: Protección general contra inyección de contenido o datos externos mediante sanitización básica de entradas.",
+    "Mejora 43: Introducir políticas de seguridad de contenido, validación de integridad de recursos y defensa ante ataques temporales.",
+
+    "Mecánica 44: Internacionalización inicial fija al idioma español con textos integrados directamente en las plantillas del sistema.",
+    "Mejora 44: Añadir soporte multilingüe mediante archivos de recursos, detección automática de idioma y compatibilidad con idiomas RTL.",
+
+    "Mecánica 45: Pruebas de funcionamiento realizadas manualmente mediante inspección directa y mensajes de depuración simples.",
+    "Mejora 45: Implementar pruebas automatizadas unitarias, integrales y de rendimiento con integración continua.",
+
+    "Mecánica 46: Depuración mediante registros en consola y monitoreo directo del estado interno del sistema durante la ejecución.",
+    "Mejora 46: Crear un modo de depuración avanzada con herramientas visuales, superposición de estado y registro histórico de acciones.",
+
+    "Mecánica 47: Proceso de compilación inexistente con código fuente ejecutado directamente sin empaquetado ni optimización.",
+    "Mejora 47: Implementar sistema de construcción moderno con empaquetado, optimización y soporte para tipado estático.",
+
+    "Mecánica 48: Implementación manual del despliegue del sistema mediante copia directa de archivos al entorno de producción.",
+    "Mejora 48: Crear flujo automatizado de integración y despliegue continuo con versionado semántico y control de regresiones.",
+
+    "Mecánica 49: Supervisión limitada a mensajes de error básicos visibles en la consola del navegador durante la ejecución.",
+    "Mejora 49: Integrar herramientas de monitoreo de aplicaciones, paneles de métricas y alertas automáticas ante incidencias.",
+
+    "Mecánica 50: Recolección elemental de datos de uso a partir de registros de trampa o comportamiento detectado durante las pruebas.",
+    "Mejora 50: Desarrollar analítica avanzada con eventos personalizados, análisis de embudo y cohortes para evaluar retención.",
+
+    "Mecánica 51: Sistema de exportación masiva que permite generar paquetes de resultados y metadatos para un conjunto de evaluaciones seleccionadas, usando filtros básicos por fecha y curso.",
+    "Mejora 51: Diseñar un motor de exportación configurable que permita seleccionar formatos (CSV, XLSX, JSON), incluir filtros avanzados, paginación y generación asíncrona con notificaciones al completar.",
+
+    "Mecánica 52: Interfaz de corrección manual para respuestas abiertas con posibilidad de ajustar puntuaciones y añadir anotaciones por respuesta individual.",
+    "Mejora 52: Añadir herramientas de lotes para corrección (p. ej. marcar por similaridad), trazabilidad de cambios, y soporte para plantillas de retroalimentación reutilizables.",
+
+    "Mecánica 53: Plantillas de impresión estáticas para informes PDF generados en cliente con estructura fija y soporte limitado para elementos gráficos.",
+    "Mejora 53: Implementar sistema de plantillas dinámicas con variables, secciones condicionales, gráficos integrados y previsualización antes de exportar.",
+
+    "Mecánica 54: Control de versiones simple para configuraciones de prueba, permitiendo reemplazar propiedades por nuevas instancias sin historial detallado.",
+    "Mejora 54: Introducir versionado semántico de configuraciones con registro de cambios, comparación entre versiones y restauración selectiva.",
+
+    "Mecánica 55: Gestión de roles mínima con distinción básica entre usuario y docente, sin control granular de permisos.",
+    "Mejora 55: Implementar modelo RBAC con roles configurables, permisos finos por recurso, y auditoría de cambios de permisos.",
+
+    "Mecánica 56: Registro de actividad limitado a eventos anti-trampa y envíos de resultados, con almacenamiento local temporal.",
+    "Mejora 56: Implementar un sistema centralizado de auditoría con eventos enriquecidos, búsqueda, retención configurable y exportación para cumplimiento normativo.",
+
+    "Mecánica 57: Control de acceso a recursos mediante reglas implícitas en el cliente que validan disponibilidad en UI.",
+    "Mejora 57: Mover la lógica de autorización a un servicio fiable en servidor, con tokens firmados y validación en cada endpoint.",
+
+    "Mecánica 58: Manejo básico de archivos adjuntos en preguntas (imágenes, audio, video) con límites de tamaño y validación de tipo en cliente.",
+    "Mejora 58: Añadir transcodificación en servidor, generación de miniaturas, almacenamiento en CDN y validaciones de integridad por hash.",
+
+    "Mecánica 59: Interfaz de administración con controles rudimentarios para crear y editar pruebas, sin flujo de trabajo colaborativo.",
+    "Mejora 59: Diseñar panel de administración colaborativo con control de permisos, historial de ediciones, revisiones por pares y bloqueos optimistas para evitar conflictos.",
+
+    "Mecánica 60: Sistema de notificaciones por UI que muestra mensajes en sesión sobre eventos relevantes, sin persistencia histórica.",
+    "Mejora 60: Implementar servicio de notificaciones persistente con prioridades, canales (email, push, in-app) y configuración por usuario.",
+
+    "Mecánica 61: Soporte de importación de preguntas desde formatos estructurados básicos con mapeo manual de campos.",
+    "Mejora 61: Crear importador inteligente con mapeo automático, validación avanzada, reporte de errores por registro y previsualización de importaciones.",
+
+    "Mecánica 62: Validación limitada de integridad de datos en el cliente con checks simples antes de enviar payloads.",
+    "Mejora 62: Añadir validación tanto en cliente como en servidor usando esquemas formales, mensajes de error amigables y pruebas automáticas de contract testing.",
+
+    "Mecánica 63: Sistema de búsqueda simple en preguntas y tests que recorre arrays en memoria para coincidencias directas.",
+    "Mejora 63: Introducir índice invertido y motor de búsqueda con tokenización, soporte de sinónimos y consultas por relevancia para resultados rápidos.",
+
+    "Mecánica 64: Exportación de resultados centrada en el docente individual con opciones limitadas de personalización.",
+    "Mejora 64: Añadir perfiles de exportación reutilizables, plantillas de columnas y programador de exportaciones periódicas.",
+
+    "Mecánica 65: Registro de intentos con marca temporal, pero sin metadatos detallados como IP, agente o duración de cada ítem.",
+    "Mejora 65: Ampliar los metadatos registrados por intento (duración por pregunta, métricas de latencia, agente, país aproximado) respetando políticas de privacidad.",
+
+    "Mecánica 66: Comprobación de consistencia básica en respuestas de opción múltiple comparando claves normalizadas.",
+    "Mejora 66: Implementar verificación robusta con hashing de respuestas y comprobación de integridad para detectar modificaciones indebidas.",
+
+    "Mecánica 67: Manejo simple de recursos estáticos servido desde el mismo origen de la aplicación sin caching avanzado.",
+    "Mejora 67: Configurar CDN para assets estáticos, establecer políticas de cache headers y versionado de recursos para invalidación controlada.",
+
+    "Mecánica 68: Control de concurrencia limitado al bloqueo por dispositivo para evitar múltiples intentos simultáneos desde el mismo navegador.",
+    "Mejora 68: Implementar control centralizado de concurrencia por cuenta de usuario y por prueba, con colas y bloqueo optimista/ pesimista según el caso.",
+
+    "Mecánica 69: Sistema básico de recuperación ante errores que muestra mensajes genéricos y permite reintentar operaciones del lado cliente.",
+    "Mejora 69: Diseñar flujos de recuperación detallados, capturas de contexto para análisis y opción de reintentos automáticos con backoff seguro.",
+
+    "Mecánica 70: Recolección de métricas rudimentarias en cliente para actividad y eventos, sin pipeline definido para agregación.",
+    "Mejora 70: Implementar pipeline de telemetría robusto con ingestión segura, agregación, paneles de control y alertas basadas en SLAs.",
+
+    "Mecánica 71: Gestión de tamaño de paquetes de datos sin compresión para persistencia local y envíos a servidores.",
+    "Mejora 71: Incorporar compresión de payloads, serialización eficiente y mecanismos de chunking para archivos grandes.",
+
+    "Mecánica 72: Políticas de retención de datos no formalizadas, con limpieza manual de registros antiguos en almacenamiento local.",
+    "Mejora 72: Definir políticas de retención centralizadas, automatizar limpieza, y ofrecer opciones de exportación antes de borrado para cumplimiento reglamentario.",
+
+    "Mecánica 73: Autenticación mínima dependiente del entorno, sin integración con proveedores de identidad empresariales.",
+    "Mejora 73: Integrar soporte SSO con proveedores estándar (OAuth2, SAML), MFA opcional y mecanismos de sesión segura con expiración configurable.",
+
+    "Mecánica 74: Mecanismo de feedback manual donde usuarios pueden enviar comentarios vía formulario simple.",
+    "Mejora 74: Crear sistema de retroalimentación estructurada con categorización, prioridades, y seguimiento por parte del equipo de producto.",
+
+    "Mecánica 75: Presentación de resultados en tiempo real con recalculo en cliente tras cada envío de respuesta.",
+    "Mejora 75: Implementar motor de scoring en servidor para resultados consistentes, con caché local para experiencia offline y reconciliación al sincronizar.",
+
+    "Mecánica 76: Manejo simple de imágenes en preguntas sin optimización adaptativa según ancho de banda del cliente.",
+    "Mejora 76: Implementar entrega adaptativa de imágenes (modern formats, compresión responsiva), lazy loading y placeholders progresivos.",
+
+    "Mecánica 77: Soporte rudimentario para accesibilidad con etiquetas mínimas y enfoque básico por teclado.",
+    "Mejora 77: Realizar auditoría completa de accesibilidad, añadir roles ARIA, navegación completa por teclado y pruebas automatizadas con herramientas reconocidas.",
+
+    "Mecánica 78: Sistema de ayuda en línea limitado a textos estáticos integrados en la interfaz.",
+    "Mejora 78: Desarrollar centro de ayuda interactivo con búsqueda, tutoriales paso a paso, videos cortos y guías contextuales integradas.",
+
+    "Mecánica 79: Control básico de concurrencia en el envío de resultados sin mecanismos de deduplicación robustos.",
+    "Mejora 79: Implementar idempotencia en endpoints, tokens de envío únicos y control de duplicados con verificación por checksum.",
+
+    "Mecánica 80: Registro de métricas de uso pero sin segmentación por cohortes o análisis longitudinal.",
+    "Mejora 80: Añadir análisis de cohorts, segmentación por perfil demográfico y dashboards para seguimiento temporal del uso y efectividad.",
+
+    "Mecánica 81: Infraestructura de pruebas limitada que depende de ambientes manuales para QA y staging.",
+    "Mejora 81: Construir entornos automatizados de testing con pipelines para pruebas unitarias, de integración y despliegues a entornos de staging replicables.",
+
+    "Mecánica 82: Gestión de errores de red con reintentos básicos, sin circuit breakers ni degradación controlada.",
+    "Mejora 82: Introducir patrón circuit breaker, degradación gradual de funcionalidades y backpressure para proteger servicios críticos.",
+
+    "Mecánica 83: Sistema de roles docente/estudiante que facilita pocas visualizaciones analíticas por rol.",
+    "Mejora 83: Crear dashboards dedicados por rol con KPIs relevantes, filtros personalizados y exportación directa de insights.",
+
+    "Mecánica 84: Soporte limitado para pruebas con multimedia de gran tamaño sin adaptación de ancho de banda.",
+    "Mejora 84: Implementar streaming adaptativo para audio/video, prefetching inteligente y monitoreo de calidad de reproducción.",
+
+    "Mecánica 85: Dependencia directa de la hora del cliente para decisiones temporales críticas sin verificación externa.",
+    "Mejora 85: Validar ventanas temporales mediante servidor de confianza, almacenar marcas temporales firmadas y ofrecer mecanismos de conciliación en discrepancias.",
+
+    "Mecánica 86: Control limitado de tamaño y complejidad de preguntas que pueden afectar rendimiento en dispositivos modestos.",
+    "Mejora 86: Implementar límites configurables por plantilla, análisis de coste de renderizado y advertencias de optimización para autores de contenido.",
+
+    "Mecánica 87: Capacidad de colaboración en edición de tests inexistente o muy básica.",
+    "Mejora 87: Diseñar flujos colaborativos con bloqueo por sección, comentarios en línea y revisiones con aprobación antes de publicar.",
+
+    "Mecánica 88: Gestión de sesiones con identificación tácita y sin latidos de actividad para detectar sesiones muertas.",
+    "Mejora 88: Añadir heartbeat de sesión, reconexión automática y limpieza de sesiones inactivas con notificaciones al usuario.",
+
+    "Mecánica 89: Interoperabilidad limitada con sistemas externos y estándares educativos.",
+    "Mejora 89: Exponer API REST bien documentada, soportar LTI y otros estándares educativos para integración con plataformas externas.",
+
+    "Mecánica 90: Escasa protección contra manipulación del lado cliente en procesos críticos de evaluación.",
+    "Mejora 90: Reforzar la confianza trasladando validaciones críticas al servidor, firmando tokens de sesión y cifrando datos sensibles en tránsito y en reposo.",
+
+    "Mecánica 91: Experiencia móvil funcional pero con ciertos componentes que degradan en pantallas pequeñas.",
+    "Mejora 91: Adoptar enfoque mobile-first, optimizar interacciones táctiles, y testear ampliamente en dispositivos reales para garantizar consistencia.",
+
+    "Mecánica 92: Panel de métricas básico que muestra totales y promedios sin comparativas ni benchmarks.",
+    "Mejora 92: Implementar comparativas históricas, benchmarks por asignatura y alertas cuando métricas clave se desvíen de expectativas.",
+
+    "Mecánica 93: Configuración de pruebas estáticas sin capacidad para generar variantes A/B o pruebas controladas.",
+    "Mejora 93: Añadir soporte nativo para experimentación A/B, segmentación de grupos y análisis estadístico de resultados.",
+
+    "Mecánica 94: Limitado soporte para exportar o importar configuraciones completas de sistema entre instancias.",
+    "Mejora 94: Crear utilidades de migración y export/import de configuraciones completas con control de dependencias y compatibilidad de versiones.",
+
+    "Mecánica 95: Registro de accesos y eventos con nivel de detalle bajo, dificultando investigaciones forenses o de calidad.",
+    "Mejora 95: Elevar granularidad de logs, centralizar en servicio de log management, y ofrecer herramientas de búsqueda y correlación de eventos.",
+
+    "Mecánica 96: Gestión básica de credenciales y secretos sin rotación ni almacén seguro centralizado.",
+    "Mejora 96: Integrar gestión de secretos con rotación automática, almacén cifrado y control de acceso basado en roles para secretos y claves.",
+
+    "Mecánica 97: Flujo de recuperación de cuenta y contraseñas simple, expuesto a vectores de ingeniería social si no se compensa con verificaciones.",
+    "Mejora 97: Fortalecer recuperación con verificaciones multifactoriales, notificaciones de seguridad y límites en intentos de recuperación.",
+
+    "Mecánica 98: Soporte de análisis de calidad de preguntas limitado a métricas básicas de respuesta.",
+    "Mejora 98: Implementar métricas avanzadas por ítem (dificultad, discriminación, tasa de omisión) y visualizaciones para curadores de contenido.",
+
+    "Mecánica 99: Proceso manual para gestionar apelaciones de bloqueos o calificaciones con falta de trazabilidad clara.",
+    "Mejora 99: Diseñar flujo de apelaciones estructurado, con estados, tiempos de respuesta SLA, y panel administrativo para seguimiento y resolución.",
+
+    "Mecánica 100: Estrategia de despliegue sin canary ni pruebas progresivas, exponiendo a todo el usuario a cambios mayores al mismo tiempo.",
+    "Mejora 100: Adoptar despliegues canary y feature flags para habilitar lanzamientos controlados, rollback rápido y experimentación segura."
+  ]
+}
