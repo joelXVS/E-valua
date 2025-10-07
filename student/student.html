@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua — Estudiantes</title>
+  <!-- estilos comunes -->
+  <link rel="icon" type="image/png" href="../utils/logo.png">
+  <link rel="stylesheet" href="../utils/common-styles.css" type="text/css"/>
+  <!--script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script-->
+  <style>
+    .version-text-main::before {content: "Release Version"; font-weight: bold; font-style: italic;}
+    .version-text-main::after {content: ": " var(--version); font-weight: bold;}
+    .version-text-sec::before {content: "Versión: " var(--version) " - " var(--version-date); font-weight: bold;}
+  </style>
+</head>
+<body style="margin: 0; height: 100vh; display: grid; place-items: center;">
+  <div class="container">
+    <header class="header card">
+      <h1 style="text-align: center;">E-valua — Estudiantes</h1>
+      <p class="sub">Ingresa tu nombre, curso y código para iniciar la prueba.<br>Recuerda, la prueba se auto-enviará y se bloqueará su acceso si se detecta que cambias de pestaña o intentas salir de la pagína.</p>
+    </header>
+
+    <main>
+      <!-- PANTALLA DE INICIO -->
+      <section id="start" class="card" aria-labelledby="inicio-title">
+        <h2 id="inicio-title" class="sr-only">Inicio - Datos del estudiante</h2>
+
+        <label class="field">
+          <span>Nombre completo</span>
+          <input id="studentName" type="text" onblur="this.value=this.value.toUpperCase()" placeholder="Ej: Nombre(s) Apellido1 Apellido2" autocomplete="name" />
+        </label>
+
+        <label class="field">
+          <span>Curso / Grupo</span>
+          <select id="gradeSelect" aria-label="Seleccionar curso / grupo">
+            <option value="">-- Seleccionar curso / grupo --</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Código de aplicación</span>
+          <input id="applyCode" type="text" onblur="this.value=this.value.toUpperCase()" placeholder="Ej: CODIGO-PRUEBA" autocomplete="off" />
+        </label>
+
+        <div class="row">
+          <button id="btnContinue" class="btn primary" disabled>Continuar</button>
+          <button id="btnViewResults" class="btn" style="margin-left:8px;">Ver resultados</button>
+        </div>
+        <div id="startMsg" class="small" style="margin-top:8px; text-align: center;"></div>
+      </section>
+
+      <!-- PANTALLA DE EXAMEN -->
+      <section id="exam" class="card hidden" aria-hidden="true">
+        <div class="exam-header">
+          <div>
+            <h2 id="testTitle" class="test-title">Título de la prueba</h2>
+            <p id="testInstructions" class="small"></p>
+          </div>
+          <div class="meta" role="status" aria-live="polite">
+            <div>Estudiante: <strong id="metaName">-</strong></div>
+            <div>Curso: <strong id="metaGrade">-</strong></div>
+            <div>Tiempo: <strong id="timer">00:00</strong></div>
+          </div>
+        </div>
+
+        <div id="questionContainer" class="question-card" aria-live="polite"></div>
+
+        <div class="row nav-buttons" style="margin-top:12px">
+          <button id="prevBtn" class="btn" disabled aria-label="Pregunta anterior">← Anterior</button>
+          <button id="nextBtn" class="btn" disabled aria-label="Siguiente pregunta">Siguiente →</button>
+        </div>
+
+        <div class="row end-buttons" style="margin-top:12px; display: flex; justify-content: center;">
+          <button id="finishBtn" class="btn danger" aria-label="Terminar prueba" disabled>Terminar prueba</button>
+        </div>
+      </section>
+
+      <!-- PANTALLA DE RESULTADO -->
+      <section id="result" class="card hidden" aria-hidden="true">
+        <h2 style="text-align: center;">Resultados</h2>
+        <div id="resultSummary" class="result-summary"></div>
+        <div id="detailedAnswers" class="detailed-answers"></div>
+        <div id="resultCodeDisplay" style="margin-top:24px; margin-bottom: 24px; text-align:center;"></div>
+        <div id="exportBar" class="row" style="margin-bottom: 20px;">
+          <button id="downloadBtn" class="btn">Descargar JSON</button>
+          <button id="downloadPdfBtn" class="btn">Exportar PDF</button>
+          <button id="downloadCertBtn" class="btn">Descargar Certificado</button>
+          <button id="backBtn" class="btn">Volver</button>
+        </div>
+      </section>
+
+      <!-- PANTALLA - VER RESULTADOS -->
+      <section id="viewResults" class="card hidden" aria-hidden="true">
+        <h2 style="text-align: center;">Ver resultados por código</h2>
+      
+        <label class="field" style="margin-top:8px;">
+          <span>Código de Resultado</span>
+          <input id="resultCodeInput" type="text" onblur="this.value=this.value.toUpperCase()" placeholder="Ej: 01234567890" maxlength="11" />
+        </label>
+      
+        <div class="row" style="margin-top:8px;">
+          <button id="btnSearchResult" class="btn primary">Buscar</button>
+          <button id="btnBackFromView" class="btn">Volver</button>
+        </div>
+      
+        <div id="viewResultArea" style="margin-top:12px;"></div>
+      </section>
+    </main>
+
+    <footer class="footer card">
+      <p class="small">E-valua — creado por Joel Valencia</p>
+      <p class="small version-text-main" style="font-size: 0.75rem;"></p>
+    </footer>
+  </div>
+
+  <div id="whatsNewModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 style="text-align: center;">Novedades</h2>
+      <h3 style="text-align: center;">¡Bienvenido a <strong>E-valua</strong>!</h3>
+      <p style="margin: 10px 0; text-align: center;">Estas son las últimas <strong>actualizaciones</strong> y <strong>mejoras</strong>:</p>
+      <hr style="margin: 0 auto; border-width: 3px; border-style: solid; border-color: #ff9800; border-radius: 15px;">
+      <div class="contenedor-scroll">
+        <ul id="updatesList"></ul>
+      </div>
+      <p class="version-text-sec" style="text-align:center; margin:8px;"><strong></strong></p>
+      <hr style="margin: 0 auto; border-width: 3px; border-style: solid; border-color: #ff9800; border-radius: 15px;">
+      <button id="closeWhatsNew" class="btn primary" style="margin-top: 8px; display: block;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- libs y app -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js" defer></script>
+  <script src="../utils/dialogs.js"></script>
+  <script src="../utils/snackbar.js"></script>
+  <script type="module" src="student-app.js" defer></script>
+</body>
+</html>
