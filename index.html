@@ -37,28 +37,40 @@
     });
     
     // EDITAR MAS TARDE
-    document.getElementById('btnTeacher').addEventListener('click',async () => {
+    document.getElementById('btnTeacher').addEventListener('click', async () => {
       let code = await customDialog(
         "prompt",
         "Ingrese el código de acceso para docentes:",
         "",
         { placeholder: "Código de acceso", defaultValue: "" }
       );
-      if (code === null) {
+      
+      // Usuario canceló
+      if (code === null) return;
+      
+      // Código vacío
+      if (!code || code.trim() === '') {
+        showSnackbar("El código no puede estar vacío", { type: 'error' });
         return;
-      } else {
-        showSnackbar("El código no puede estar vacío, verificalo e intenta de nuevo", { type: 'error' });
-        showSnackbar("Validando código...", { duration: 2500 });
-        if (code === 'SOYE-VALUADOR') {
-          showSnackbar("Ingresando a E-valua para Docentes...", { duration: 2500 });
-          window.location.href = 'teacher/teacher.html';
-        } else {
-          if (code === '') {
-          } else {
-            customDialog('alert', 'Código incorrecto:', 'Si es estudiante ingrese desde el panel de estudiantes.');
-          } 
-        }
       }
+      
+      showSnackbar("Validando código...", { duration: 2000 });
+      
+      // Validar después de un breve delay
+      setTimeout(async () => {
+        if (code === 'SOYE-VALUADOR') {
+          showSnackbar("Acceso concedido", { type: 'success' });
+          setTimeout(() => {
+            window.location.href = 'teacher/teacher.html';
+          }, 1000);
+        } else {
+          await customDialog(
+            'alert', 
+            'Código incorrecto', 
+            'El código ingresado no es válido. Si es estudiante, ingrese desde el panel de estudiantes.'
+          );
+        }
+      }, 1500);
     });
 
     document.getElementById('btnSystem').addEventListener('click', () => {
