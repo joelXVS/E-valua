@@ -421,78 +421,102 @@ function attachAntiCheatListeners() {
   examTerminatedForCheating = false;
   currentCheatEvents = currentCheatEvents || [];
 
+  // Contador global de eventos de trampa (combinando ambos tipos)
+  let totalCheatEvents = 0;
+  let antiCheatLock = false; // Lock global para evitar procesamiento paralelo
+
   function recordEvent(kind) {
     examCheatCount++;
-    const entry = { when: new Date().toISOString(), kind, count: examCheatCount };
+    totalCheatEvents++; // Incrementar contador global
+    
+    const entry = { 
+      when: new Date().toISOString(), 
+      kind, 
+      count: examCheatCount,
+      totalCount: totalCheatEvents
+    };
     currentCheatEvents.push(entry);
+    
     // persistimos por sesión
     appendCheatLogForAttempt(currentSessionId, entry);
     return entry;
   }
 
-  let tabSwitchCount = 0; // contador de cambios de pestaña
-  let visibilityLock = false; // evita bucles
-  
-  let blurCount = 0; // contador de cambios a segundo plano
-  let blurLock = false; // evita spam de prompts
+  function handleAntiCheatEvent(kind, warningMessage) {
+    if (antiCheatLock) return;
+    antiCheatLock = true;
+    
+    recordEvent(kind);
+    
+    // Mostrar advertencia según el tipo de evento
+    if (totalCheatEvents <= 2) {
+      customDialog("alert", "Aviso:", warningMessage);
+    }
+    
+    // Bloquear después de 3 eventos de cualquier tipo combinados
+    if (totalCheatEvents >= 3) {
+      examTerminatedForCheating = true;
+      const name = $('studentName').value.trim();
+      const code = $('applyCode').value.trim();
+      
+      // Registrar el evento final de violación
+      recordEvent('cheating-violation');
+      
+      // Bloquear estudiante
+      blockStudent(name, code, 'cheating-violation');
+      
+      // Terminar examen
+      finishExam(true, `Se detectaron ${totalCheatEvents} intentos de trampa: La prueba ha terminado y se ha bloqueado el acceso.`);
+    }
+    
+    // Liberar el lock después de un tiempo razonable
+    setTimeout(() => {
+      antiCheatLock = false;
+    }, 2000); // 2 segundos para prevenir spam rápido
+  }
 
   function handleVisibilityChange() {
-    if (document.hidden && !visibilityLock) {
-      visibilityLock = true;
-      tabSwitchCount++;
-      recordEvent('visibility-change');
-
-      if (tabSwitchCount === 1) {
-        customDialog("alert", "Aviso:", 'Cambio de pestaña detectado: Hemos detectado que te has salido de la prueba. Puede que haya sido accidental pero, ten cuidado, podrías perder acceso permanente a ella.');
-      } else if (tabSwitchCount >= 3) {
-        examTerminatedForCheating = true;
-        const name = $('studentName').value.trim();
-        const code = $('applyCode').value.trim();
-        recordEvent('visibility-violation');
-        blockStudent(name, code, 'visibility-violation');
-        finishExam(true, 'Se detectaron 3 cambios de pestaña: La prueba ha terminado y se ha bloqueado el acceso.');
-        tabSwitchCount = 0;
-        visibilityLock = false;
-      }
-
-      setTimeout(() => visibilityLock = false, 1000);
+    if (document.hidden) {
+      handleAntiCheatEvent(
+        'visibility-change', 
+        'Cambio de pestaña detectado: Hemos detectado que te has salido de la prueba. Puede que haya sido accidental pero, ten cuidado, podrías perder acceso permanente a ella.'
+      );
     }
   }
   
   function handleWindowBlur() {
-    if (!blurLock) {
-      blurLock = true;
-      blurCount++;
-      recordEvent('window-blur');
-      
-      if (blurCount === 1) {
-        customDialog("alert", "Aviso:", 'Se detectó que la pestaña quedó en segundo plano: Hemos detectado que minimizaste la ventana de la prueba. Puede que haya sido accidental pero, ten cuidado, podrías perder acceso permanente a ella.');
-  
-      } else if (blurCount > 2) {
-        examTerminatedForCheating = true;
-        const name = $('studentName').value.trim();
-        const code = $('applyCode').value.trim();
-        recordEvent('blur-violation');
-        blockStudent(name, code, 'blur-violation');
-        finishExam(true, 'Se detectaron 3 cambios a segundo plano: La prueba ha terminado y se ha bloqueado el acceso.');
-        blurCount = 0;
-        blurLock = false;
-      }
-
-      setTimeout(() => blurLock = false, 1000);
-    }
+    handleAntiCheatEvent(
+      'window-blur',
+      'Se detectó que la pestaña quedó en segundo plano: Hemos detectado que minimizaste la ventana de la prueba. Puede que haya sido accidental pero, ten cuidado, podrías perder acceso permanente a ella.'
+    );
   }
 
+  // Remover listeners anteriores si existen
+  detachAntiCheatListeners();
+
+  // Agregar nuevos listeners
   document.addEventListener('visibilitychange', handleVisibilityChange);
   window.addEventListener('blur', handleWindowBlur);
 
-  document._antiCheatHandles = { handleVisibilityChange, handleWindowBlur };
+  // Guardar referencias para poder removerlos después
+  document._antiCheatHandles = { 
+    handleVisibilityChange, 
+    handleWindowBlur 
+  };
 }
 
 function detachAntiCheatListeners() {
   if (document._antiCheatHandles) {
-    document.removeEventListener('visibilitychange', document._antiCheatHandles.handleVisibilityChange);
-    window.removeEventListener('blur', document._antiCheatHandles.handleWindowBlur);
+    const { handleVisibilityChange, handleWindowBlur } = document._antiCheatHandles;
+    
+    if (handleVisibilityChange) {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }
+    
+    if (handleWindowBlur) {
+      window.removeEventListener('blur', handleWindowBlur);
+    }
+    
     delete document._antiCheatHandles;
   }
 }
@@ -1374,7 +1398,7 @@ function normalizeKeysArray(q, arr) {
 
 // ---------- terminar examen ----------
 function finishExam(cheatingForced = false, endMsg = "") {
-  showSnackBar("Examen finalizado. Evaluando respuestas...");
+  showSnackbar("Examen finalizado. Evaluando respuestas...");
   setTimeout(() => {
     clearInterval(timerInterval);
     detachAntiCheatListeners();
@@ -1648,7 +1672,7 @@ function finishExam(cheatingForced = false, endMsg = "") {
     }
 
     if (examTerminatedForCheating) {
-      customDialog("alert", "Aviso:", endMsg + 'Tu intento fue registrado en el sistema. Si es algún error, pidele a tu docente encargado que habilite la prueba para ti por segunda vez.');
+      customDialog("alert", "Aviso:", endMsg + ' Tu intento fue registrado en el sistema. Si es algún error, pidele a tu docente encargado que habilite la prueba para ti por segunda vez.');
     } else {
       localStorage.removeItem('examProgress');
     }
@@ -1985,7 +2009,7 @@ function downloadResultsPdf(docData = {}) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.setTextColor(41, 128, 185);
-  doc.text('Detalles de preguntas:', margin + 2, y + 16);
+  doc.text('Detalles de preguntas:', margin + 2, y + 9);
   // restaurar tamaño y color texto
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
@@ -2063,7 +2087,7 @@ function downloadResultsPdf(docData = {}) {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
     doc.setTextColor(255, 38, 0);
-    doc.text('Intentos de trampa:', margin + 2, y + 4);
+    doc.text('Intentos de trampa:', margin + 2, y + 9);
     doc.setFontSize(11);
     doc.setTextColor(0, 0, 0);
     y += 20;
