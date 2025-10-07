@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua</title>
+  <link rel="icon" type="image/png" href="utils/logo.png">
+  <link rel="stylesheet" href="utils/common-styles.css" type="text/css"/>
+</head>
+<body style="margin: 0; height: 100vh; display: grid; place-items: center;">
+  <div class="container">
+    <header class="header card" style="text-align:center;">
+      <h1 style="font-size:2.5rem; color:#e65100;">E-valua</h1>
+      <p class="sub" style="margin-top:8px;">
+        Plataforma creada por José Angel Perea Valencia, estudiante de Ing. Sistemas de la Universidad del Pacífico, más conocido como Joel Valencia, para gestionar y realizar evaluaciones en línea. Creada para el uso de docentes de instituciones que tienen dificultades para evaluar a sus alumnos. Ahora mismo esta en modo de prueba, proximamente será lanzada con nuevas funciones.
+      </p>
+    </header>
+
+    <main class="card" style="text-align:center;">
+      <div class="row" style="justify-content:center; margin-top:20px;">
+        <button id="btnStudent" class="btn primary">Ir a E-valua para Estudiantes</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnTeacher" class="btn danger">Ir a E-valua para Docentes</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnSystem" class="btn primary">Ir a Sistema de Información</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="../utils/dialogs.js"></script>
+  <script src="../utils/snackbar.js"></script>
+  <script>
+    document.getElementById('btnStudent').addEventListener('click', () => {
+      window.location.href = 'student/student.html';
+    });
+    
+    // EDITAR MAS TARDE
+    document.getElementById('btnTeacher').addEventListener('click',async () => {
+      let code = await customDialog(
+        "prompt",
+        "Ingrese el código de acceso para docentes:",
+        "",
+        { placeholder: "Código de acceso", defaultValue: "" }
+      );
+      if (code === null) {
+        return;
+      } else {
+        showSnackbar("El código no puede estar vacío, verificalo e intenta de nuevo", { type: 'error' });
+        showSnackbar("Validando código...", { duration: 2500 });
+        if (code === 'SOYE-VALUADOR') {
+          showSnackbar("Ingresando a E-valua para Docentes...", { duration: 2500 });
+          window.location.href = 'teacher/teacher.html';
+        } else {
+          if (code === '') {
+          } else {
+            customDialog('alert', 'Código incorrecto:', 'Si es estudiante ingrese desde el panel de estudiantes.');
+          } 
+        }
+      }
+    });
+
+    document.getElementById('btnSystem').addEventListener('click', () => {
+      window.location.href = 'system/info.html';
+    });
+  </script>
+</body>
+</html>
