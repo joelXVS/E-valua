@@ -58,11 +58,11 @@
       
       // Validar después de un breve delay
       setTimeout(async () => {
-        if (code === 'SOYE-VALUADOR') {
+        if (code === '@SOYE-VALUADOR') {
           showSnackbar("Acceso concedido", { type: 'success' });
           setTimeout(() => {
             window.location.href = 'teacher/teacher.html';
-          }, 1000);
+          }, 2000);
         } else {
           await customDialog(
             'alert', 
