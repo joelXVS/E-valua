@@ -21,7 +21,7 @@ function customDialog(type, title, message, opts = {}) {
     // logo si es PC
     const logo = document.createElement('img');
 
-    logo.src = "../utils/logo.png"; 
+    logo.src = "utils/logo.png"; 
     logo.alt = "Logo";
     logo.style.width = '80px';
     logo.style.margin = '0px auto';
