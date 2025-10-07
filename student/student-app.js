@@ -452,6 +452,7 @@ function attachAntiCheatListeners() {
         blockStudent(name, code, 'visibility-violation');
         finishExam(true, 'Se detectaron 3 cambios de pestaña: La prueba ha terminado y se ha bloqueado el acceso.');
         tabSwitchCount = 0;
+        visibilityLock = false;
       }
 
       setTimeout(() => visibilityLock = false, 1000);
@@ -475,6 +476,7 @@ function attachAntiCheatListeners() {
         blockStudent(name, code, 'blur-violation');
         finishExam(true, 'Se detectaron 3 cambios a segundo plano: La prueba ha terminado y se ha bloqueado el acceso.');
         blurCount = 0;
+        blurLock = false;
       }
 
       setTimeout(() => blurLock = false, 1000);
@@ -1979,11 +1981,11 @@ function downloadResultsPdf(docData = {}) {
     return [ idx, title, studentText, pts ];
   });
 
-  // --- encabezado coloreado para la sección "Detalle de preguntas" ---
+  // --- encabezado coloreado para la sección "Detalles de preguntas" ---
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.setTextColor(41, 128, 185);
-  doc.text('Detalle de preguntas:', margin + 2, y + 4);
+  doc.text('Detalles de preguntas:', margin + 2, y + 16);
   // restaurar tamaño y color texto
   doc.setFontSize(11);
   doc.setTextColor(0, 0, 0);
@@ -2334,8 +2336,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (btnSearch) btnSearch.addEventListener('click', () => {
     const code = $('resultCodeInput').value.trim();
     if (!/^\d{11}$/.test(code)) { customDialog("alert", "Aviso:", 'Ingresa un código válido de 11 dígitos.'); return; }
+    showSnackbar("Buscando resultados...", { duration: 4000 });
     const found = findResultByCode(code);
-    renderResultInViewArea(found);
+    setTimeout(() => renderResultInViewArea(found), 600);
+    showSnackbar("Resultados encontrados: 1", { type: "success" });
   });
 
   const btnBackFromView = $('btnBackFromView');
