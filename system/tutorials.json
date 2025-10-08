@@ -1,13 +1,11 @@
 {
   "tutorials": [
     {
-      "title": "E-valua Introducción",
-      "desc": "Explicación rápida sobre la app: Introducción.",
-      "imgs": [
-        { "url": "../utils/logo.png" }
-      ],
-      "vid": "",
-      "created": "2025-10-03T17:14:39Z"
+      "title": "Introducción a E-valua",
+      "desc": "Video completo de introducción al sistema",
+      "created": "2024-01-15T10:00:00",
+      "vid": "https://www.youtube.com/watch?v=7U1um4nLLoE",
+      "imgs": []
     }
   ]
 }
