@@ -149,8 +149,8 @@ function getCheatLogsForSession(sessionId) {
 function validateStartForm() {
   const name = $('studentName').value.trim();
   const rawCode = $('applyCode').value.trim();
-  const override = rawCode.endsWith(':NEW!');
-  const code = override ? rawCode.replace(/:NEW!$/, '') : rawCode;
+  const override = rawCode.endsWith(':NUEVO!');
+  const code = override ? rawCode.replace(/:NUEVO!$/, '') : rawCode;
   const grade = $('gradeSelect').value;
 
   // Elemento donde mostramos el mensaje de inicio
@@ -173,7 +173,7 @@ function validateStartForm() {
     canContinue = false;
   } else if (code) {
     // revisar cooldown de reintento (si existe lastAttempt)
-    // nota: getLastAttemptTime espera el código limpio (sin :NEW!)
+    // nota: getLastAttemptTime espera el código limpio (sin :NUEVO!)
     const deviceId = getDeviceId();
     const last = getLastAttemptTime(code, deviceId);
 
@@ -209,8 +209,8 @@ function validateStartForm() {
 function canStartExam() {
   const name = $('studentName').value.trim();
   const rawCode = $('applyCode').value.trim();
-  const override = rawCode.endsWith(':NEW!');
-  const code = override ? rawCode.replace(/:NEW!$/, '') : rawCode;
+  const override = rawCode.endsWith(':NUEVO!');
+  const code = override ? rawCode.replace(/:NUEVO!$/, '') : rawCode;
 
   if (name.length <= 15) {
     customDialog("alert", "Aviso:", 'El nombre completo debe tener al menos 16 caracteres.');
@@ -271,8 +271,8 @@ async function startExam() {
   if (!canStartExam()) return;
   const studentName = $('studentName').value.trim();
   const rawCode = $('applyCode').value.trim();
-  const override = rawCode.endsWith(':NEW!');
-  const code = override ? rawCode.replace(/:NEW!$/, '') : rawCode;
+  const override = rawCode.endsWith(':NUEVO!');
+  const code = override ? rawCode.replace(/:NUEVO!$/, '') : rawCode;
   
   showSnackbar("Buscando prueba...", { duration: 4000 })
   // buscar prueba por código limpio
