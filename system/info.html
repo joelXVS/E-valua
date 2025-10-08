@@ -154,7 +154,7 @@
       </div>
 
       <!-- TUTORIALS UI (hidden por defecto, muestra en tab) -->
-      <div id="tutorialsArea" class="hidden" style="margin-top:12px">
+      <div id="tutorialsArea" class="tab-content hidden" style="margin-top:12px">
         <h4 style="color:var(--accent-2)">Galería de tutoriales</h4>
         <div class="thumbs" id="thumbs"></div>
         <div id="videoPreview" style="margin-top:8px"></div>
@@ -280,7 +280,7 @@
     function renderList(items, title){
       listArea.innerHTML = '';
       const head = document.createElement('div');
-      head.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>${title}</strong><span class='badge'>${items.length} items</span></div>`;
+      head.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--accent-2)"><strong>${title}</strong><span class='badge'>${items.length} items</span></div>`;
       listArea.appendChild(head);
 
       const container = document.createElement('div');

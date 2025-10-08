@@ -1,7 +1,7 @@
 /* Variables */
 :root {
-  --version: "1.17.101";
-  --version-date: "Octubre 07, 2025";
+  --version: "1.17.102";
+  --version-date: "Octubre 08, 2025";
 }
 /* Reset */
 * {
@@ -20,7 +20,7 @@ html, body {
 body {
   height: 100vh; 
   margin: 20px;
-  display: grid; 
+  display: grid;
   place-items: center;
 }
 
