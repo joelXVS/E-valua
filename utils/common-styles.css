@@ -282,27 +282,6 @@ input[type="text"]:focus {
   background: #fffdf5;
 }
 
-/* Multimedia */
-.multimedia-container {
-  margin: 10px 0;
-  text-align: center;
-}
-.multimedia-container video,
-.multimedia-container audio,
-.multimedia-container img {
-  border: 2px solid #ffcc80;
-  border-radius: 10px;
-  padding: 4px;
-  max-width: 100%;
-}
-.subquestion {
-  margin-top: 12px;
-  padding: 10px;
-  border: 2px dashed #ffcc80;
-  border-radius: 8px;
-  background: #fffdf5;
-}
-
 /* Resultados (Estudiantes) */
 .result-summary {
   font-size: 1.1rem;
