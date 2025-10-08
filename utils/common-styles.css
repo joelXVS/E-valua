@@ -18,10 +18,10 @@ html, body {
   color: #333;
 }
 body {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px;
+  height: 100vh; 
+  margin: 20px;
+  display: grid; 
+  place-items: center;
 }
 
 /* Contenedor principal */
