@@ -250,10 +250,10 @@
         renderList(technique.details, 'Técnica');
         downloadJsonBtn.addEventListener('click', async () => {
           const downloadTech = await customDialog(
+            "../utils/logo.png",
             "confirm",
             "Descargar _technique-data.json:",
-            "¿Estás seguro de que quieres descargar el archivo .json de datos técnicos de E-valua?",
-            img_src = "../utils/logo.png"
+            "¿Estás seguro de que quieres descargar el archivo .json de datos técnicos de E-valua?"
           );
           if (downloadTech) {
             showSnackbar("Descargando _technique-data.json…", { duration: 4000 });
@@ -267,10 +267,10 @@
         renderList(marketing.details, 'Marketing');
         downloadJsonBtn.addEventListener('click', async () => {
           const downloadMark = await customDialog(
+            "../utils/logo.png",
             "confirm",
             "Descargar _marketing-data.json:",
-            "¿Estás seguro de que quieres descargar el archivo .json de datos de marketing de E-valua?",
-            img_src = "../utils/logo.png"
+            "¿Estás seguro de que quieres descargar el archivo .json de datos de marketing de E-valua?"
           );
           if (downloadMark) {
             showSnackbar("Descargando _marketing-data.json…", { duration: 4000 });
@@ -334,10 +334,10 @@
 
     downloadAll.addEventListener('click', async () => {
       const downloadBoth = await customDialog(
+        "../utils/logo.png",
         "confirm",
         "Descargar archivos .json:",
-        "¿Estás seguro de que quieres descargar los archivos .json de datos técnicos y de marketing de E-valua?",
-        img_src = "../utils/logo.png"
+        "¿Estás seguro de que quieres descargar los archivos .json de datos técnicos y de marketing de E-valua?"
       );
       if (downloadBoth) {
         showSnackbar("Descargando archivos…", { duration: 4000 });

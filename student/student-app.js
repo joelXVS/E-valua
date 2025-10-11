@@ -213,11 +213,11 @@ function canStartExam() {
   const code = override ? rawCode.replace(/:NUEVO!$/, '') : rawCode;
 
   if (name.length <= 15) {
-    customDialog("alert", "Aviso:", 'El nombre completo debe tener al menos 16 caracteres.', img_src = "../utils/logo.png");
+    customDialog("../utils/logo.png", "alert", "Aviso:", 'El nombre completo debe tener al menos 16 caracteres.');
     return false;
   }
   if (code.length <= 7) {
-    customDialog("alert", "Aviso:", 'El código de aplicación debe tener al menos 8 caracteres.', img_src = "../utils/logo.png");
+    customDialog("../utils/logo.png", "alert", "Aviso:", 'El código de aplicación debe tener al menos 8 caracteres.');
     return false;
   }
 
@@ -286,13 +286,13 @@ async function startExam() {
   const selectedGradeText = $('gradeSelect').selectedOptions[0].textContent;
   const allowedGroups = currentTest.groups || [];
   if (Array.isArray(allowedGroups) && allowedGroups.length > 0 && !allowedGroups.includes(selectedGradeText)) {
-    setTimeout(() => customDialog("alert", "Aviso:", 'La prueba no está disponible para el grupo/curso seleccionado.', img_src = "../utils/logo.png"), 4500);
+    setTimeout(() => customDialog("../utils/logo.png", "alert", "Aviso:", 'La prueba no está disponible para el grupo/curso seleccionado.'), 4500);
     return;
   }
 
   // validar ventana de la prueba (fecha + hora)
   if (!isTestOpen(currentTest)) {
-    setTimeout(() => customDialog("alert", "Aviso:", 'La prueba no está disponible en este momento. Verifica la fecha y hora de apertura.', img_src = "../utils/logo.png"), 4500);
+    setTimeout(() => customDialog("../utils/logo.png", "alert", "Aviso:", 'La prueba no está disponible en este momento. Verifica la fecha y hora de apertura.'), 4500);
     return;
   }
 
@@ -450,7 +450,7 @@ function attachAntiCheatListeners() {
     
     // Mostrar advertencia según el tipo de evento
     if (totalCheatEvents <= 2) {
-      customDialog("alert", "Aviso:", warningMessage, img_src = "../utils/logo.png");
+      customDialog("../utils/logo.png", "alert", "Aviso:", warningMessage);
     }
     
     // Bloquear después de 3 eventos de cualquier tipo combinados
@@ -1620,7 +1620,7 @@ function finishExam(cheatingForced = false, endMsg = "") {
               // fallback
               const ta = document.createElement('textarea');
               ta.value = resultCode; document.body.appendChild(ta); ta.select();
-              try { document.execCommand('copy'); showSnackbar("Código copiado al portapapeles", { type: "success" }); } catch(e){ customDialog("prompt", "Copia manual:", "", { placeholder: "Copia manual", defaultValue: ta.value }, img_src = "../utils/logo.png"); }
+              try { document.execCommand('copy'); showSnackbar("Código copiado al portapapeles", { type: "success" }); } catch(e){ customDialog("../utils/logo.png", "prompt", "Copia manual:", "", { placeholder: "Copia manual", defaultValue: ta.value }); }
               ta.remove();
             });
           });
@@ -1672,7 +1672,7 @@ function finishExam(cheatingForced = false, endMsg = "") {
     }
 
     if (examTerminatedForCheating) {
-      customDialog("alert", "Aviso:", endMsg + ' Tu intento fue registrado en el sistema. Si es algún error, pidele a tu docente encargado que habilite la prueba para ti por segunda vez.', img_src = "../utils/logo.png");
+      customDialog("../utils/logo.png", "alert", "Aviso:", endMsg + ' Tu intento fue registrado en el sistema. Si es algún error, pidele a tu docente encargado que habilite la prueba para ti por segunda vez.');
     } else {
       localStorage.removeItem('examProgress');
     }
@@ -1734,10 +1734,10 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
   // añadir listeners a los nuevos botones (descargas de este resultado)
   document.getElementById('viewJsonBtn').addEventListener('click',async () => {
     const downloadResJson = await customDialog(
+      "../utils/logo.png",
       "confirm",
       "Descargar resultados:",
-      "¿Estás seguro de que quieres descargar el archivo .json de tus resultados?",
-      img_src = "../utils/logo.png"
+      "¿Estás seguro de que quieres descargar el archivo .json de tus resultados?"
     );
     if (downloadResJson) {
       showSnackbar("Descargando resultados en JSON…", { duration: 4000 });
@@ -1755,10 +1755,10 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
     
     if (lastResult) {
       const downloadResPDF = await customDialog(
+        "../utils/logo.png",
         "confirm",
         "Descargar resultados:",
-        "¿Estás seguro de que quieres descargar el archivo .pdf de tus resultados?",
-        img_src = "../utils/logo.png"
+        "¿Estás seguro de que quieres descargar el archivo .pdf de tus resultados?"
       );
       if (downloadResPDF) {
         showSnackbar("Descargando resultados en PDF…", { duration: 4000 });
@@ -1776,7 +1776,7 @@ function downloadResults(resultObj) {
 
   // si resultObj viene desde "Ver resultados" pero no trae detalles, ofrecer fallback
   if (resultObj && (!resultObj.details || resultObj.details.length === 0)) {
-    if (!customDialog("confirm", "Confirmar", '¿Estás seguro de que deseas descargar tus respuestas actuales en formato JSON?', img_src = "../utils/logo.png")) {
+    if (!customDialog("../utils/logo.png", "confirm", "Confirmar", '¿Estás seguro de que deseas descargar tus respuestas actuales en formato JSON?')) {
       return;
     }
     resultObj = null; // forzar fallback below
@@ -2306,10 +2306,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   $('finishBtn').addEventListener('click', () => finishExam(false));
   $('downloadBtn').addEventListener('click',async () => {;
     const downloadResJson = await customDialog(
+      "../utils/logo.png",
       "confirm",
       "Descargar resultados:",
-      "¿Estás seguro de que quieres descargar el archivo .json de tus resultados?",
-      img_src = "../utils/logo.png"
+      "¿Estás seguro de que quieres descargar el archivo .json de tus resultados?"
     );
     if (downloadResJson) {
       showSnackbar("Descargando resultados en JSON…", { duration: 4000 });
@@ -2327,10 +2327,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     if (lastResult) {
       const downloadResPDF = await customDialog(
+        "../utils/logo.png",
         "confirm",
         "Descargar resultados:",
-        "¿Estás seguro de que quieres descargar el archivo .pdf de tus resultados?",
-        img_src = "../utils/logo.png"
+        "¿Estás seguro de que quieres descargar el archivo .pdf de tus resultados?"
       );
       if (downloadResPDF) {
         showSnackbar("Descargando resultados en PDF…", { duration: 4000 });
@@ -2342,10 +2342,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   $('downloadCertBtn').addEventListener('click',async () => {
     const downloadCert = await customDialog(
+      "../utils/logo.png",
       "confirm",
       "Descargar certificado:",
-      "¿Estás seguro de que quieres descargar el certificado de presentación de esta prueba?",
-      img_src = "../utils/logo.png"
+      "¿Estás seguro de que quieres descargar el certificado de presentación de esta prueba?"
     );
     if (downloadCert) {
       showSnackbar("Descargando certificado…", { duration: 4000 });
@@ -2364,7 +2364,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const btnSearch = $('btnSearchResult');
   if (btnSearch) btnSearch.addEventListener('click', () => {
     const code = $('resultCodeInput').value.trim();
-    if (!/^\d{11}$/.test(code)) { customDialog("alert", "Aviso:", 'Ingresa un código válido de 11 dígitos.', img_src = "../utils/logo.png"); return; }
+    if (!/^\d{11}$/.test(code)) { customDialog("../utils/logo.png", "alert", "Aviso:", 'Ingresa un código válido de 11 dígitos.'); return; }
     showSnackbar("Buscando resultados...", { duration: 4000 });
     const found = findResultByCode(code);
     setTimeout(() => renderResultInViewArea(found), 600);

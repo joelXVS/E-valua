@@ -2,7 +2,7 @@
 let dialogOpen = false;
 let lastDialogClose = 0;
 
-function customDialog(type, title, message, opts = {}, img_src = "logo.png") {
+function customDialog(img_src, type, title, message, opts = {}) {
   return new Promise(resolve => {
     dialogOpen = true;
 

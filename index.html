@@ -39,11 +39,11 @@
     // EDITAR MAS TARDE
     document.getElementById('btnTeacher').addEventListener('click', async () => {
       let code = await customDialog(
+        "utils/logo.png",
         "prompt",
         "Ingrese el código de acceso para docentes:",
         "",
-        { placeholder: "Código de acceso", defaultValue: "" },
-        "utils/logo.png"
+        { placeholder: "Código de acceso", defaultValue: "" }
       );
       
       // Usuario canceló
@@ -66,10 +66,10 @@
           }, 2000);
         } else {
           await customDialog(
+            "utils/logo.png",
             'alert', 
             'Código incorrecto', 
-            'El código ingresado no es válido. Si es estudiante, ingrese desde el panel de estudiantes.',
-            img_src = "utils/logo.png"
+            'El código ingresado no es válido. Si es estudiante, ingrese desde el panel de estudiantes.'
           );
         }
       }, 1500);
