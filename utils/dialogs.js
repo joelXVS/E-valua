@@ -19,7 +19,7 @@ function customDialog(img_src, type, title, message, opts = {}) {
     card.style.maxWidth = '90%';
 
     // logo si es PC
-    const logo = document.createElement('=');
+    const logo = document.createElement('img');
 
     logo.src = img_src; 
     logo.alt = "Logo";
