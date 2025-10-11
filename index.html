@@ -42,7 +42,8 @@
         "prompt",
         "Ingrese el código de acceso para docentes:",
         "",
-        { placeholder: "Código de acceso", defaultValue: "" }
+        { placeholder: "Código de acceso", defaultValue: "" },
+        "utils/logo.png"
       );
       
       // Usuario canceló
@@ -67,7 +68,8 @@
           await customDialog(
             'alert', 
             'Código incorrecto', 
-            'El código ingresado no es válido. Si es estudiante, ingrese desde el panel de estudiantes.'
+            'El código ingresado no es válido. Si es estudiante, ingrese desde el panel de estudiantes.',
+            img_src = "utils/logo.png"
           );
         }
       }, 1500);

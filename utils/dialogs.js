@@ -2,7 +2,7 @@
 let dialogOpen = false;
 let lastDialogClose = 0;
 
-function customDialog(type, title, message, opts = {}) {
+function customDialog(type, title, message, opts = {}, img_src = "logo.png") {
   return new Promise(resolve => {
     dialogOpen = true;
 
@@ -19,9 +19,9 @@ function customDialog(type, title, message, opts = {}) {
     card.style.maxWidth = '90%';
 
     // logo si es PC
-    const logo = document.createElement('img');
+    const logo = document.createElement('=');
 
-    logo.src = "../utils/logo.png"; 
+    logo.src = img_src; 
     logo.alt = "Logo";
     logo.style.width = '80px';
     logo.style.margin = '0px auto';
