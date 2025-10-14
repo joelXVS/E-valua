@@ -78,12 +78,12 @@
       ]
     },
     {
-      "code":"DEPO-2025A030",
+      "code":"DEPO-Q123456",
       "name":"PRUEBA DE DEPORTES - GENERALES",
       "time":43.75,
       "points":{ "ok":2.85714285714,"bad":0 },
-      "startDateTime":"2025-10-06T14:00:00",
-      "endDateTime":"2025-10-06T20:59:59",
+      "startDateTime":"2025-10-14T14:00:00",
+      "endDateTime":"2025-10-14T20:59:59",
       "showResults":false,
       "showCorrect":false,
       "groups":[ "Invitado", "Profesor" ],
