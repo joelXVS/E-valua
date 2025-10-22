@@ -133,7 +133,7 @@
       "endDateTime":"2025-10-22T12:29:59",
       "showResults":true,
       "showCorrect":false,
-      "groups":[ "Séptimo 2","Séptimo 4" ],
+      "groups":[ "Séptimo 3","Séptimo 4" ],
       "questions":[
         {"type":"mcq","title":"¿Qué elemento fue clave para que las civilizaciones antiguas pasaran de ser nómadas a sedentarias?","options":["Desarrollo de armas de hierro","Producción agrícola sistemática","Invención de la brújula","Construcción de acueductos"],"answer":1},
         {"type":"mcq","title":"¿Cuál de las siguientes NO es una civilización antigua mencionada en la guía?","options":["Grecia","Roma","Babilonia","Cartago"],"answer":3},
