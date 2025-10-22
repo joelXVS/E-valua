@@ -45,7 +45,7 @@
       "code":"CONS-0802M030",
       "name":"Evaluación Final 8° - PARTE 2 (COPODP / CDPYD)",
       "time":27.5,
-      "points":{ "ok": 0.2272727273,"bad": 0 },
+      "points":{ "ok": 0.22727272727,"bad": 0 },
       "startDateTime":"2025-10-27T07:00:00",
       "endDateTime":"2025-10-31T12:29:59",
       "showResults":false,
@@ -72,7 +72,6 @@
         { "type":"tf","title":"El 20 de julio de 1810 es recordado como el día de la firma del Acta de Independencia en Bogotá.","answer":1 },
         { "type":"mcq","title":"El himno nacional de Colombia fue compuesto por:","options":[ "José Joaquín de Olmedo","Francisco de Paula Santander","Oreste Sindici","Pedro Nel Gómez" ],"answer":2 },
         { "type":"tf","title":"Los derechos humanos pueden ser analizados críticamente en el marco de la 'inquisición de derechos'.","answer":1 },
-        { "type":"mcq","title":"¿Qué hecho histórico se relaciona directamente con el 20 de julio de 1810?","options":[ "El grito de independencia","La firma de la Constitución de 1991","La batalla de Ayacucho","La abolición de la esclavitud" ],"answer":0 },
         { "type":"mcq","title":"¿Cuál de los siguientes personajes fue conocido como 'El Hombre de las Leyes'?","options":[ "Francisco de Paula Santander","Simón Bolívar","José María Córdova","Camilo Torres" ],"answer":0 },
         { "type":"open","title":"Explica: ¿Cómo se puede evitar que se vulneren los derechos de los estudiantes?","keywords":[ { "word":"respeto","weight":0.1 },{ "word":"igualdad","weight":0.2 },{ "word":"justicia","weight":0.2 },{ "word":"proteccion","weight":0.2 },{ "word":"participacion","weight":0.2 },{ "word":"escuchar","weight":0.2 },{ "word":"denunciar","weight":0.2 },{ "word":"dialogar","weight":0.2 },{ "word":"prevenir","weight":0.2 },{ "word":"garantizar","weight":0.2 },{ "word":"defender","weight":0.2 },{ "word":"cumplir","weight":0.2 },{ "word":"apoyar","weight":0.2 },{ "word":"incluir","weight":0.2 },{ "word":"seguridad","weight":0.2 },{ "word":"convivencia","weight":0.2 },{ "word":"solidaridad","weight":0.1 },{ "word":"derechos","weight":0.4 },{ "word":"estudiantes","weight":0.2 },{ "word":"educacion","weight":0.4 },{ "word":"respaldar","weight":0.2 },{ "word":"cuidar","weight":0.2 },{ "word":"vigilar","weight":0.2 },{ "word":"respetar","weight":0.2 },{ "word":"dialogo","weight":0.2 } ] }
       ]
@@ -80,8 +79,8 @@
     {
       "code":"DEPO-Q123456",
       "name":"PRUEBA DE DEPORTES - GENERALES",
-      "time":43.75,
-      "points":{ "ok":2.85714285714,"bad":0 },
+      "time":45,
+      "points":{ "ok":0.14285714285,"bad":0 },
       "startDateTime":"2025-10-14T14:00:00",
       "endDateTime":"2025-10-14T20:59:59",
       "showResults":false,
@@ -123,6 +122,48 @@
         {"type":"mcq","title":"¿Cuánto mide una cancha oficial de baloncesto en longitud según FIBA?","options":["26 m","28 m","30 m","32 m"],"answer":1},
         {"type":"tf","title":"El balón de rugby es redondo.","answer":0},
         {"type":"open","title":"Explica la importancia del calentamiento antes de cualquier práctica deportiva.","image":"https://media.self.com/photos/608aec94a525d4982d482a02/16%3A9/w_3214%2Ch_1808%2Cc_limit/Shauna_Down-dog-to-runners-lunge_MG_8027.jpg","keywords":[{"word":"músculos","weight":1},{"word":"lesiones","weight":2},{"word":"temperatura","weight":1},{"word":"preparar","weight":1},{"word":"rendimiento","weight":1},{"word":"flexibilidad","weight":1},{"word":"circulación","weight":1},{"word":"movilidad","weight":1},{"word":"activación","weight":1}],"freeAnswerLength":30}
+      ]
+    },
+    {
+      "code":"HIST-07A01234",
+      "name":"Evaluación Final 7° - HISTORIA",
+      "time":30,
+      "points":{ "ok": 0.1724137931,"bad": 0 },
+      "startDateTime":"2025-10-22T07:00:00",
+      "endDateTime":"2025-10-22T12:29:59",
+      "showResults":true,
+      "showCorrect":false,
+      "groups":[ "Séptimo 2","Séptimo 4" ],
+      "questions":[
+        {"type":"mcq","title":"¿Qué elemento fue clave para que las civilizaciones antiguas pasaran de ser nómadas a sedentarias?","options":["Desarrollo de armas de hierro","Producción agrícola sistemática","Invención de la brújula","Construcción de acueductos"],"answer":1},
+        {"type":"mcq","title":"¿Cuál de las siguientes NO es una civilización antigua mencionada en la guía?","options":["Grecia","Roma","Babilonia","Cartago"],"answer":3},
+        {"type":"mcq","title":"En Mesopotamia, el Código de Hammurabi se basaba principalmente en:","options":["Ley del talión","Principios democráticos","La Biblia hebrea","Costumbres griegas"],"answer":0},
+        {"type":"mcq","title":"La escritura cuneiforme fue desarrollada por:","options":["Babilonios","Egipcios","Sumerios","Asirios"],"answer":2},
+        {"type":"mcq","title":"¿Qué relación tenían la religión y el gobierno en Mesopotamia?","options":["Eran totalmente independientes","El poder político dependía de la Iglesia","Los reyes eran vistos como representantes de los dioses","Los sacerdotes no influían en la política"],"answer":2},
+        {"type":"mcq","title":"En Egipto, la creencia en la vida después de la muerte influyó directamente en:","options":["La escritura jeroglífica","La momificación y construcción de pirámides","El comercio de especias","La creación de monedas"],"answer":1},
+        {"type":"mcq","title":"Una diferencia clave entre la India y China antiguas es que:","options":["China desarrolló la brújula y la pólvora","India inventó el papel y la imprenta","China practicó el hinduismo","India no tuvo planificación urbana"],"answer":0},
+        {"type":"mcq","title":"¿Cuál de estos inventos NO es de China?","options":["Pólvora","Brújula","Telar mecánico","Papel"],"answer":2},
+        {"type":"mcq","title":"¿Qué ciudad griega fue cuna de la democracia directa?","options":["Esparta","Atenas","Corinto","Mileto"],"answer":1},
+        {"type":"mcq","title":"El Derecho Romano fue fundamental porque:","options":["Se basaba en tradiciones orales","Sirvió de base a sistemas jurídicos modernos","Solo aplicaba en Roma","Prohibía la ciudadanía"],"answer":1},
+        {"type":"mcq","title":"Los incas se diferenciaban de mayas y aztecas porque:","options":["No tenían escritura alfabética","No desarrollaron sistemas agrícolas","No construyeron caminos","No tenían religión organizada"],"answer":0},
+        {"type":"mcq","title":"¿Qué civilización era conocida como la 'cultura madre' de Mesoamérica?","options":["Zapoteca","Olmeca","Maya","Inca"],"answer":1},
+        {"type":"gaptext","title":"Mesopotamia se ubicaba entre los ríos ___ y ___.","sentence":"Mesopotamia se ubicaba entre los ríos [[0]] y [[1]].","options":["Nilo","Tigris","Eufrates","Ganges","Yangtsé"],"answer":{"0":"Tigris","1":"Eufrates"}},
+        {"type":"gaptext","title":"El sistema feudal se basaba en la relación entre ___, ___ y ___.","sentence":"El sistema feudal se basaba en la relación entre [[0]], [[1]] y [[2]].","options":["rey","noble","siervo","sacerdote","mercader"],"answer":{"0":"rey","1":"noble","2":"siervo"}},
+        {"type":"gaptext","title":"El río ___ era considerado sagrado por los egipcios y permitía el desarrollo de la agricultura.","sentence":"El río [[0]] era considerado sagrado por los egipcios y permitía el desarrollo de la agricultura.","options":["Eufrates","Nilo","Tigris","Indo","Yangtsé"],"answer":{"0":"Nilo"}},
+        {"type":"gaptext","title":"El Imperio Bizantino tuvo su capital en ___ y su religión principal fue el ___ ___.","sentence":"El Imperio Bizantino tuvo su capital en [[0]] y su religión principal fue el [[1]] [[2]].","options":["Roma","Constantinopla","Cristianismo","Ortodoxo","Islámico","Budista"],"answer":{"0":"Constantinopla","1":"Cristianismo","2":"Ortodoxo"}},
+        {"type":"gaptext","title":"Los mayas desarrollaron un sistema de escritura ___ y un calendario basado en la observación de los ___.","sentence":"Los mayas desarrollaron un sistema de escritura [[0]] y un calendario basado en la observación de los [[1]].","options":["jeroglífico","cuneiforme","símbolos","astros","ríos"],"answer":{"0":"jeroglífico","1":"astros"}},
+        {"type":"mcq","title":"¿Qué hecho marca convencionalmente el inicio de la Edad Media?","options":["Caída de Constantinopla","Descubrimiento de América","Caída del Imperio Romano de Occidente","Invención de la imprenta"],"answer":2},
+        {"type":"mcq","title":"El sistema feudal consistía principalmente en:","options":["Comercio marítimo y producción artesanal","Intercambio de protección por trabajo y cosechas","Democracia directa","Gobierno centralizado"],"answer":1},
+        {"type":"mcq","title":"¿Qué institución dominó la educación en la Edad Media?","options":["La monarquía","Los gremios","La Iglesia Católica","Los ejércitos"],"answer":2},
+        {"type":"mcq","title":"¿Cuál de estos pueblos NO fue considerado 'bárbaro' por Roma?","options":["Visigodos","Vándalos","Fenicios","Hunos"],"answer":2},
+        {"type":"mcq","title":"¿Quién fue el último emperador romano de Occidente?","options":["Julio César","Constantino","Rómulo Augústulo","Nerón"],"answer":2},
+        {"type":"mcq","title":"El Imperio Bizantino se destacó por:","options":["Hablar latín como lengua oficial","Su arte en mosaicos dorados","Inventar la brújula","Ser una democracia"],"answer":1},
+        {"type":"mcq","title":"La religión oficial del Imperio Bizantino era:","options":["Cristianismo ortodoxo","Islam","Paganismo","Cristianismo protestante"],"answer":0},
+        {"type":"mcq","title":"¿En qué campo destacó el Imperio Islámico durante la Edad Media?","options":["Invención del alfabeto","Medicina, matemáticas y astronomía","Reforma protestante","Construcción de catedrales góticas"],"answer":1},
+        {"type":"mcq","title":"El Imperio Carolingio promovió principalmente:","options":["Educación y cultura","Comercio marítimo","Colonización de América","Arquitectura gótica"],"answer":0},
+        {"type":"mcq","title":"¿Quién fue coronado emperador por el Papa en el año 800?","options":["Carlomagno","Justiniano","Mahoma","Atila"],"answer":0},
+        {"type":"mcq","title":"Un legado común de los imperios medievales fue:","options":["La invención del papel moneda","La preservación de textos y conocimientos antiguos","La democracia parlamentaria","El sufragio universal"],"answer":1},
+        {"type":"mcq","title":"¿Cuál de estos imperios medievales cayó en 1453?","options":["Bizantino","Islámico","Carolingio","Romano de Occidente"],"answer":0}
       ]
     }
   ]
