@@ -26,88 +26,7 @@ function generateExportCode() {
   return String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
 }
 
-async function loadInitialData() {
-  try {
-    // Inicializar Drive API si está disponible
-    if (window.initDriveAPI) {
-      console.log('Inicializando Drive API...');
-      const driveAPIInstance = initDriveAPI(SYSTEM_CONFIG.DRIVE_WEB_APP_URL);
-      
-      // Probar conexión
-      console.log('Probando conexión a Drive...');
-      const connected = await window.driveAPI.testConnection();
-      console.log('Conexión Drive:', connected);
-      
-      if (connected) {
-        console.log('✅ Conectado a Google Drive');
-        
-        try {
-          // Cargar desde Drive con timeout
-          const loadPromise = Promise.all([
-            window.driveAPI.readFile('grades.json'),
-            window.driveAPI.readFile('tests.json'),
-            window.driveAPI.readFile('teachers.json')
-          ]);
-          
-          // Timeout de 10 segundos
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout al cargar de Drive')), 10000)
-          );
-          
-          const [gData, tData, teData] = await Promise.race([loadPromise, timeoutPromise]);
-          
-          grades = gData || { grades: [] };
-          tests = tData || { tests: [] };
-          teachers = teData || { teachers: [] };
-          
-          console.log('Datos cargados desde Google Drive:', {
-            grades: grades.grades?.length,
-            tests: tests.tests?.length,
-            teachers: teachers.teachers?.length
-          });
-          return;
-        } catch (driveError) {
-          console.warn('Error cargando desde Drive, usando fallback:', driveError);
-          showSnackbar('⚠️ Usando datos locales (Drive no disponible)', { type: 'warning', duration: 3000 });
-        }
-      } else {
-        console.warn('No se pudo conectar a Google Drive');
-        showSnackbar('⚠️ Drive no disponible, usando datos locales', { type: 'warning', duration: 3000 });
-      }
-    }
-    
-    // Fallback a archivos locales
-    console.log('Cargando datos locales...');
-    const [gResp, tResp, teResp] = await Promise.all([
-      fetch('grades.json'),
-      fetch('tests.json'),
-      fetch('teachers.json')
-    ]);
-    
-    if (!gResp.ok || !tResp.ok) {
-      throw new Error('Error cargando archivos locales');
-    }
-    
-    grades = await gResp.json();
-    tests = await tResp.json();
-    teachers = teResp.ok ? await teResp.json() : { teachers: [] };
-    
-    console.log('Datos cargados localmente:', {
-      grades: grades.grades?.length,
-      tests: tests.tests?.length,
-      teachers: teachers.teachers?.length
-    });
-    
-  } catch (err) {
-    console.error('Error cargando datos:', err);
-    const el = document.getElementById('startMsg');
-    if (el) {
-      el.textContent = 'Error cargando datos iniciales. Revisa la consola.';
-      el.style.color = 'red';
-    }
-    showSnackbar('❌ Error cargando datos', { type: 'error', duration: 4000 });
-  }
-}
+
 
 function $(id) { return document.getElementById(id); }
 function showSection(id) {
@@ -1651,30 +1570,7 @@ async function finishExam() {
       stored.push(resultObj);
       localStorage.setItem('results', JSON.stringify(stored));
 
-      // Guardar en Google Drive si está disponible
-      if (window.driveAPI) {
-        try {
-          // Leer resultados existentes de Drive
-          let driveResults = await window.driveAPI.readFile('results.json');
-          if (!driveResults || !driveResults.results) {
-            driveResults = { results: [] };
-          }
-          
-          // Agregar nuevo resultado
-          driveResults.results.push(resultObj);
-          
-          // Limitar a últimos 1000 resultados
-          if (driveResults.results.length > 1000) {
-            driveResults.results = driveResults.results.slice(-1000);
-          }
-          
-          // Guardar en Drive
-          await window.driveAPI.saveFile('results.json', driveResults);
-          console.log('Resultado guardado en Google Drive');
-        } catch (driveError) {
-          console.warn('No se pudo guardar en Drive:', driveError);
-        }
-      }
+      // nn
 
       // Mostrar código en la pantalla de resultados y añadir botón copiar
       const codeEl = $('resultCodeDisplay');

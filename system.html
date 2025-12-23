@@ -4,9 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>E-valua — Sistema de Información</title>
-  <link rel="icon" type="image/png" href="../utils/logo.png">
-  <!-- Usa los estilos base comunes (si existen en tu proyecto) -->
-  <link rel="stylesheet" href="../utils/common-styles.css" type="text/css"/>
+  <link rel="icon" type="image/png" href="utils/logo.png">
+  <link rel="stylesheet" href="utils/common-styles.css" type="text/css"/>
   <style>
     /* Estilos adicionales y animaciones para esta página */
     :root{
@@ -85,7 +84,7 @@
     <header class="hero system-card anim-in">
       <div>
         <div class="logo-spot">
-          <img src="../utils/logo.png" alt="Logo E-valua" onerror="this.style.display='none'" />
+          <img src="utils/logo.png" alt="Logo E-valua" onerror="this.style.display='none'" />
           <div>
             <h2 class="title">E-valua — Sistema de Información</h2>
             <p class="lead">Panel informativo con datos técnicos y de marketing para que los usuarios visualicen información relevante sobre el sistema.</p>
@@ -174,8 +173,8 @@
     </footer>
   </div>
 
-  <script src="../utils/dialogs.js"></script>
-  <script src="../utils/snackbar.js"></script>
+  <script src="utils/dialogs.js"></script>
+  <script src="utils/snackbar.js"></script>
   <script>
     // Intenta usar fetch desde archivos externos si el proyecto así lo requiere, sino usa los datos embebidos
     let technique = {details:[]}, marketing={details:[]}, tutorialsData={tutorials:[]};
@@ -183,9 +182,9 @@
     async function loadData(){
       try{
         const [tech, mark, tuts] = await Promise.all([
-            fetch('./technique.json').then(r=>r.json()),
-            fetch('./marketing.json').then(r=>r.json()),
-            fetch('./tutorials.json').then(r=>r.json())
+            fetch('technique.json').then(r=>r.json()),
+            fetch('marketing.json').then(r=>r.json()),
+            fetch('tutorials.json').then(r=>r.json())
         ]);
         technique = tech; 
         marketing = mark; 
@@ -250,14 +249,14 @@
         renderList(technique.details, 'Técnica');
         downloadJsonBtn.addEventListener('click', async () => {
           const downloadTech = await customDialog(
-            "../utils/logo.png",
+            "utils/logo.png",
             "confirm",
             "Descargar _technique-data.json:",
             "¿Estás seguro de que quieres descargar el archivo .json de datos técnicos de E-valua?"
           );
           if (downloadTech) {
             showSnackbar("Descargando _technique-data.json…", { duration: 4000 });
-            setTimeout(() => downloadJSON('./technique-data.json', technique), 600);
+            setTimeout(() => downloadJSON('technique-data.json', technique), 600);
           } else {
             showSnackbar("Descarga cancelada", { type: 'warn' });
           }
@@ -267,14 +266,14 @@
         renderList(marketing.details, 'Marketing');
         downloadJsonBtn.addEventListener('click', async () => {
           const downloadMark = await customDialog(
-            "../utils/logo.png",
+            "utils/logo.png",
             "confirm",
             "Descargar _marketing-data.json:",
             "¿Estás seguro de que quieres descargar el archivo .json de datos de marketing de E-valua?"
           );
           if (downloadMark) {
             showSnackbar("Descargando _marketing-data.json…", { duration: 4000 });
-            setTimeout(() => downloadJSON('./marketing-data.json', marketing), 600);
+            setTimeout(() => downloadJSON('marketing-data.json', marketing), 600);
           } else {
             showSnackbar("Descarga cancelada", { type: 'warn' });
           }
@@ -334,15 +333,15 @@
 
     downloadAll.addEventListener('click', async () => {
       const downloadBoth = await customDialog(
-        "../utils/logo.png",
+        "utils/logo.png",
         "confirm",
         "Descargar archivos .json:",
         "¿Estás seguro de que quieres descargar los archivos .json de datos técnicos y de marketing de E-valua?"
       );
       if (downloadBoth) {
         showSnackbar("Descargando archivos…", { duration: 4000 });
-        setTimeout(() => downloadJSON('./technique-data.json', technique), 450);
-        setTimeout(() => downloadJSON('./marketing-data.json', marketing), 450);
+        setTimeout(() => downloadJSON('technique-data.json', technique), 450);
+        setTimeout(() => downloadJSON('marketing-data.json', marketing), 450);
       } else {
         showSnackbar("Descarga cancelada", { type: 'warn' });
       }
