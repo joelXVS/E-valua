@@ -1,7 +1,7 @@
 // config.js - Configuración global
 const SYSTEM_CONFIG = {
   // URL de tu App Script desplegado como Web App
-  DRIVE_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbx0pByISivzqJSFtBBkbfLWL4QnAzwa8Is4qNYFIAm0MHMLlN5t_2ZBpqt2MXs3mWsx/exec',
+  DRIVE_WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbznSv-TFuRQ1tmstPrhFNLnpk2tx8o-gTTF34MJWlV8NkwA6XebzU1Ebh49gfPtORG1/exec',
   
   // Archivos de base de datos en Google Drive
   DATABASE_FILES: {
