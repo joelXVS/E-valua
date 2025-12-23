@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua</title>
+  <link rel="icon" type="image/png" href="utils/logo.png">
+  <link rel="stylesheet" href="utils/common-styles.css" type="text/css"/>
+</head>
+<body>
+  <div class="container">
+    <header class="header card" style="text-align:center;">
+      <h1 style="font-size:2.5rem; color:#e65100;">E-valua</h1>
+      <p class="sub" style="margin-top:8px;">
+      </p>
+    </header>
+
+    <main class="card" style="text-align:center;">
+      <div class="row" style="justify-content:center; margin-top:20px;">
+        <button id="btnStudent" class="btn primary">Ir a E-valua - Estudiantes</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnTeacher" class="btn danger">Ir a E-valua - Docentes</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnAdmin" class="btn primary">Ir a E-valua - Administración</button>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:12px;">
+        <button id="btnSystem" class="btn danger">Ir a E-valua - Sistema de Información</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="utils/dialogs.js"></script>
+  <script src="utils/snackbar.js"></script>
+  <script>
+    document.getElementById('btnStudent').addEventListener('click', () => {
+      window.location.href = 'app/student/student.html';
+    });
+    
+    // EDITAR MAS TARDE
+    document.getElementById('btnTeacher').addEventListener('click', async () => {
+      let code = await customDialog(
+        "utils/logo.png",
+        "prompt",
+        "Ingrese el código de acceso para docentes:",
+        "",
+        { placeholder: "Código de acceso", defaultValue: "" }
+      );
+      
+      // Usuario canceló
+      if (code === null) return;
+      
+      // Código vacío
+      if (!code || code.trim() === '') {
+        showSnackbar("El código no puede estar vacío", { type: 'error' });
+        return;
+      }
+      
+      showSnackbar("Validando código...", { duration: 2000 });
+      
+      // Validar después de un breve delay
+      setTimeout(async () => {
+        if (code === '@SOYE-VALUADOR') {
+          showSnackbar("Acceso concedido", { type: 'success' });
+          setTimeout(() => {
+            window.location.href = 'app/teacher/teacher.html';
+          }, 2000);
+        } else {
+          await customDialog(
+            "utils/logo.png",
+            'alert', 
+            'Código incorrecto', 
+            'El código ingresado no es válido. Si es estudiante, ingrese desde el panel de estudiantes.'
+          );
+        }
+      }, 1500);
+    });
+
+    document.getElementById('btnAdmin').addEventListener('click', async () => {
+      let code = await customDialog(
+        "utils/logo.png",
+        "prompt",
+        "Acceso de Administración:",
+        "Ingrese el código de administración:",
+        { placeholder: "Código secreto", defaultValue: "" }
+      );
+      
+      if (code === null) return;
+      
+      if (!code || code.trim() === '') {
+        showSnackbar("El código no puede estar vacío", { type: 'error' });
+        return;
+      }
+      
+      showSnackbar("Validando acceso...", { duration: 2000 });
+      
+      setTimeout(async () => {
+        // Código secreto para admin (puedes cambiarlo)
+        if (code === '@SOYE-ADMIN') {
+          showSnackbar("Acceso concedido", { type: 'success' });
+          setTimeout(() => {
+            // Guardar sesión admin
+            localStorage.setItem('adminSession', 'true');
+            window.location.href = 'app/admin/admin.html';
+          }, 2000);
+        } else {
+          await customDialog(
+            "utils/logo.png",
+            'alert', 
+            'Acceso denegado', 
+            'Código de administración incorrecto.'
+          );
+        }
+      }, 1500);
+    });
+
+    document.getElementById('btnSystem').addEventListener('click', () => {
+      window.location.href = 'system/info.html';
+    });
+
+    // Script de prueba para Drive API
+    async function testDriveConnection() {
+      const DRIVE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHffUkC0g9uf0twLEVfVAzcKKe9v9rFbsLLpjK-hTcMD9VBhZU17rNWVJjYT6ABTIl/exec';
+      
+      if (!window.initDriveAPI) {
+        console.error('Drive API no está cargada');
+        return;
+      }
+      
+      try {
+        initDriveAPI(DRIVE_WEB_APP_URL);
+        console.log('Drive API inicializada');
+        
+        // Probar conexión
+        const connected = await window.driveAPI.testConnection();
+        console.log('Conexión exitosa:', connected);
+        
+        if (connected) {
+          // Probar lectura de archivo
+          const testData = await window.driveAPI.readFile('tests.json');
+          console.log('Datos de prueba cargados:', testData);
+          
+          showSnackbar('✅ Conexión a Drive verificada', { type: 'success', duration: 3000 });
+        } else {
+          showSnackbar('❌ No se pudo conectar a Drive', { type: 'error', duration: 3000 });
+        }
+      } catch (error) {
+        console.error('Error en prueba de conexión:', error);
+        showSnackbar('❌ Error en conexión a Drive', { type: 'error', duration: 3000 });
+      }
+    }
+
+    // Ejecutar prueba al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      // Opcional: descomentar para probar
+      // testDriveConnection();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>E-valua — Docentes</title>
+  <link rel="icon" type="image/png" href="/utils/logo.png">
+  <link rel="stylesheet" href="/utils/common-styles.css" type="text/css"/>
+  <link rel="stylesheet" href="/utils/teacher-styles.css" type="text/css"/>
+  <style>
+    :root {
+      --primary-teacher: #2196F3;
+      --primary-dark-teacher: #1976D2;
+      --secondary-teacher: #03A9F4;
+      --accent-teacher: #FF9800;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header card" style="background: linear-gradient(135deg, var(--primary-teacher) 0%, var(--primary-dark-teacher) 100%); color: white;">
+      <h1 style="text-align: center; color: white;">E-valua — Panel de Docentes</h1>
+      <p class="sub" style="color: rgba(255,255,255,0.9);">Bienvenido al panel de gestión docente. Aquí puedes crear pruebas, ver resultados y gestionar evaluaciones.</p>
+      <div class="teacher-info" style="margin-top: 12px; text-align: center; font-size: 0.9rem;">
+        <span id="teacherName">Cargando...</span> | 
+        <span id="teacherEmail">Cargando...</span>
+      </div>
+    </header>
+
+    <!-- Panel de navegación -->
+    <nav class="nav-tabs card" style="margin-bottom: 16px;">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="dashboard">
+          <span class="tab-icon">📊</span> Dashboard
+        </button>
+        <button class="tab-btn" data-tab="create-test">
+          <span class="tab-icon">📝</span> Crear Prueba
+        </button>
+        <button class="tab-btn" data-tab="manage-tests">
+          <span class="tab-icon">📋</span> Gestionar Pruebas
+        </button>
+        <button class="tab-btn" data-tab="view-results">
+          <span class="tab-icon">📈</span> Ver Resultados
+        </button>
+        <button class="tab-btn" data-tab="students">
+          <span class="tab-icon">👥</span> Estudiantes
+        </button>
+        <button class="tab-btn" data-tab="settings">
+          <span class="tab-icon">⚙️</span> Configuración
+        </button>
+      </div>
+    </nav>
+
+    <main>
+      <!-- Dashboard -->
+      <section id="dashboard" class="tab-content active">
+        <div class="stats-grid">
+          <div class="stat-card primary">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <h3>Pruebas Activas</h3>
+              <p class="stat-number" id="activeTests">0</p>
+              <p class="stat-desc">Pruebas disponibles</p>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <h3>Resultados Totales</h3>
+              <p class="stat-number" id="totalResults">0</p>
+              <p class="stat-desc">Evaluaciones realizadas</p>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+              <h3>Estudiantes Únicos</h3>
+              <p class="stat-number" id="uniqueStudents">0</p>
+              <p class="stat-desc">Participantes</p>
+            </div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+              <h3>Incidencias</h3>
+              <p class="stat-number" id="incidents">0</p>
+              <p class="stat-desc">Eventos anti-trampa</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 20px; gap: 16px;">
+          <div class="card" style="flex: 2;">
+            <h3 style="color: var(--primary-teacher);">Actividad Reciente</h3>
+            <div class="activity-list" id="recentActivity">
+              <p class="small" style="text-align: center; padding: 20px;">Cargando actividad...</p>
+            </div>
+          </div>
+          <div class="card" style="flex: 1;">
+            <h3 style="color: var(--primary-teacher);">Acciones Rápidas</h3>
+            <div class="quick-actions">
+              <button class="btn primary" data-action="create-test" style="width: 100%; margin-bottom: 8px;">
+                <span class="action-icon">➕</span> Nueva Prueba
+              </button>
+              <button class="btn success" data-action="view-results" style="width: 100%; margin-bottom: 8px;">
+                <span class="action-icon">📊</span> Ver Resultados
+              </button>
+              <button class="btn warning" data-action="export-all" style="width: 100%; margin-bottom: 8px;">
+                <span class="action-icon">📤</span> Exportar Datos
+              </button>
+              <button class="btn info" data-action="backup" style="width: 100%;">
+                <span class="action-icon">💾</span> Respaldar
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Crear Prueba -->
+      <section id="create-test" class="tab-content card hidden">
+        <h2 style="color: var(--primary-teacher); text-align: center;">Crear Nueva Prueba</h2>
+        
+        <div class="test-wizard">
+          <!-- Paso 1: Información básica -->
+          <div class="wizard-step active" data-step="1">
+            <h3>Paso 1: Información Básica</h3>
+            <div class="form-grid">
+              <div class="field">
+                <label for="testCode">Código de Prueba *</label>
+                <input type="text" id="testCode" placeholder="Ej: MAT-2024-001" required>
+                <small class="field-hint">Usa un código único (mínimo 8 caracteres)</small>
+              </div>
+              <div class="field">
+                <label for="testName">Nombre de la Prueba *</label>
+                <input type="text" id="testName" placeholder="Ej: Examen Final de Matemáticas" required>
+              </div>
+              <div class="field">
+                <label for="testTime">Duración (minutos) *</label>
+                <input type="number" id="testTime" min="1" max="300" value="60" required>
+              </div>
+              <div class="field">
+                <label for="testPointsOk">Puntos por acierto</label>
+                <input type="number" step="0.1" id="testPointsOk" value="1" required>
+              </div>
+              <div class="field">
+                <label for="testPointsBad">Puntos por error</label>
+                <input type="number" step="0.1" id="testPointsBad" value="0" required>
+              </div>
+              <div class="field">
+                <label for="testType">Tipo de Prueba</label>
+                <select id="testType">
+                  <option value="evaluative">Evaluativa</option>
+                  <option value="formative">Formativa</option>
+                  <option value="practice">Práctica</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="field">
+              <label for="testDescription">Descripción (opcional)</label>
+              <textarea id="testDescription" rows="3" placeholder="Descripción detallada de la prueba..."></textarea>
+            </div>
+            
+            <div class="row" style="justify-content: space-between; margin-top: 20px;">
+              <button class="btn" disabled>Anterior</button>
+              <button class="btn primary next-step" data-next="2">Siguiente →</button>
+            </div>
+          </div>
+
+          <!-- Paso 2: Configuración avanzada -->
+          <div class="wizard-step" data-step="2">
+            <h3>Paso 2: Configuración Avanzada</h3>
+            
+            <div class="form-grid">
+              <div class="field">
+                <label for="testStartDate">Fecha de inicio</label>
+                <input type="datetime-local" id="testStartDate">
+              </div>
+              <div class="field">
+                <label for="testEndDate">Fecha de finalización</label>
+                <input type="datetime-local" id="testEndDate">
+              </div>
+              <div class="field">
+                <label for="testGroups">Grupos permitidos</label>
+                <select id="testGroups" multiple style="height: 120px;">
+                  <option value="Invitado">Invitado</option>
+                  <option value="Profesor">Profesor</option>
+                </select>
+                <small class="field-hint">Ctrl+click para seleccionar múltiples</small>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <h4>Opciones de visualización</h4>
+              <label class="checkbox">
+                <input type="checkbox" id="showResults" checked>
+                <span>Mostrar resultados a estudiantes</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" id="showCorrectAnswers">
+                <span>Mostrar respuestas correctas</span>
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" id="enableAntiCheat" checked>
+                <span>Activar sistema anti-trampa</span>
+              </label>
+            </div>
+
+            <div class="field-group">
+              <h4>Penalizaciones anti-trampa</h4>
+              <div class="field">
+                <label for="pointsPerCheat">Puntos por infracción</label>
+                <input type="number" step="0.1" id="pointsPerCheat" value="1.5" min="0">
+              </div>
+            </div>
+
+            <div class="row" style="justify-content: space-between; margin-top: 20px;">
+              <button class="btn prev-step" data-prev="1">← Anterior</button>
+              <button class="btn primary next-step" data-next="3">Siguiente →</button>
+            </div>
+          </div>
+
+          <!-- Paso 3: Preguntas -->
+          <div class="wizard-step" data-step="3">
+            <h3>Paso 3: Agregar Preguntas</h3>
+            
+            <div class="questions-toolbar">
+              <button class="btn primary" id="addQuestionBtn">
+                <span>➕</span> Agregar Pregunta
+              </button>
+              <button class="btn" id="importQuestionsBtn">
+                <span>📥</span> Importar
+              </button>
+              <button class="btn" id="templateBtn">
+                <span>📄</span> Plantillas
+              </button>
+            </div>
+
+            <div class="questions-list" id="questionsList">
+              <p class="small" style="text-align: center; padding: 40px; color: #666;">
+                No hay preguntas agregadas. Haz clic en "Agregar Pregunta" para comenzar.
+              </p>
+            </div>
+
+            <div class="row" style="justify-content: space-between; margin-top: 20px;">
+              <button class="btn prev-step" data-prev="2">← Anterior</button>
+              <button class="btn success" id="saveTestBtn">💾 Guardar Prueba</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gestionar Pruebas -->
+      <section id="manage-tests" class="tab-content card hidden">
+        <h2 style="color: var(--primary-teacher); text-align: center;">Gestionar Pruebas</h2>
+        
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchTests" placeholder="Buscar pruebas...">
+            <span class="search-icon">🔍</span>
+          </div>
+          <div class="filter-buttons">
+            <button class="btn filter-btn active" data-filter="all">Todas</button>
+            <button class="btn filter-btn" data-filter="active">Activas</button>
+            <button class="btn filter-btn" data-filter="upcoming">Próximas</button>
+            <button class="btn filter-btn" data-filter="ended">Finalizadas</button>
+          </div>
+        </div>
+
+        <div class="tests-grid" id="testsGrid">
+          <!-- Las pruebas se cargarán aquí -->
+          <div class="loading-placeholder">
+            <p>Cargando pruebas...</p>
+          </div>
+        </div>
+
+        <div class="pagination" id="testsPagination">
+          <!-- Paginación -->
+        </div>
+      </section>
+
+      <!-- Ver Resultados -->
+      <section id="view-results" class="tab-content card hidden">
+        <h2 style="color: var(--primary-teacher); text-align: center;">Resultados de Estudiantes</h2>
+        
+        <div class="filters-panel">
+          <div class="filter-row">
+            <div class="field">
+              <label for="filterTest">Filtrar por Prueba</label>
+              <select id="filterTest">
+                <option value="">Todas las pruebas</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filterGroup">Filtrar por Grupo</label>
+              <select id="filterGroup">
+                <option value="">Todos los grupos</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="filterDateFrom">Desde</label>
+              <input type="date" id="filterDateFrom">
+            </div>
+            <div class="field">
+              <label for="filterDateTo">Hasta</label>
+              <input type="date" id="filterDateTo">
+            </div>
+            <div class="field">
+              <label for="filterStudent">Estudiante</label>
+              <input type="text" id="filterStudent" placeholder="Nombre del estudiante">
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button class="btn primary" id="applyFilters">Aplicar Filtros</button>
+            <button class="btn" id="resetFilters">Limpiar</button>
+            <button class="btn success" id="exportResults">Exportar CSV</button>
+          </div>
+        </div>
+
+        <div class="results-summary">
+          <div class="summary-card">
+            <h4>Total Resultados</h4>
+            <p id="totalResultsCount">0</p>
+          </div>
+          <div class="summary-card">
+            <h4>Promedio</h4>
+            <p id="averageScore">0.00</p>
+          </div>
+          <div class="summary-card">
+            <h4>Mejor Resultado</h4>
+            <p id="bestScore">0.00</p>
+          </div>
+          <div class="summary-card">
+            <h4>Peor Resultado</h4>
+            <p id="worstScore">0.00</p>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="results-table" id="resultsTable">
+            <thead>
+              <tr>
+                <th>Estudiante</th>
+                <th>Grupo</th>
+                <th>Prueba</th>
+                <th>Puntaje</th>
+                <th>Tiempo</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <!-- Los resultados se cargarán aquí -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="resultsPagination">
+          <!-- Paginación de resultados -->
+        </div>
+      </section>
+
+      <!-- Estudiantes -->
+      <section id="students" class="tab-content card hidden">
+        <h2 style="color: var(--primary-teacher); text-align: center;">Gestión de Estudiantes</h2>
+        <div class="alert info">
+          <strong>Nota:</strong> Esta sección está en desarrollo. Próximamente podrás gestionar estudiantes y grupos.
+        </div>
+      </section>
+
+      <!-- Configuración -->
+      <section id="settings" class="tab-content card hidden">
+        <h2 style="color: var(--primary-teacher); text-align: center;">Configuración del Profesor</h2>
+        
+        <div class="settings-tabs">
+          <div class="settings-nav">
+            <button class="settings-tab active" data-tab="profile">Perfil</button>
+            <button class="settings-tab" data-tab="notifications">Notificaciones</button>
+            <button class="settings-tab" data-tab="security">Seguridad</button>
+            <button class="settings-tab" data-tab="preferences">Preferencias</button>
+          </div>
+
+          <div class="settings-content">
+            <div class="settings-pane active" id="profile-pane">
+              <h3>Información del Perfil</h3>
+              <div class="field">
+                <label for="teacherFullName">Nombre Completo</label>
+                <input type="text" id="teacherFullName" disabled>
+              </div>
+              <div class="field">
+                <label for="teacherEmailInput">Correo Electrónico</label>
+                <input type="email" id="teacherEmailInput" disabled>
+              </div>
+              <div class="field">
+                <label for="teacherPhone">Teléfono</label>
+                <input type="tel" id="teacherPhone">
+              </div>
+              <button class="btn primary" id="updateProfileBtn">Actualizar Perfil</button>
+            </div>
+
+            <div class="settings-pane" id="notifications-pane">
+              <h3>Preferencias de Notificación</h3>
+              <div class="field-group">
+                <label class="checkbox">
+                  <input type="checkbox" id="notifyNewResults" checked>
+                  <span>Notificar nuevos resultados</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" id="notifyCheatAttempts" checked>
+                  <span>Notificar intentos de trampa</span>
+                </label>
+                <label class="checkbox">
+                  <input type="checkbox" id="notifyTestEnding">
+                  <span>Notificar cuando finalice una prueba</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer card">
+      <p class="small">E-valua — Panel de Docentes | Versión 1.0</p>
+      <p class="small">© 2024 Universidad del Pacífico</p>
+    </footer>
+  </div>
+
+  <!-- Modal para editar pregunta -->
+  <div id="questionModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 800px;">
+      <h2>Editor de Pregunta</h2>
+      <div class="modal-body" id="questionEditor">
+        <!-- Contenido dinámico del editor de preguntas -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="cancelQuestionBtn">Cancelar</button>
+        <button class="btn primary" id="saveQuestionBtn">Guardar Pregunta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para ver detalles del resultado -->
+  <div id="resultDetailModal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 900px;">
+      <h2>Detalles del Resultado</h2>
+      <div class="modal-body" id="resultDetailContent">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="closeResultModal">Cerrar</button>
+        <button class="btn primary" id="printResultBtn">Imprimir</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/utils/dialogs.js"></script>
+  <script src="/utils/snackbar.js"></script>
+  <script src="/utils/drive-api.js"></script>
+  <script src="/config.js"></script>
+  <script type="module" src="teacher-app.js"></script>
+</body>
+</html>

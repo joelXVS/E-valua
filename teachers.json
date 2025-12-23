@@ -1,0 +1,22 @@
+{
+  "teachers":[
+    {
+      "fullname":"José Angel Perea Valencia",
+      "name":"Joel Valencia",
+      "user":"jvalencia",
+      "pass":"@jvalencia",
+      "tests":[ "CONS-0801A033","CONS-0802M030","DEPO-Q123456","HIST-07A01234" ],
+      "email":"justindk456@gmail.com",
+      "phone":"+57 302 818 6841"
+    },
+    {
+      "fullname":"Yolanda Valencia Valenzuela",
+      "name":"Yolanda Valencia",
+      "user":"yvalencia",
+      "pass":"@yvalencia",
+      "tests":[ "CONS-0801A033", "CONS-0802M030" ],
+      "email":"yolvalval1964@gmail.com",
+      "phone":"+57 300 000 0000"
+    }
+  ]
+}

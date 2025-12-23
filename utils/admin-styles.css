@@ -1,0 +1,385 @@
+/* Admin Panel Specific Styles */
+
+:root {
+  --primary-admin: #9C27B0;
+  --primary-dark-admin: #7B1FA2;
+  --secondary-admin: #BA68C8;
+  --accent-admin: #FF9800;
+  --success-admin: #4CAF50;
+  --warning-admin: #FFC107;
+  --danger-admin: #F44336;
+  --info-admin: #00BCD4;
+}
+
+/* Admin specific overrides */
+.stat-card.admin {
+  border-left: 5px solid var(--primary-admin);
+}
+
+.btn.admin {
+  background: var(--primary-admin);
+  color: white;
+}
+
+.btn.admin:hover:not(:disabled) {
+  background: var(--primary-dark-admin);
+}
+
+/* Data Tables */
+.data-tabs {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.data-nav {
+  flex: 1;
+  max-width: 250px;
+}
+
+.data-content {
+  flex: 3;
+}
+
+.data-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  border: none;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.data-tab:hover {
+  background: #f0f0f0;
+}
+
+.data-tab.active {
+  background: var(--primary-admin);
+  color: white;
+}
+
+.data-pane {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.data-pane.active {
+  display: block;
+}
+
+.data-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.data-table th {
+  background: var(--primary-admin);
+  color: white;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.data-table tr:hover {
+  background: #f8f8f8;
+}
+
+.table-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Configuration Sections */
+.config-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.config-section {
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.config-section h3 {
+  color: var(--primary-admin);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.config-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Security Tabs */
+.security-tabs {
+  display: flex;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.security-nav {
+  flex: 1;
+  max-width: 200px;
+}
+
+.security-content {
+  flex: 3;
+}
+
+.security-tab {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  border: none;
+  background: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.security-tab:hover {
+  background: #f0f0f0;
+}
+
+.security-tab.active {
+  background: var(--primary-admin);
+  color: white;
+}
+
+.security-pane {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.security-pane.active {
+  display: block;
+}
+
+.permissions-table {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Backup Grid */
+.backup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.backup-card {
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.backup-card h3 {
+  color: var(--primary-admin);
+  margin-bottom: 16px;
+}
+
+.storage-info {
+  margin-top: 16px;
+}
+
+.storage-bar {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.storage-used {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-admin) 0%, var(--secondary-admin) 100%);
+  border-radius: 4px;
+}
+
+.storage-stats {
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* Logs */
+.logs-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.logs-container {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-entry {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid #ccc;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.log-entry.error {
+  border-left-color: var(--danger-admin);
+}
+
+.log-entry.warning {
+  border-left-color: var(--warning-admin);
+}
+
+.log-entry.info {
+  border-left-color: var(--info-admin);
+}
+
+.log-entry.security {
+  border-left-color: var(--primary-admin);
+}
+
+.log-time {
+  color: #666;
+  min-width: 160px;
+}
+
+.log-level {
+  font-weight: bold;
+  min-width: 80px;
+  text-align: center;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.8em;
+}
+
+.log-level.error {
+  background: #ffebee;
+  color: var(--danger-admin);
+}
+
+.log-level.warning {
+  background: #fff8e1;
+  color: var(--warning-admin);
+}
+
+.log-level.info {
+  background: #e3f2fd;
+  color: var(--info-admin);
+}
+
+.log-level.security {
+  background: #f3e5f5;
+  color: var(--primary-admin);
+}
+
+.log-message {
+  flex: 1;
+}
+
+/* Admin Actions */
+.admin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .data-tabs {
+    flex-direction: column;
+  }
+  
+  .data-nav {
+    max-width: 100%;
+  }
+  
+  .security-tabs {
+    flex-direction: column;
+  }
+  
+  .security-nav {
+    max-width: 100%;
+  }
+  
+  .backup-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .logs-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .log-entry {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .log-time {
+    min-width: auto;
+  }
+  
+  .log-level {
+    min-width: auto;
+    align-self: flex-start;
+  }
+}

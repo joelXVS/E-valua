@@ -1,0 +1,6 @@
+{
+  "grades" : [
+    { "id": "nobody", "name": "Invitado" },
+    { "id": "teacher", "name": "Profesor" }
+  ]
+}
