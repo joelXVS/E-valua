@@ -26,7 +26,34 @@ function generateExportCode() {
   return String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
 }
 
+async function loadInitialData() {
+  try {
+    // Cargar tests
+    const testsResponse = await fetch('../data/tests.json');
+    if (!testsResponse.ok) {
+      throw new Error('No se pudo cargar tests.json');
+    }
+    const testsData = await testsResponse.json();
 
+    // Cargar grades
+    const gradesResponse = await fetch('../data/grades.json');
+    if (!gradesResponse.ok) {
+      throw new Error('No se pudo cargar grades.json');
+    }
+    const gradesData = await gradesResponse.json();
+
+    // Guardar en variables globales o de estado
+    window.tests = testsData;
+    window.grades = gradesData;
+
+    console.log('✅ Datos cargados correctamente');
+    console.log('Tests:', testsData);
+    console.log('Grades:', gradesData);
+
+  } catch (error) {
+    console.error('❌ Error cargando datos:', error);
+  }
+}
 
 function $(id) { return document.getElementById(id); }
 function showSection(id) {
