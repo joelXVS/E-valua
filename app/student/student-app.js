@@ -29,14 +29,14 @@ function generateExportCode() {
 async function loadInitialData() {
   try {
     // Cargar tests
-    const testsResponse = await fetch('../data/tests.json');
+    const testsResponse = await fetch('../../tests.json');
     if (!testsResponse.ok) {
       throw new Error('No se pudo cargar tests.json');
     }
     const testsData = await testsResponse.json();
 
     // Cargar grades
-    const gradesResponse = await fetch('../data/grades.json');
+    const gradesResponse = await fetch('../../grades.json');
     if (!gradesResponse.ok) {
       throw new Error('No se pudo cargar grades.json');
     }
@@ -180,11 +180,11 @@ function canStartExam() {
   const code = override ? rawCode.replace(/:NUEVO!$/, '') : rawCode;
 
   if (name.length <= 15) {
-    customDialog("../utils/logo.png", "alert", "Aviso:", 'El nombre completo debe tener al menos 16 caracteres.');
+    customDialog("../../utils/logo.png", "alert", "Aviso:", 'El nombre completo debe tener al menos 16 caracteres.');
     return false;
   }
   if (code.length <= 7) {
-    customDialog("../utils/logo.png", "alert", "Aviso:", 'El código de aplicación debe tener al menos 8 caracteres.');
+    customDialog(".../../utils/logo.png", "alert", "Aviso:", 'El código de aplicación debe tener al menos 8 caracteres.');
     return false;
   }
 
@@ -257,13 +257,13 @@ async function startExam() {
   const selectedGradeText = $('gradeSelect').selectedOptions[0].textContent;
   const allowedGroups = currentTest.groups || [];
   if (Array.isArray(allowedGroups) && allowedGroups.length > 0 && !allowedGroups.includes(selectedGradeText)) {
-    setTimeout(() => customDialog("../utils/logo.png", "alert", "Aviso:", 'La prueba no está disponible para el grupo/curso seleccionado.'), 4500);
+    setTimeout(() => customDialog("../../utils/logo.png", "alert", "Aviso:", 'La prueba no está disponible para el grupo/curso seleccionado.'), 4500);
     return;
   }
 
   // validar ventana de la prueba (fecha + hora)
   if (!isTestOpen(currentTest)) {
-    setTimeout(() => customDialog("../utils/logo.png", "alert", "Aviso:", 'La prueba no está disponible en este momento. Verifica la fecha y hora de apertura.'), 4500);
+    setTimeout(() => customDialog("../../utils/logo.png", "alert", "Aviso:", 'La prueba no está disponible en este momento. Verifica la fecha y hora de apertura.'), 4500);
     return;
   }
 
@@ -430,15 +430,15 @@ function attachAntiCheatListeners() {
       const warningWithPenalty = `${warningMessage}\n\nSe aplicará una penalización de ${pointsPerCheat.toFixed(1)} puntos por este intento.`;
       
       if (totalCheatEvents <= 3) {
-        customDialog("../utils/logo.png", "alert", "Advertencia:", warningWithPenalty);
+        customDialog("../../utils/logo.png", "alert", "Advertencia:", warningWithPenalty);
       } else if (totalCheatEvents === 4) {
-        customDialog("../utils/logo.png", "alert", "Advertencia Final:", 
+        customDialog("../../utils/logo.png", "alert", "Advertencia Final:", 
           `Has acumulado ${totalCheatEvents} advertencias. Se aplicará una penalización total de ${cheatPenalty.toFixed(1)} puntos a tu calificación final.`);
       }
     } else {
       // Comportamiento antiguo (bloqueo después de 3 eventos)
       if (totalCheatEvents <= 2) {
-        customDialog("../utils/logo.png", "alert", "Aviso:", warningMessage);
+        customDialog("../../utils/logo.png", "alert", "Aviso:", warningMessage);
       }
     }
     
@@ -1721,7 +1721,7 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
   // añadir listeners a los nuevos botones (descargas de este resultado)
   document.getElementById('viewJsonBtn').addEventListener('click',async () => {
     const downloadResJson = await customDialog(
-      "../utils/logo.png",
+      "../../utils/logo.png",
       "confirm",
       "Descargar resultados:",
       "¿Estás seguro de que quieres descargar el archivo .json de tus resultados?"
@@ -1742,7 +1742,7 @@ function renderResultInViewArea(result, targetElId = 'viewResultArea') {
     
     if (lastResult) {
       const downloadResPDF = await customDialog(
-        "../utils/logo.png",
+        "../../utils/logo.png",
         "confirm",
         "Descargar resultados:",
         "¿Estás seguro de que quieres descargar el archivo .pdf de tus resultados?"
@@ -1763,7 +1763,7 @@ function downloadResults(resultObj) {
 
   // si resultObj viene desde "Ver resultados" pero no trae detalles, ofrecer fallback
   if (resultObj && (!resultObj.details || resultObj.details.length === 0)) {
-    if (!customDialog("../utils/logo.png", "confirm", "Confirmar", '¿Estás seguro de que deseas descargar tus respuestas actuales en formato JSON?')) {
+    if (!customDialog("../../utils/logo.png", "confirm", "Confirmar", '¿Estás seguro de que deseas descargar tus respuestas actuales en formato JSON?')) {
       return;
     }
     resultObj = null; // forzar fallback below
@@ -2293,7 +2293,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   $('finishBtn').addEventListener('click', () => finishExam());
   $('downloadBtn').addEventListener('click',async () => {;
     const downloadResJson = await customDialog(
-      "../utils/logo.png",
+      "../../utils/logo.png",
       "confirm",
       "Descargar resultados:",
       "¿Estás seguro de que quieres descargar el archivo .json de tus resultados?"
@@ -2314,7 +2314,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     
     if (lastResult) {
       const downloadResPDF = await customDialog(
-        "../utils/logo.png",
+        "../../utils/logo.png",
         "confirm",
         "Descargar resultados:",
         "¿Estás seguro de que quieres descargar el archivo .pdf de tus resultados?"
@@ -2329,7 +2329,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   $('downloadCertBtn').addEventListener('click',async () => {
     const downloadCert = await customDialog(
-      "../utils/logo.png",
+      "../../utils/logo.png",
       "confirm",
       "Descargar certificado:",
       "¿Estás seguro de que quieres descargar el certificado de presentación de esta prueba?"
@@ -2351,7 +2351,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const btnSearch = $('btnSearchResult');
   if (btnSearch) btnSearch.addEventListener('click', () => {
     const code = $('resultCodeInput').value.trim();
-    if (!/^\d{11}$/.test(code)) { customDialog("../utils/logo.png", "alert", "Aviso:", 'Ingresa un código válido de 11 dígitos.'); return; }
+    if (!/^\d{11}$/.test(code)) { customDialog("../../utils/logo.png", "alert", "Aviso:", 'Ingresa un código válido de 11 dígitos.'); return; }
     showSnackbar("Buscando resultados...", { duration: 4000 });
     const found = findResultByCode(code);
     setTimeout(() => renderResultInViewArea(found), 600);
@@ -2371,7 +2371,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const updatesList = document.getElementById("updatesList");
 
   // Cargar novedades desde JSON y mostrar con la parte antes de ":" en negrita
-  fetch("/whats_new.json")
+  fetch("../../whats_new.json")
     .then(res => {
       if (!res.ok) throw new Error('No se pudo cargar whats_new.json');
       return res.json();
