@@ -50,6 +50,16 @@ async function loadInitialData() {
     console.log('Tests:', testsData);
     console.log('Grades:', gradesData);
 
+    // Cargar grupos en la lista de selección
+    const select = $('gradeSelect');
+    select.innerHTML = '<option value="">-- Seleccionar curso / grupo --</option>';
+    (grades.grades || []).forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = g.name;
+      select.appendChild(opt);
+    });
+
   } catch (error) {
     console.error('❌ Error cargando datos:', error);
   }
@@ -64,18 +74,6 @@ function showSection(id) {
   const section = $(id);
   section.classList.remove('hidden');
   section.setAttribute('aria-hidden', 'false');
-}
-
-// ---------- cargar cursos ----------
-function loadGrades() {
-  const select = $('gradeSelect');
-  select.innerHTML = '<option value="">-- Seleccionar curso / grupo --</option>';
-  (grades.grades || []).forEach(g => {
-    const opt = document.createElement('option');
-    opt.value = g.id;
-    opt.textContent = g.name;
-    select.appendChild(opt);
-  });
 }
 
 // ----------------- Retake cooldown helpers -----------------
@@ -2283,7 +2281,6 @@ function downloadCertificate() {
 // ---------- eventos DOM ----------
 window.addEventListener('DOMContentLoaded', async () => {
   await loadInitialData();
-  loadGrades();
   $('studentName').addEventListener('input', validateStartForm);
   $('gradeSelect').addEventListener('change', validateStartForm);
   $('applyCode').addEventListener('input', validateStartForm);
