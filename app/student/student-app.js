@@ -28,31 +28,26 @@ function generateExportCode() {
 
 async function loadInitialData() {
   try {
-    // Cargar tests
     const testsResponse = await fetch('../../tests.json');
     if (!testsResponse.ok) {
       throw new Error('No se pudo cargar tests.json');
     }
-    const testsData = await testsResponse.json();
+    tests = await testsResponse.json();
 
-    // Cargar grades
     const gradesResponse = await fetch('../../grades.json');
     if (!gradesResponse.ok) {
       throw new Error('No se pudo cargar grades.json');
     }
-    const gradesData = await gradesResponse.json();
-
-    // Guardar en variables globales o de estado
-    window.tests = testsData;
-    window.grades = gradesData;
+    grades = await gradesResponse.json();
 
     console.log('✅ Datos cargados correctamente');
-    console.log('Tests:', testsData);
-    console.log('Grades:', gradesData);
+    console.log('Tests:', tests);
+    console.log('Grades:', grades);
 
-    // Cargar grupos en la lista de selección
+    // Cargar grupos en el select
     const select = $('gradeSelect');
     select.innerHTML = '<option value="">-- Seleccionar curso / grupo --</option>';
+
     (grades.grades || []).forEach(g => {
       const opt = document.createElement('option');
       opt.value = g.id;
