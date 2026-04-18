@@ -87,6 +87,16 @@
                 document.getElementById("loader").style.display = "none";
             }, 4000);
         }
+
+        function generarIdAleatorio(length) {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
     </script>
 </head>
 
@@ -100,5 +110,63 @@
     <!-- Página incrustada -->
     <iframe id="frame"></iframe>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        const firebaseConfig = {
+          apiKey: "AIzaSyCZBCN24zxCZmhWKSk1A3CCMRXO9hhbaio",
+          authDomain: "e-valua-db.firebaseapp.com",
+          databaseURL: "https://e-valua-db-default-rtdb.firebaseio.com",
+          projectId: "e-valua-db",
+          storageBucket: "e-valua-db.firebasestorage.app",
+          messagingSenderId: "635718448102",
+          appId: "1:635718448102:web:aa5f2d57ebf350c9005c27",
+          measurementId: "G-VENVD6ZQ4F"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Función para registrar trampa
+        const idSeguimiento = generarIdAleatorio(20);
+        let ultimoEvento = {};
+        
+        async function enviarTrampa(tipo) {
+            const ahora = Date.now();
+            if (!ultimoEvento[tipo] || ahora - ultimoEvento[tipo] > 3000) {
+              ultimoEvento[tipo] = ahora;
+              try {
+                await addDoc(collection(db, "REGISTROS-TRAMPA"), {
+                  id: generarIdAleatorio(15),
+                  fechaDeteccion: serverTimestamp(),
+                  tipoTrampa: tipo,
+                  idSeguimiento: idSeguimiento,
+                });
+              } catch (e) {
+                console.error("Error enviando trampa:", e);
+              }
+            }
+        }
+        
+        // Detectar cambio de pestaña
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            enviarTrampa("Cambio de pestana");
+          }
+        });
+        
+        // Detectar pérdida de foco
+        window.addEventListener("blur", () => {
+          enviarTrampa("Pérdida de foco");
+        });
+
+        // Detectar copia de contenido
+        document.addEventListener("copy", () => enviarTrampa("Contenido de la prueba copiado"));
+        
+        // Bloqueo de click derecho
+        document.addEventListener("contextmenu", e => e.preventDefault());
+    </script>
 </body>
+
 </html>
