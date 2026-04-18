@@ -120,31 +120,28 @@
         
         // Variables involucradas
         let pruebaIniciada = false;
-        const idSeguimiento = "";
-        const idEvaluacion = "";
+        let idSeguimiento = "";
+        let idEvaluacion = "";
         let ultimoEvento = {};
 
         // Leer datos del iframe para comprobar pruebaIniciada y obtener idSeguimiento
         window.addEventListener("message", (event) => {
-            // Validar origen por seguridad (opcional pero recomendado)
             if (event.origin !== "https://preview.flutterflow.app") return;
             
             const { tipo, payload } = event.data || {};
             
             if (tipo === "TEST_INICIADO") {
                 pruebaIniciada = true;
-                idSeguimiento = payload?.idSeguimiento;
-                idEvaluacion = payload?.idEvaluacion;
+                idSeguimiento = payload.idSeguimiento;
+                idEvaluacion = payload.idEvaluacion;
                 
                 document.documentElement.requestFullscreen();
-                console.log("✅ Monitoreo activado:", idSeguimiento, idEvalaucion);
             }
             
             if (tipo === "TEST_FINALIZADO") {
                 pruebaIniciada = false;
 
                 document.exitFullscreen();
-                console.log("🔚 Monitoreo desactivado");
             }
         });
         
