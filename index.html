@@ -132,7 +132,7 @@
             const { tipo, payload } = event.data || {};
             
             if (tipo === "TEST_INICIADO") {
-                monitoreoActivo = true;
+                pruebaIniciada = true;
                 idSeguimiento = payload?.idSeguimiento;
                 idEvaluacion = payload?.idEvaluacion;
                 
@@ -141,7 +141,7 @@
             }
             
             if (tipo === "TEST_FINALIZADO") {
-                monitoreoActivo = false;
+                pruebaIniciada = false;
 
                 document.exitFullscreen();
                 console.log("🔚 Monitoreo desactivado");
@@ -161,7 +161,7 @@
         
         // Función para registrar trampa
         async function enviarTrampa(tipo) {
-            if (!monitoreoActivo) return;
+            if (!pruebaIniciada) return;
             
             const ahora = Date.now();
             if (!ultimoEvento[tipo] || ahora - ultimoEvento[tipo] > 3000) {
