@@ -77,7 +77,7 @@
     </style>
 
     <script>
-        let idPreview = "erYwiuGCmcvoGtdPwSo5";
+        let idPreview = "YacOpblP40nNjTkn29NH";
 
         function alCargarPagina() {
             setTimeout(() => {
@@ -86,16 +86,6 @@
 
                 document.getElementById("loader").style.display = "none";
             }, 4000);
-        }
-
-        function generarIdAleatorio(length) {
-            let result = '';
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            const charactersLength = characters.length;
-            for (let i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            return result;
         }
     </script>
 </head>
@@ -145,14 +135,29 @@
                 monitoreoActivo = true;
                 idSeguimiento = payload?.idSeguimiento;
                 idEvaluacion = payload?.idEvaluacion;
+                
+                document.documentElement.requestFullscreen();
                 console.log("✅ Monitoreo activado:", idSeguimiento);
             }
             
             if (tipo === "TEST_FINALIZADO") {
                 monitoreoActivo = false;
+
+                document.exitFullscreen();
                 console.log("🔚 Monitoreo desactivado");
             }
         });
+        
+        // Función para generar ID aleatorio
+        function generarIdAleatorio(length) {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
         
         // Función para registrar trampa
         async function enviarTrampa(tipo) {
@@ -186,6 +191,14 @@
           enviarTrampa("Pérdida de foco");
         });
 
+        // Detectar cambio de pantalla completa
+        document.addEventListener("fullscreenchange", () => {
+          if (!document.fullscreenElement) {
+            enviarTrampa("Salió de pantalla completa");
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        });
+        
         // Detectar copia de contenido
         document.addEventListener("copy", () => enviarTrampa("Contenido de la prueba copiado"));
         
