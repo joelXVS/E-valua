@@ -137,7 +137,7 @@
                 idEvaluacion = payload?.idEvaluacion;
                 
                 document.documentElement.requestFullscreen();
-                console.log("✅ Monitoreo activado:", idSeguimiento);
+                console.log("✅ Monitoreo activado:", idSeguimiento, idEvalaucion);
             }
             
             if (tipo === "TEST_FINALIZADO") {
@@ -167,7 +167,7 @@
             if (!ultimoEvento[tipo] || ahora - ultimoEvento[tipo] > 3000) {
               ultimoEvento[tipo] = ahora;
               try {
-                await addDoc(collection(db, ´EVALUACIONES/${idEvaluacion}´, "REGISTROS-TRAMPA"), {
+                await addDoc(collection(db, "EVALUACIONES", idEvaluacion, "REGISTROS-TRAMPA"), {
                   id: generarIdAleatorio(15),
                   fechaDeteccion: serverTimestamp(),
                   tipoTrampa: tipo,
