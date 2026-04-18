@@ -128,16 +128,41 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // Función para registrar trampa
-        const idSeguimiento = generarIdAleatorio(20);
+        // Variables involucradas
+        let pruebaIniciada = false;
+        const idSeguimiento = "";
+        const idEvaluacion = "";
         let ultimoEvento = {};
+
+        // Leer datos del iframe para comprobar pruebaIniciada y obtener idSeguimiento
+        window.addEventListener("message", (event) => {
+            // Validar origen por seguridad (opcional pero recomendado)
+            if (event.origin !== "https://preview.flutterflow.app") return;
+            
+            const { tipo, payload } = event.data || {};
+            
+            if (tipo === "TEST_INICIADO") {
+                monitoreoActivo = true;
+                idSeguimiento = payload?.idSeguimiento;
+                idEvaluacion = payload?.idEvaluacion;
+                console.log("✅ Monitoreo activado:", idSeguimiento);
+            }
+            
+            if (tipo === "TEST_FINALIZADO") {
+                monitoreoActivo = false;
+                console.log("🔚 Monitoreo desactivado");
+            }
+        });
         
+        // Función para registrar trampa
         async function enviarTrampa(tipo) {
+            if (!monitoreoActivo) return;
+            
             const ahora = Date.now();
             if (!ultimoEvento[tipo] || ahora - ultimoEvento[tipo] > 3000) {
               ultimoEvento[tipo] = ahora;
               try {
-                await addDoc(collection(db, "REGISTROS-TRAMPA"), {
+                await addDoc(collection(db, "EVALUACIONES", idEvaluacion, "REGISTROS-TRAMPA"), {
                   id: generarIdAleatorio(15),
                   fechaDeteccion: serverTimestamp(),
                   tipoTrampa: tipo,
@@ -152,7 +177,7 @@
         // Detectar cambio de pestaña
         document.addEventListener("visibilitychange", () => {
           if (document.hidden) {
-            enviarTrampa("Cambio de pestana");
+            enviarTrampa("Cambio de pestaña");
           }
         });
         
